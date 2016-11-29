@@ -161,8 +161,9 @@ if [ ${SecondRun} -eq 0 ]; then
 
     done
 
-    echo Performins configMachines.sh on "$BenchNode"
+    echo Performing configMachines.sh on "$BenchNode"
     echo First copying the node list to "$BenchNode"
+
     echo scp ~/fullnodelistip root@"$BenchNode":/root/basho_bench1/basho_bench/script/allnodesfull
     scp ~/fullnodelistip root@"$BenchNode":/root/basho_bench1/basho_bench/script/allnodesfull
 
