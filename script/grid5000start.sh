@@ -20,9 +20,7 @@ BenchParallel=${Config[6]}
 DcsPerCluster=${Config[7]}
 GridBranch=${Config[8]}
 BenchFile=${Config[9]}
-Clusters=(`oargridstat $GridJob | awk '/-->/ { print $1 }'`)
-# Reservations=(`oargridstat $1 | awk '/-->/ { print $3 }'`)
-# JobId=`oargridstat $1 | awk '/Reservation/ { print $3 }' | grep -o '[0-9]*'`
+Clusters=(`oargridstat ${GridJob} | awk '/-->/ { print $1 }'`)
 
 BenchCount2=$(($BenchCount * $DcsPerCluster))
 ComputeCount2=$(($ComputeCount * $DcsPerCluster))
@@ -131,17 +129,11 @@ if [ $DoDeploy -eq 1 ]; then
     # Connect to each cluster to deloy the nodes
     for I in $(seq 0 $((${#Clusters[*]} - 1))); do
 	echo Deploying cluster: ${Clusters[$I]}
-	ssh -t -o StrictHostKeyChecking=no ${Clusters[$I]} ~/basho_bench/script/grid5000start-createnodes.sh ${Clusters[$I]} $GridJob &
-	#oargridstat -w -l $JobId | sed '/^$/d' > ~/machines
-	#awk < ~/machines '/'"${Clusters[$I]}"'/ { print $1 }' > ~/machines-tmp
-	#kadeploy3 -f ~/machines-tmp -a ~/antidote_images/mywheezy-x64-base.env -k ~/.ssh/exp_key.pub
+	ssh -t -o StrictHostKeyChecking=no ${Clusters[$I]} \
+	    ~/basho_bench/script/grid5000start-createnodes.sh ${Clusters[$I]} $GridJob &
     done
     wait
 fi
-
-# oargridstat -w -l $GridJob | sed '/^$/d' > ~/machines
-# awk < ~/machines '!seen[$0]++' > ~/machines-tmp
-# awk < ~/machines-tmp '!/'"$BenchNode"'/ { print $1 }' > ~/machines-tmp2    
 
 Time=`date +"%Y-%m-%d-%s"`
 mkdir -p logs/"$GridJob"
