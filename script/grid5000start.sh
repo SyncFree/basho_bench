@@ -93,34 +93,25 @@ rm ~/computecookielist
 rm ~/allcookielist
 echo Making cookies
 
-DCNum=1
-for I in $(seq 1 $CountDC); do
-    for F in $(seq 1 $DcsPerCluster); do
-	for J in $(seq 1 $BenchCount); do
-	    echo dccookie"$DCNum" >> ~/allcookielist
-	done
-	DCNum=$(($DCNum + 1))
-    done
-done
-DCNum=1
-for I in $(seq 1 $CountDC); do
-    for F in $(seq 1 $DcsPerCluster); do
-	for J in $(seq 1 $ComputeCount); do
-	    echo dccookie"$DCNum" >> ~/allcookielist
-	done
-	DCNum=$(($DCNum + 1))
+for I in $(seq 1 ${CountDC}); do
+    for _ in $(seq 1 $((DcsPerCluster * BenchCount))); do
+        echo dccookie"$I" >> ~/allcookielist
     done
 done
 
-DCNum=1
-for I in $(seq 1 $TotalDCs); do
-    for F in $(seq 1 $BenchCount); do
-	echo dccookie"$DCNum" >> ~/benchcookielist	
+for I in $(seq 1 ${CountDC}); do
+    for _ in $(seq 1 $((DcsPerCluster * ComputeCount))); do
+        echo dccookie"$I" >> ~/allcookielist
     done
-    for F in $(seq 1 $ComputeCount); do
-	echo dccookie"$DCNum" >> ~/computecookielist
+done
+
+for I in $(seq 1 ${TotalDCs}); do
+    for _ in $(seq 1 ${BenchCount}); do
+	    echo dccookie"$I" >> ~/benchcookielist
     done
-    DCNum=$(($DCNum + 1))
+    for _ in $(seq 1 ${ComputeCount}); do
+	    echo dccookie"$I" >> ~/computecookielist
+    done
 done
 echo Benchmark cookies: `cat ~/benchcookielist`
 echo Compute cookies: `cat ~/computecookielist`
