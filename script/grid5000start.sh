@@ -195,41 +195,18 @@ if [ ${SecondRun} -eq 0 ]; then
     scp ~/fullnodelistip root@"$BenchNode":/root/basho_bench1/basho_bench/script/allnodesfull
     echo ssh root@$BenchNode /root/basho_bench1/basho_bench/script/configMachines.sh $Branch
     ssh -t -o StrictHostKeyChecking=no root@$BenchNode /root/basho_bench1/basho_bench/script/configMachines.sh $Branch $GridJob $Time
-
-    # Copy the allnodes file to the benchmark locations
-    echo all nodes are `cat ~/nodelistip`
-    echo Performing SCPs
-    for Node in `cat ~/benchnodelist`; do
-	for I in $(seq 1 $BenchParallel); do
-	    echo scp ~/nodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodes
-	    scp ~/nodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodes
-	    echo scp ~/computecookielist root@"$Node":/root/basho_bench"$I"/basho_bench/script/allcookies
-	    scp ~/computecookielist root@"$Node":/root/basho_bench"$I"/basho_bench/script/allcookies
-	    echo scp ~/benchnodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodesbench
-	    scp ~/benchnodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodesbench
-	    echo scp ~/branch root@"$Node":/root/basho_bench"$I"/basho_bench/script/branch
-	    scp ~/branch root@"$Node":/root/basho_bench"$I"/basho_bench/script/branch
-	done
-    done
-    
-else
-    # Copy the allnodes file to the benchmark locations
-    echo Not the first run
-    echo all nodes are `cat ~/nodelistip`
-    for Node in `cat ~/benchnodelist`; do
-	for I in $(seq 1 $BenchParallel); do
-	    echo scp ~/nodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodes
-	    scp ~/nodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodes
-	    echo scp ~/computecookielist root@"$Node":/root/basho_bench"$I"/basho_bench/script/allcookies
-	    scp ~/computecookielist root@"$Node":/root/basho_bench"$I"/basho_bench/script/allcookies
-	    echo scp ~/benchnodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodesbench
-	    scp ~/benchnodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodesbench
-	    echo scp ~/branch root@"$Node":/root/basho_bench"$I"/basho_bench/script/branch
-	    scp ~/branch root@"$Node":/root/basho_bench"$I"/basho_bench/script/branch
-	done
-    done
-   
 fi
+
+# Copy the allnodes file to the benchmark locations
+echo all nodes are `cat ~/nodelistip`
+for Node in `cat ~/benchnodelist`; do
+  for I in $(seq 1 ${BenchParallel}); do
+    scp ~/nodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodes
+    scp ~/computecookielist root@"$Node":/root/basho_bench"$I"/basho_bench/script/allcookies
+    scp ~/benchnodelistip root@"$Node":/root/basho_bench"$I"/basho_bench/script/allnodesbench
+    scp ~/branch root@"$Node":/root/basho_bench"$I"/basho_bench/script/branch
+  done
+done
 
 # The second run only need to do a make clean
 AllNodes1=`cat ~/nodelist`
