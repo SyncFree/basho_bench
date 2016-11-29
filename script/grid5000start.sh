@@ -141,33 +141,14 @@ scp ~/key root@"$BenchNode":/root/basho_bench1/basho_bench/
 if [ ${SecondRun} -eq 0 ]; then
     # The first run should download and update all code files
     echo The first run
-    # AllNodes=`cat ~/benchnodelist`
+
     # Will compile both antidoe and basho bench on all nodes in case the number changes in a later experiment
     AllNodes=`cat ~/fullnodelist`
-
-    # TODO: Isn't this only operating on one bench node (the first in benchnodelist)
-    echo Perform configProxy.sh on "$BenchNode"
-
-    echo First copying the node list to "$BenchNode"
-    echo scp ~/fullnodelistip root@"$BenchNode":/root/basho_bench1/basho_bench/script/allnodesfull
-    scp ~/fullnodelistip root@"$BenchNode":/root/basho_bench1/basho_bench/script/allnodesfull
-
-    echo scp ~/basho_bench/script/configProxy.sh root@"$BenchNode":/root/basho_bench1/basho_bench/script/
-    scp ~/basho_bench/script/configProxy.sh root@"$BenchNode":/root/basho_bench1/basho_bench/script/
-
-    echo Now copying the cookie list to "$BenchNode"
-    echo scp ~/allcookielist root@"$BenchNode":/root/basho_bench1/basho_bench/script/allcookiesfull
-    scp ~/allcookielist root@"$BenchNode":/root/basho_bench1/basho_bench/script/allcookiesfull
-
-    echo ssh root@$BenchNode /root/basho_bench1/basho_bench/script/configProxy.sh
-    ssh -t -o StrictHostKeyChecking=no root@$BenchNode /root/basho_bench1/basho_bench/script/configProxy.sh
-
 
     for I in $(seq 1 ${BenchParallel}); do
 	  echo Checking out
 	  Command0="\
 	      cd ./basho_bench"$I"/basho_bench/ \
-	      && rm -f ./script/configProxy.sh \
 	      && git stash \
 	      && git fetch \
 	      && git checkout $GridBranch \
@@ -184,6 +165,11 @@ if [ ${SecondRun} -eq 0 ]; then
     echo First copying the node list to "$BenchNode"
     echo scp ~/fullnodelistip root@"$BenchNode":/root/basho_bench1/basho_bench/script/allnodesfull
     scp ~/fullnodelistip root@"$BenchNode":/root/basho_bench1/basho_bench/script/allnodesfull
+
+    echo Now copying the cookie list to "$BenchNode"
+    echo scp ~/allcookielist root@"$BenchNode":/root/basho_bench1/basho_bench/script/allcookiesfull
+    scp ~/allcookielist root@"$BenchNode":/root/basho_bench1/basho_bench/script/allcookiesfull
+
     echo ssh root@$BenchNode /root/basho_bench1/basho_bench/script/configMachines.sh $Branch
     ssh -t -o StrictHostKeyChecking=no root@$BenchNode /root/basho_bench1/basho_bench/script/configMachines.sh $Branch $GridJob $Time
 fi
