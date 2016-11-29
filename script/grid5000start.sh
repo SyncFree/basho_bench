@@ -59,6 +59,7 @@ echo
 while read n; do dig +short "$n"; done < ~/nodelist > ~/nodelistip
 while read n; do dig +short "$n"; done < ~/benchnodelist > ~/benchnodelistip
 while read n; do dig +short "$n"; done < ~/fullnodelist > ~/fullnodelistip
+# TODO: Why only the first one?
 BenchNode=`head -1 ~/benchnodelist`
 
 # Calculate the number of DCs in case there is one that is just benchmark nodes
@@ -69,6 +70,8 @@ for I in $(seq 0 $((${#Clusters[*]} - 1))); do
     # echo ${Clusters[$I]}
     DCSize=`grep -o ${Clusters[$I]} ~/nodelist | wc -l`
     if [ $DCSize -ne 0 ]; then
+    # TODO: Isn't this overwritten on each iteration?
+    # TODO: we only get the dc size in the last site
 	Size=$(($DCSize / $DcsPerCluster))
 	TotalDCs=$(($TotalDCs + 1))
     fi
@@ -140,6 +143,7 @@ mkdir -p logs/"$GridJob"
 
 echo Copying the experiment key to "$BenchNode"
 echo scp ~/key root@"$BenchNode":/root/basho_bench1/basho_bench/
+# TODO: Why only basho_bench1?
 scp ~/key root@"$BenchNode":/root/basho_bench1/basho_bench/
 
 
@@ -150,7 +154,7 @@ if [ $SecondRun -eq 0 ]; then
     # Will compile both antidoe and basho bench on all nodes in case the number changes in a later experiment
     AllNodes=`cat ~/fullnodelist`
 
-  
+    # TODO: Isn't this only operating on one bench node (the first in benchnodelist)
     echo Perform configProxy.sh on "$BenchNode"
 
     echo First copying the node list to "$BenchNode"
