@@ -147,7 +147,7 @@ echo scp ~/key root@"$BenchNode":/root/basho_bench1/basho_bench/
 scp ~/key root@"$BenchNode":/root/basho_bench1/basho_bench/
 
 
-if [ $SecondRun -eq 0 ]; then
+if [ ${SecondRun} -eq 0 ]; then
     # The first run should download and update all code files
     echo The first run
     # AllNodes=`cat ~/benchnodelist`
@@ -172,10 +172,21 @@ if [ $SecondRun -eq 0 ]; then
     ssh -t -o StrictHostKeyChecking=no root@$BenchNode /root/basho_bench1/basho_bench/script/configProxy.sh
 
 
-    for I in $(seq 1 $BenchParallel); do
-	echo Checking out 
-	Command0="cd ./basho_bench"$I"/basho_bench/  && rm -f ./script/configProxy.sh && git stash && git fetch && git checkout $GridBranch && git pull && rm -rf ./deps/* && make all"
-	~/basho_bench/script/parallel_command.sh "$AllNodes" "$Command0" >> logs/"$GridJob"/basho_bench-compile-job"$Time"
+    for I in $(seq 1 ${BenchParallel}); do
+	  echo Checking out
+	  Command0="\
+	      cd ./basho_bench"$I"/basho_bench/ \
+	      && rm -f ./script/configProxy.sh \
+	      && git stash \
+	      && git fetch \
+	      && git checkout $GridBranch \
+	      && git pull \
+	      && rm -rf ./deps/* \
+	      && make all\
+      "
+
+	  ~/basho_bench/script/parallel_command.sh "$AllNodes" "$Command0" >> logs/"$GridJob"/basho_bench-compile-job"$Time"
+
     done
 
     echo Performins configMachines.sh on "$BenchNode"
