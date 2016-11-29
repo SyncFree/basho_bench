@@ -56,9 +56,9 @@ echo Branch to send: `cat ~/branch`
 echo
 
 # Change node names to ips
-while read in; do dig +short "$in"; done < ~/nodelist > ~/nodelistip
-while read in; do dig +short "$in"; done < ~/benchnodelist > ~/benchnodelistip
-while read in; do dig +short "$in"; done < ~/fullnodelist > ~/fullnodelistip
+while read n; do dig +short "$n"; done < ~/nodelist > ~/nodelistip
+while read n; do dig +short "$n"; done < ~/benchnodelist > ~/benchnodelistip
+while read n; do dig +short "$n"; done < ~/fullnodelist > ~/fullnodelistip
 BenchNode=`head -1 ~/benchnodelist`
 
 # Calculate the number of DCs in case there is one that is just benchmark nodes
