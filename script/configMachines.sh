@@ -18,17 +18,16 @@ AllCookies=`cat /root/basho_bench1/basho_bench/script/allcookiesfull`
 echo All nodes "$AllNodes"
 mkdir -p logs/"$JobId"
 
-File1="./antidote/rel/vars.config"
+File1="./antidote/rel/vars/dev_vars.config.src"
 File2="./antidote/rel/files/app.config"
 
 Command0="cd ./antidote/ && pkill beam"
 Command0a="cd ./antidote/ && git stash && git fetch && git pull && git checkout $Branch && git pull"
 Command0b="cd ./antidote/ && git checkout $Branch && git pull"
 Command1="sed -i 's/127.0.0.1/localhost/g' $File1"
-Command2="sed -i 's/172.31.30.71/localhost/g' $File1"
-Command3="sed -i 's/127.0.0.1/localhost/g' $File2"
-Command4="cd ./antidote/ && rm -r deps && mkdir deps "
-Command5="cd ./antidote/ && make clean && make relnocert" 
+Command2="sed -i 's/127.0.0.1/localhost/g' $File2"
+Command3="cd ./antidote/ && rm -r deps && mkdir deps "
+Command4="cd ./antidote/ && make clean && make relnocert"
 
 echo Running config commands
 echo
@@ -53,17 +52,14 @@ echo Performing: ./script/parallel_command.sh "$AllNodes" "$Command3"
 
 echo Performing: ./script/parallel_command.sh "$AllNodes" "$Command4"
 ./script/parallel_command.sh "$AllNodes" "$Command4" >> logs/"$JobId"/config_machines-"$Time"
-
-echo Performing: ./script/parallel_command.sh "$AllNodes" "$Command5"
-./script/parallel_command.sh "$AllNodes" "$Command5" >> logs/"$JobId"/config_machines-"$Time"
 echo
 
 CookieArray=($AllCookies)
 Count=0
 for Node in $AllNodes; do
     Cookie=(${CookieArray[$Count]})
-    Command6="sed -i 's/\"antidote\"/\""$Cookie"\"/g' $File1"
-    echo Performing ./script/parallel_command.sh "$Node" "$Command6"
-    ./script/parallel_command.sh "$Node" "$Command6" >> logs/"$JobId"/config_machines-"$Time"
+    Command5="sed -i 's/\"antidote\"/\""$Cookie"\"/g' $File1"
+    echo Performing ./script/parallel_command.sh "$Node" "$Command5"
+    ./script/parallel_command.sh "$Node" "$Command5" >> logs/"$JobId"/config_machines-"$Time"
     Count=$(($Count + 1))
 done
