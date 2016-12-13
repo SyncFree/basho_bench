@@ -39,7 +39,7 @@ Meaning:
 gridjobid - the id of the job running on grid5000
 branch - the git branch of antidote to run the experiment on
 dodeploy - 1 or 0, 1 means it will boot the machines and load the os image, 0 means the machines should already be running
-secondrun - 1 or 0, 0 means it will download and recompile all the code, 0 means it should already be compiled
+secondrun - 1 or 0, 1 means it will download and recompile all the code, 0 means it should already be compiled
 computeCount - the number of machines running BashoBench per DC
 benchCount - the number of machines running Antidote per DC
 benchParallel - the number of instances of BashoBench to run per machine
