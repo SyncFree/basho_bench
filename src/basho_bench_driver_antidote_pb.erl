@@ -27,7 +27,7 @@
 -include("basho_bench.hrl").
 -define(BUCKET, <<"antidote_bench_bucket">>).
 
--define(TIMEOUT, 20000).
+-define(TIMEOUT, 100000).
 -record(state, {worker_id,
                 time,
                 type_dict,
