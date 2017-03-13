@@ -107,7 +107,7 @@ runAll () {
     popd
   done
   for i in $(seq 1 ${N_INSTANCES}); do
-    while kill -0 ${pid_node${i}}; do
+    while kill -0 $pid_node${i}; do
       sleep 1
     done
   done
