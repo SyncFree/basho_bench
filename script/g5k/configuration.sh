@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 # The private / public key pair used for this experiment
-PRKFILE=~/.ssh/a_exp
-PBKFILE=~/.ssh/a_exp.pub
+PRKFILE=~/.ssh/id_rsa
+PBKFILE=~/.ssh/id_rsa.pub
 
 # The url of the k3 env to deploy on the nodes
-K3_IMAGE=/home/$(whoami)/public/antidote-images/latest/antidote.env
+K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # Different g5k sites to run the benchmark
 SITES=( "nancy" )
 
 # Reserve sites and nodes through oargridsub
-RESERVE_SITES=true
+RESERVE_SITES=false
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -28,21 +28,24 @@ CLEAN_RUN=true
 DCS_PER_SITE=1
 
 # Number of nodes running Antidote per DC
-ANTIDOTE_NODES=1
+ANTIDOTE_NODES=6
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=1
+BENCH_NODES=4
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=1
+BENCH_INSTANCES=4
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/ergl/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="fix-join-scripts"
+ANTIDOTE_BRANCH="physics-g5k-physics"
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
 # git branch of Basho Bench to use
-BENCH_BRANCH="antidote_pb-rebar3-erlang19"
+BENCH_BRANCH="antidote_pb-g5k"
 
 # Name of the benchmark configuration file to use
 BENCH_FILE="antidote_pb.config"
+
+# Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
+GRID_JOB_ID=57912
