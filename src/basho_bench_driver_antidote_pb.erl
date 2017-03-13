@@ -67,10 +67,10 @@ new(Id) ->
     PbPorts_File = basho_bench_config:get(antidote_pb_port),
     PbPorts = case PbPorts_File of
         [] ->
-            ?INFO("Usind default pb_port 8087, as it was ~p in the file\n", [PbPorts]),
+            ?INFO("Usind default pb_port 8087, as it was ~p in the file\n", [PbPorts_File]),
             [8087];
         _->
-            ?INFO("Usind pb_ports from filr ~p file\n", [PbPorts]),
+            ?INFO("Usind pb_ports from filr ~p file\n", [PbPorts_File]),
             PbPorts_File
     end,
     ?INFO("Usind pb_port ~p\n", [PbPorts]),
