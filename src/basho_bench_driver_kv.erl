@@ -66,30 +66,19 @@ new(_Id) ->
 run(get, KeyGen, _ValueGen, State = #state{driver = Driver, context = Context}) ->
     Table = "counter_bucket",
     Key = integer_to_list(KeyGen()),
-    {{ok, Object}, NewCtx} = Driver:get_key({Table, Key}, counter, Context),
+    {ok, Context1} = Driver:start_transaction(Context),
+    {{ok, Object}, Context2} = Driver:get_counter({Table, Key}, Context1),
+    {ok, NewCtx} = Driver:commit_transaction(Context2),
     lager:debug("Read: ~p ~p",[Object, Key]),
     {ok, State#state{context = NewCtx }};
 
 run(get_put, KeyGen, _ValueGen, State = #state{driver = Driver, context = Context}) ->
     Table = "counter_bucket",
     Key = integer_to_list(KeyGen()),
-    ObjToStore = case Driver:get_key({Table, Key}, counter, Context) of
-                     {{ok,Obj},_NewCtx} ->
-                         Driver:execute_local_op({counter, increment, [1]}, Obj, Context);
-                     % Treats all errors as object not found.
-                     {{error,_}, _NewCtx} ->
-                         NewObj = Driver:create_obj(counter, []),
-                         Driver:execute_local_op({counter, increment, [1]},NewObj,Context)
-                 end,
-    {Result, NewCtx} = Driver:put({Table, Key}, counter, ObjToStore, Context),
-    lager:debug("Write: ~p ~p ~p",[Result, ObjToStore, Key]),
-    {ok, State#state{context = NewCtx}};
-
-run(list, _KeyGen, _ValueGen, State = #state{driver = Driver, context = Context}) ->
-    Table = "counter_bucket",
-    {Result, NewCtx} = Driver:get_list_of_keys(Table, counter, Context),
-    lager:debug("List: ~p",[Result]),
-    {ok, State#state{context = NewCtx }}.
+    {ok, Context1} = Driver:start_transaction(Context),
+    {{ok, _}, Context2} = Driver:inc_counter({Table, Key},10,Context1),
+    {ok, NewCtx} = Driver:commit_transaction(Context2),
+    {ok, State#state{context = NewCtx}}.
 
 ensure_module(Module) ->
     case code:which(Module) of
