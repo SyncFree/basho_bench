@@ -3,7 +3,7 @@
 # TODO
 # There should be read and update latencies, as well as a summary
 
-READ_PERCENTAGES=( 99 90 75 50 )
+#READ_PERCENTAGES=( 99 90 75 50 )
 
 processPercentage () {
   local percentage="$1"
@@ -35,6 +35,7 @@ processPercentage () {
 
 run () {
   local test_directory="$1"
+  local READ_PERCENTAGES="$2"
   local latency_files=( "summary.csv" "update-only-txn_latencies.csv" )
 
   pushd "${test_directory}" > /dev/null 2>&1

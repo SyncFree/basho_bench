@@ -7,7 +7,11 @@ if [[ $# -ne 3 ]]; then
   exit 1
 fi
 
-READ_PERCENTAGES=( 99 90 75 50 )
+
+KEY_SPACES=( 10000000 1000000 100000 10000 )
+ROUND_NUMBER=( 1 2  10 10 )
+READ_NUMBER=( 100 100 90 75 50 )
+UPDATE_NUMBER=( 1 2 10 25 50 )
 ANTIDOTE_IP_FILE="$1"
 
 changeAntidoteIPs () {
@@ -41,26 +45,22 @@ changeAntidotePBPort () {
 changeConcurrent () {
   local config_file="$1"
   # TODO: Change
-  local concurrent_value=40
+  local concurrent_value=200
 
   sed -i.bak "s|^{concurrent.*|{concurrent, ${concurrent_value}}.|g" "${config_file}"
 }
 
 changeReadWriteRatio () {
   local config_file="$1"
-  local ratio="$2"
-  local reads="${ratio}"
-  local writes=$((100 - ratio))
 
-  sed -i.bak "s|^{num_reads.*|{num_reads, ${reads}}.|g" "${config_file}"
-  sed -i.bak "s|^{num_updates.*|{num_updates, ${writes}}.|g" "${config_file}"
+  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_file}"
+  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_file}"
+  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_file}"
 }
 
 changeKeyGen () {
   local config_file="$1"
-  # TODO: Config
-  local keys=100000000
-  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${keys}}}.|g" "${config_file}"
+  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${config_file}"
 }
 
 changeOPs () {
@@ -72,26 +72,22 @@ changeOPs () {
 
 changeBashoBenchConfig () {
   local config_file="$1"
-  local ratio="$2"
-
   changeAntidoteIPs "${config_file}"
-  # changeAntidoteCodePath "${config_file}"
+#  changeAntidoteCodePath "${config_file}"
 #  changeAntidotePBPort "${config_file}"
-  changeConcurrent "${config_file}"
+#  changeConcurrent "${config_file}"
 
-  changeReadWriteRatio "${config_file}" ${ratio}
+  changeReadWriteRatio "${config_file}"
   changeKeyGen "${config_file}"
 }
 
 changeAllConfigs () {
-  local n_instances="$1"
-  local config_file="$2"
-  local read_ratio="$3"
-  for i in $(seq 1 ${n_instances}); do
+# create a folder for each basho bench instance
+  for i in $(seq 1 ${N_INSTANCES}); do
     local bench_folder="basho_bench${i}"
-    local config_path="${bench_folder}/examples/${config_file}"
+    local config_path="${bench_folder}/examples/${CONFIG_FILE}"
 
-    changeBashoBenchConfig "${config_path}" "${read_ratio}"
+    changeBashoBenchConfig "${config_path}"
 
     if [[ -d ${bench_folder}/tests ]]; then
       rm -r ${bench_folder}/tests/
@@ -101,29 +97,33 @@ changeAllConfigs () {
   done
 }
 
+# Launch N_INSTANCES of basho bench simultaneoustly
 runAll () {
-  local n_instances="$1"
-  local config_file="$2"
-  for i in $(seq 1 ${n_instances}); do
+  for i in $(seq 1 ${N_INSTANCES}); do
     local bench_folder="basho_bench${i}"
-    local config_path="examples/${config_file}"
+    local config_path="examples/${CONFIG_FILE}"
     pushd ${bench_folder} > /dev/null 2>&1
-    ./_build/default/bin/basho_bench "${config_path}"
+    ./_build/default/bin/basho_bench "${config_path}" & export pid_node${i}=$!
     popd
+  done
+  for i in $(seq 1 ${N_INSTANCES}); do
+    while kill -0 ${pid_node${i}}; do
+      sleep 1
+    done
   done
 }
 
 collectAll () {
-  local n_instances="$1"
-  local config_file="$2"
-  local ratio="$3"
+#  local n_instances="$1"
+#  local config_file="$2"
+#  local ratio="$3"
   local own_node_name="${HOSTNAME::-12}" # remove the .grid5000.fr part of the name
-  for i in $(seq 1 ${n_instances}); do
+  for i in $(seq 1 ${N_INSTANCES}); do
     local bench_folder="./basho_bench${i}"
     pushd "${bench_folder}" > /dev/null 2>&1
 
     local test_folder="./tests/"
-    local result_f_name="test${i}-${own_node_name}-${config_file}-${ratio}.tar"
+    local result_f_name="test${i}-${own_node_name}-${CONFIG_FILE}-${KEYSPACE}-${ROUNDS}-${READS}.tar"
 
     tar czf /root/"${result_f_name}" "${test_folder}"
     popd > /dev/null 2>&1
@@ -131,16 +131,30 @@ collectAll () {
 }
 
 run () {
-  local n_instances="$1"
-  local config_file="$2"
+#this run will run once for every keyspace,
+# round number and read number.
+# Writes will be used for reads, complementary,
+# and do not generate extra rounds
 
-  for ratio in "${READ_PERCENTAGES[@]}"; do
-    changeAllConfigs "${n_instances}" "${config_file}" "${ratio}"
-    runAll "${n_instances}" "${config_file}"
-    collectAll "${n_instances}" "${config_file}" "${ratio}"
+  export N_INSTANCES="$1"
+  export CONFIG_FILE="$2"
+  for keyspace in "${KEY_SPACES[@]}"; do
+    export KEYSPACE=${keyspace}
+    for rounds in "${ROUND_NUMBER[@]}"; do
+      export ROUNDS=${rounds}
+      local re=0
+      for reads in "${READ_NUMBER[@]}"; do
+        export UPDATES=${UPDATE_NUMBER[re]}
+        export READS=${reads}
+        changeAllConfigs
+        runAll
+        collectAll
 
-    # Wait for the cluster to settle between runs
-    sleep 60
+        # Wait for the cluster to settle between runs
+        sleep 60
+        re=$((re+1))
+      done
+    done
   done
 }
 
