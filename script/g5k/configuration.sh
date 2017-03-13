@@ -14,7 +14,7 @@ SITES=( "nancy" )
 RESERVE_SITES=false
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
 PROVISION_IMAGES=true
