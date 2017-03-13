@@ -9,9 +9,13 @@ if [[ -z ${SELF} ]]; then
   SELF=$0
 fi
 
+if [[ -z ${CONFIG} ]]; then
+  CONFIG=configuration.sh
+fi
+
 cd $(dirname "$SELF")
 
-source configuration.sh
+source $CONFIG
 export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
 sites=( "${SITES[@]}" )
 
@@ -255,7 +259,7 @@ cleanAntidote () {
   local command="\
     cd antidote; \
     pkill beam; \
-    make clean; \
+    make relclean; \
     make relnocert
   "
   doForNodesIn ${ANT_IPS} "${command}" \
