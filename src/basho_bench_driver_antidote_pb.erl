@@ -64,7 +64,16 @@ new(Id) ->
     rand_compat:seed(time_compat:timestamp()),
 
     IPs = basho_bench_config:get(antidote_pb_ips),
-    PbPorts = basho_bench_config:get(antidote_pb_port),
+    PbPorts_File = basho_bench_config:get(antidote_pb_port),
+    PbPorts = case PbPorts_File of
+        [] ->
+            ?INFO("Usind default pb_port 8087, as it was ~p in the file\n", [PbPorts]),
+            [8087];
+        _->
+            ?INFO("Usind pb_ports from filr ~p file\n", [PbPorts]),
+            PbPorts_File
+    end,
+    ?INFO("Usind pb_port ~p\n", [PbPorts]),
     Types  = basho_bench_config:get(antidote_types),
     SetSize = basho_bench_config:get(set_size),
     NumUpdates  = basho_bench_config:get(num_updates),
