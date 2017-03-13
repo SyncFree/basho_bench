@@ -25,10 +25,10 @@ CLEAN_RUN=true
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
-DCS_PER_SITE=1
+DCS_PER_SITE=2
 
-# Number of nodes running Antidote per DC
-ANTIDOTE_NODES=6
+# Number of nodes running Antidote PER DC!!!!!!
+ANTIDOTE_NODES=3
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=4
 # Number of instances of basho_bench to run per node
