@@ -76,7 +76,7 @@ changeBashoBenchConfig () {
 
   changeAntidoteIPs "${config_file}"
   # changeAntidoteCodePath "${config_file}"
-  changeAntidotePBPort "${config_file}"
+#  changeAntidotePBPort "${config_file}"
   changeConcurrent "${config_file}"
 
   changeReadWriteRatio "${config_file}" ${ratio}
