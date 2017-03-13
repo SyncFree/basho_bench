@@ -14,7 +14,7 @@ SITES=( "nancy" )
 RESERVE_SITES=false
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
 PROVISION_IMAGES=true
@@ -48,4 +48,4 @@ BENCH_BRANCH="antidote_pb-g5k"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=57912
+GRID_JOB_ID=57930

@@ -337,7 +337,6 @@ setupTests () {
 
 runTests () {
   local total_dcs=$(getTotalDCCount)
-
   echo "[RUNNING_TEST]: Starting..."
   ./run-benchmark.sh ${total_dcs} >> ${LOGDIR}/basho-bench-execution-${GLOBAL_TIMESTART} 2>&1
   echo "[RUNNING_TEST]: Done"
@@ -424,9 +423,9 @@ run () {
 
   setupCluster
   configCluster
-
   setupTests
   runTests
+  collectResults
 }
 
 run
