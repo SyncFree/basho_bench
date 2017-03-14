@@ -33,14 +33,13 @@ joinInterDCCluster() {
 
     # Get only one antidote node per DC
   for i in $(seq 1 ${total_dcs}); do
-    local head${i}=$(head -1 .dc_nodes${i})
-    nodes_str+="'antidote@$head${i}' "
+    local clusterhead=$(head -1 .dc_nodes${i})
+    nodes_str+="'antidote@${clusterhead}' "
   done
 
   nodes_str=${nodes_str%?}
 
-  local head="${dc_nodes[0]}"
-
+  local head=$(head -1 .dc_nodes1)
 
   local join_cluster="\
     ./antidote/bin/join_dcs_script.erl ${nodes_str}
