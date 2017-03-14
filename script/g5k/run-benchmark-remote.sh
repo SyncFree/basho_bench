@@ -24,6 +24,8 @@ changeAntidoteIPs () {
   done
   ips_string=${ips_string%?}
 
+  echo "Antidote IPS: ${ips_string}"
+
   sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${config_file}"
 }
 
@@ -52,7 +54,9 @@ changeConcurrent () {
 
 changeReadWriteRatio () {
   local config_file="$1"
-
+  echo "Rounds = ${ROUNDS}"
+  echo "READS = ${READS}"
+  echo "UPDATES = ${UPDATES}"
   sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_file}"
   sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_file}"
   sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_file}"
@@ -72,11 +76,10 @@ changeOPs () {
 
 changeBashoBenchConfig () {
   local config_file="$1"
-#  changeAntidoteIPs "${config_file}"
+  changeAntidoteIPs "${config_file}"
 #  changeAntidoteCodePath "${config_file}"
 #  changeAntidotePBPort "${config_file}"
 #  changeConcurrent "${config_file}"
-
   changeReadWriteRatio "${config_file}"
   changeKeyGen "${config_file}"
 }
@@ -86,7 +89,8 @@ changeAllConfigs () {
   for i in $(seq 1 ${N_INSTANCES}); do
     local bench_folder="basho_bench${i}"
     local config_path="${bench_folder}/examples/${CONFIG_FILE}"
-
+    echo "[changeAllConfigs] changing config for basho_bench${i}"
+    echo "[changeAllConfigs] config_path = ${config_path}"
     changeBashoBenchConfig "${config_path}"
 
     if [[ -d ${bench_folder}/tests ]]; then
@@ -104,19 +108,21 @@ runAll () {
     local config_path="examples/${CONFIG_FILE}"
     pushd ${bench_folder} > /dev/null 2>&1
     ./_build/default/bin/basho_bench "${config_path}" & pid_node${i}=$!
+    echo "[RUNALL] ./_build/default/bin/basho_bench ${config_path}"
+    echo "[RUNALL]  got pid: $pid_node${i}"
     popd
   done
+  echo "[RUNALL] waiting for bench processes to finish..."
   for i in $(seq 1 ${N_INSTANCES}); do
     while kill -0 $pid_node${i}; do
       sleep 1
     done
   done
+  echo "[RUNALL] done!"
+
 }
 
 collectAll () {
-#  local n_instances="$1"
-#  local config_file="$2"
-#  local ratio="$3"
   local own_node_name="${HOSTNAME::-12}" # remove the .grid5000.fr part of the name
   for i in $(seq 1 ${N_INSTANCES}); do
     local bench_folder="./basho_bench${i}"
