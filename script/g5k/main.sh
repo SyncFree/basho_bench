@@ -116,6 +116,8 @@ getIPs () {
   while read n; do dig +short "${n}"; done < ${ANT_NODES} > ${ANT_IPS}
   while read n; do dig +short "${n}"; done < ${BENCH_NODEF} > ${BENCH_IPS}
   while read n; do dig +short "${n}"; done < ${ALL_NODES} > ${ALL_IPS}
+  echo "[GATHER_MACHINES]: ANTIDOTE IPS: ${ANT_IPS}"
+  echo "[GATHER_MACHINES]: ANTIDOTE IPS: ${BENCH_IPS}"
 }
 
 
@@ -123,10 +125,8 @@ getIPs () {
 # antidote and basho bench nodes.
 gatherMachines () {
   echo "[GATHER_MACHINES]: Starting..."
-
   local antidote_nodes_per_site=$((DCS_PER_SITE * ANTIDOTE_NODES))
-  local benchmark_nodes_per_site=$((DCS_PER_SITE * BENCH_NODES))
-
+  local benchmark_nodes_per_site=$((BENCH_NODES))
   [[ -f ${ALL_NODES} ]] && rm ${ALL_NODES}
   [[ -f ${ANT_NODES} ]] && rm ${ANT_NODES}
   [[ -f ${BENCH_NODEF} ]] && rm ${BENCH_NODEF}
@@ -243,8 +243,8 @@ rebuildAntidote () {
     pkill beam; \
     sed -i.bak 's/127.0.0.1/localhost/g' rel/vars/dev_vars.config.src rel/files/app.config; \
     sed -i.bak 's/127.0.0.1/localhost/g' config/vars.config; \
-    rm -rf deps; mkdir deps; \
-    make clean; make relnocert
+    rm -rf ./_build; \
+    git pull; ./rebar3 upgrade; make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
   doForNodesIn ${ANT_IPS} "${command}" \
@@ -259,8 +259,10 @@ cleanAntidote () {
   local command="\
     cd antidote; \
     pkill beam; \
+    git pull; \
     make relclean; \
-    make relnocert
+    ./rebar3 upgrade; \
+    make rel
   "
   doForNodesIn ${ANT_IPS} "${command}" \
     >> ${LOGDIR}/clean-antidote-${GLOBAL_TIMESTART} 2>&1
@@ -367,12 +369,10 @@ collectResults () {
 # logs and key pairs.
 setupScript () {
   echo "[SETUP_KEYS]: Starting..."
-
   mkdir -p ${SCRATCHFOLDER}
   mkdir -p ${LOGDIR}
   cp ${PRKFILE} ${EXPERIMENT_PRIVATE_KEY}
   cp ${PBKFILE} ${EXPERIMENT_PUBLIC_KEY}
-
   echo "[SETUP_KEYS]: Done"
 }
 
@@ -419,9 +419,11 @@ configCluster () {
 
 
 run () {
-  setupScript
 
+  setupScript
+  #get machines and define which are antidote and bench
   setupCluster
+
   configCluster
   setupTests
   runTests

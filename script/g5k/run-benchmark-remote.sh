@@ -72,7 +72,7 @@ changeOPs () {
 
 changeBashoBenchConfig () {
   local config_file="$1"
-  changeAntidoteIPs "${config_file}"
+#  changeAntidoteIPs "${config_file}"
 #  changeAntidoteCodePath "${config_file}"
 #  changeAntidotePBPort "${config_file}"
 #  changeConcurrent "${config_file}"
