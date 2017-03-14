@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+#set -eo pipefail
 
 if [[ $# -ne 1 ]]; then
   echo "Usage: ${0##/*} total-dcs"
@@ -113,6 +113,7 @@ runRemoteBenchmark () {
   local benchmark_configuration_file="$2"
   local antidote_ip_file="$3"
   local bench_nodes=( $(< ${BENCH_NODEF}) )
+  echo "[RUN REMOTE BENCHMARK : ] bench_nodes=$bench_nodes"
   for node in "${bench_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} ./run-benchmark-remote.sh root@${node}:/root/
   done
