@@ -47,7 +47,7 @@ joinInterDCCluster() {
   nodes_str=${nodes_str%?}
 
   local join_cluster="\
-    ./antidote/bin/~/antidote/bin/join_dcs_script.erl ${nodes_str}
+    ./antidote/bin/join_dcs_script.erl ${nodes_str}
   "
   ./execute-in-nodes.sh "${head1}" "${join_cluster}" "-debug"
 }
