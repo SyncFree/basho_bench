@@ -62,10 +62,11 @@ joinNodes () {
   else
     echo -e "\t[BUILDING_LOCAL_CLUSTER]: Starting..."
 
-    local offset=0
+    local offset=1
     for i in $(seq 1 ${total_dcs}); do
-#      head -$((dc_size + offset))p "${ANT_IPS}" > .dc_nodes${i}
-      sed -n '$offset,$((dc_size + offset))p' < "${ANT_IPS}" > .dc_nodes${i}
+        line_end=`expr $offset + $dc_size - 1`
+        sed -n "${offset}, ${line_end}p" "${ANT_IPS}" > .dc_nodes${i}
+
       joinLocalDC .dc_nodes${i} >> "${LOGDIR}"/join-local-dc${GLOBAL_TIMESTART} 2>&1
       offset=$((offset + dc_size))
     done
