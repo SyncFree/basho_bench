@@ -146,7 +146,12 @@ run () {
   local antidote_ip_file=".antidote_ip_file"
   local bench_instances="${BENCH_INSTANCES}"
   local benchmark_configuration_file="${BENCH_FILE}"
-  runRemoteBenchmark "${bench_instances}" "${benchmark_configuration_file}" "${antidote_ip_file}"
+  command="runRemoteBenchmark "${bench_instances}" "${benchmark_configuration_file}" "${antidote_ip_file}""
+  echo "running $command"
+  $command
+
+
+
 }
 
 run "$@"
