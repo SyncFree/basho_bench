@@ -37,19 +37,15 @@ joinInterDCCluster() {
     nodes_str+="'antidote@$head${i}' "
   done
 
-#  local i=1
-#  local nodes_str
-#  while [[ i -lt ${total_dcs} ]]; do
-#    nodes_str+="'antidote@$(sed -n "${i}p" ${ANT_IPS})' "
-#    i=$((i + dc_size))
-#  done
-
   nodes_str=${nodes_str%?}
+
+  local head="${dc_nodes[0]}"
+
 
   local join_cluster="\
     ./antidote/bin/join_dcs_script.erl ${nodes_str}
   "
-  ./execute-in-nodes.sh "${head1}" "${join_cluster}" "-debug"
+  ./execute-in-nodes.sh "${head}" "${join_cluster}" "-debug"
 }
 
 
