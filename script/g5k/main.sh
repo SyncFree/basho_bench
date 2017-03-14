@@ -335,6 +335,17 @@ distributeCookies () {
   echo -e "\t[DISTRIBUTE_COOKIES]: Done"
 }
 
+transferIPs () {
+  local bench_node_file="$1"
+  local antidote_ips_file="$2"
+  local antidote_ips_file_name=$(basename "${antidote_ips_file}")
+
+  local bench_dc_nodes=( $(< "${bench_node_file}") )
+  for node in "${bench_dc_nodes[@]}"; do
+    scp -i ${EXPERIMENT_PRIVATE_KEY} "${antidote_ips_file}" root@${node}:/root/${antidote_ips_file_name}
+  done
+}
+
 setupTests () {
   echo "[SETUP_TESTS]: Starting..."
 
