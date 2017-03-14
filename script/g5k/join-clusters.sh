@@ -64,7 +64,9 @@ joinNodes () {
 
     local offset=0
     for i in $(seq 1 ${total_dcs}); do
-      head -$((dc_size + offset)) "${ANT_IPS}" > .dc_nodes${i}
+      sed -n '3,5p' < nodes1
+#      head -$((dc_size + offset))p "${ANT_IPS}" > .dc_nodes${i}
+      sed -n '$offset,-$((dc_size + offset))p' < "${ANT_IPS}" > .dc_nodes${i}
       joinLocalDC .dc_nodes${i} >> "${LOGDIR}"/join-local-dc${GLOBAL_TIMESTART} 2>&1
       offset=$((offset + dc_size))
     done
