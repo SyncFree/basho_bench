@@ -20,24 +20,6 @@ transferIPs () {
   done
 }
 
-prepareTests () {
-  local total_dcs="$1"
-  local antidote_ip_file="$2"
-  ./prepare-clusters.sh ${ANTIDOTE_NODES} ${total_dcs}
-
-  local ant_offset=0
-  local bench_offset=0
-  for _ in $(seq 1 ${total_dcs}); do
-    head -$((ANTIDOTE_NODES + ant_offset)) "${ANT_IPS}" > "${antidote_ip_file}"
-    head -$((BENCH_NODES + bench_offset)) "${BENCH_NODEF}" > .dc_bench_nodes
-
-    transferIPs .dc_bench_nodes "${antidote_ip_file}"
-
-    ant_offset=$((ant_offset + ANTIDOTE_NODES))
-    bench_offset=$((bench_offset + BENCH_NODES))
-  done
-}
-
 changeReadWriteRatio () {
   echo "[changeReadWriteRatio] Changing config files to send to nodes..."
   local config_file="$1"
@@ -171,11 +153,8 @@ runRemoteBenchmark () {
   done
 }
 run () {
-  local total_dcs="$1"
+
   local antidote_ip_file=".antidote_ip_file"
-
-  prepareTests ${total_dcs} "${antidote_ip_file}"
-
   local bench_instances="${BENCH_INSTANCES}"
   local benchmark_configuration_file="${BENCH_FILE}"
   runRemoteBenchmark "${bench_instances}" "${benchmark_configuration_file}" "${antidote_ip_file}"
