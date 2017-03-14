@@ -480,7 +480,7 @@ if [[ "${JUST_RUN}" == "false" ]]; then
   setupCluster
   configCluster
   setupTests
-  local total_dcs="$1"
+  local total_dcs=$(getTotalDCCount)
   prepareClusters ${total_dcs} "${antidote_ip_file}"
 fi
   runTests
