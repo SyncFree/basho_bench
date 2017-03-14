@@ -4,6 +4,9 @@
 PRKFILE=~/.ssh/id_rsa
 PBKFILE=~/.ssh/id_rsa.pub
 
+# If set to true, the bench will just run,
+# without reserving, deploying, building, cleanning.
+JUST_RUN=true
 # The url of the k3 env to deploy on the nodes
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 

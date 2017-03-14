@@ -444,12 +444,13 @@ configCluster () {
 
 
 run () {
-
+if [[ "${JUST_RUN}" == "false" ]]; then
   setupScript
   #get machines and define which are antidote and bench
   setupCluster
   configCluster
   setupTests
+fi
   runTests
   collectResults
 }
