@@ -58,14 +58,14 @@ joinNodes () {
   # No point in clustering if we have only 1 node
   if [[ ${dc_size} -le 1 ]]; then
     echo -e "\t[BUILDING_LOCAL_CLUSTER]: only starting background processes"
-    joinLocalDC .dc_nodes
+    joinLocalDC .dc_nodes1
   else
     echo -e "\t[BUILDING_LOCAL_CLUSTER]: Starting..."
 
     local offset=0
-    for _ in $(seq 1 ${total_dcs}); do
-      head -$((dc_size + offset)) "${ANT_IPS}" > .dc_nodes
-      joinLocalDC .dc_nodes >> "${LOGDIR}"/join-local-dc${GLOBAL_TIMESTART} 2>&1
+    for i in $(seq 1 ${total_dcs}); do
+      head -$((dc_size + offset)) "${ANT_IPS}" > .dc_nodes${i}
+      joinLocalDC .dc_nodes${i} >> "${LOGDIR}"/join-local-dc${GLOBAL_TIMESTART} 2>&1
       offset=$((offset + dc_size))
     done
 
