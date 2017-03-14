@@ -423,7 +423,6 @@ run () {
   setupScript
   #get machines and define which are antidote and bench
   setupCluster
-
   configCluster
   setupTests
   runTests

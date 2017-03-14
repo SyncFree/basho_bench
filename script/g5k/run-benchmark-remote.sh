@@ -52,38 +52,6 @@ changeConcurrent () {
   sed -i.bak "s|^{concurrent.*|{concurrent, ${concurrent_value}}.|g" "${config_file}"
 }
 
-changeReadWriteRatio () {
-  local config_file="$1"
-  echo "Rounds = ${ROUNDS}"
-  echo "READS = ${READS}"
-  echo "UPDATES = ${UPDATES}"
-  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_file}"
-  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_file}"
-  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_file}"
-}
-
-changeKeyGen () {
-  local config_file="$1"
-  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${config_file}"
-}
-
-changeOPs () {
-  local config_file="$1"
-  # TODO: Config
-  local ops="[{update_only_txn, 1}]"
-  sed -i.bak "s|^{operations.*|{operations, ${ops}}.|g" "${config_file}"
-}
-
-changeBashoBenchConfig () {
-  local config_file="$1"
-  changeAntidoteIPs "${config_file}"
-#  changeAntidoteCodePath "${config_file}"
-#  changeAntidotePBPort "${config_file}"
-#  changeConcurrent "${config_file}"
-  changeReadWriteRatio "${config_file}"
-  changeKeyGen "${config_file}"
-}
-
 changeAllConfigs () {
 # create a folder for each basho bench instance
   for i in $(seq 1 ${N_INSTANCES}); do
@@ -91,7 +59,7 @@ changeAllConfigs () {
     local config_path="${bench_folder}/examples/${CONFIG_FILE}"
     echo "[changeAllConfigs] changing config for basho_bench${i}"
     echo "[changeAllConfigs] config_path = ${config_path}"
-    changeBashoBenchConfig "${config_path}"
+#    changeBashoBenchConfig "${config_path}"
 
     if [[ -d ${bench_folder}/tests ]]; then
       rm -r ${bench_folder}/tests/
@@ -144,24 +112,24 @@ run () {
 
   export N_INSTANCES="$1"
   export CONFIG_FILE="$2"
-  for keyspace in "${KEY_SPACES[@]}"; do
-    export KEYSPACE=${keyspace}
-    for rounds in "${ROUND_NUMBER[@]}"; do
-      export ROUNDS=${rounds}
-      local re=0
-      for reads in "${READ_NUMBER[@]}"; do
-        export UPDATES=${UPDATE_NUMBER[re]}
-        export READS=${reads}
+#  for keyspace in "${KEY_SPACES[@]}"; do
+#    export KEYSPACE=${keyspace}
+#    for rounds in "${ROUND_NUMBER[@]}"; do
+#      export ROUNDS=${rounds}
+#      local re=0
+#      for reads in "${READ_NUMBER[@]}"; do
+#        export UPDATES=${UPDATE_NUMBER[re]}
+#        export READS=${reads}
         changeAllConfigs
         runAll
         collectAll
 
         # Wait for the cluster to settle between runs
-        sleep 60
-        re=$((re+1))
-      done
-    done
-  done
+#        sleep 60
+#        re=$((re+1))
+#      done
+#    done
+#  done
 }
 
 run "$2" "$3"

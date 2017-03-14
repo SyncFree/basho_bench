@@ -38,6 +38,38 @@ prepareTests () {
   done
 }
 
+changeReadWriteRatio () {
+  local config_file="$1"
+  echo "Rounds = ${ROUNDS}"
+  echo "READS = ${READS}"
+  echo "UPDATES = ${UPDATES}"
+  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_file}"
+  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_file}"
+  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_file}"
+}
+
+changeKeyGen () {
+  local config_file="$1"
+  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${config_file}"
+}
+
+changeOPs () {
+  local config_file="$1"
+  # TODO: Config
+  local ops="[{update_only_txn, 1}]"
+  sed -i.bak "s|^{operations.*|{operations, ${ops}}.|g" "${config_file}"
+}
+
+changeBashoBenchConfig () {
+  local config_file="$1"
+  changeAntidoteIPs "${CONFIG_FILE}"
+#  changeAntidoteCodePath "${config_file}"
+#  changeAntidotePBPort "${config_file}"
+#  changeConcurrent "${config_file}"
+  changeReadWriteRatio "${CONFIG_FILE}"
+  changeKeyGen "${CONFIG_FILE}"
+}
+
 runRemoteBenchmark () {
   local instances="$1"
   local benchmark_configuration_file="$2"
@@ -48,8 +80,35 @@ runRemoteBenchmark () {
     scp -i ${EXPERIMENT_PRIVATE_KEY} ./run-benchmark-remote.sh root@${node}:/root/
   done
 
-  ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
+  export N_INSTANCES="$1"
+  export CONFIG_FILE="$2"
+  for keyspace in "${KEY_SPACES[@]}"; do
+    export KEYSPACE=${keyspace}
+    for rounds in "${ROUND_NUMBER[@]}"; do
+      export ROUNDS=${rounds}
+      local re=0
+      for reads in "${READ_NUMBER[@]}"; do
+        export UPDATES=${UPDATE_NUMBER[re]}
+        export READS=${reads}
+        changeAllConfigs
+        #NOW RUN A BENCH
+        echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEY_SPACES ROUND_NUMBER=$ROUND_NUMBER READ_NUMBER=$READ_NUMBER UPDATES=$UPDATES"
+        ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
       "./run-benchmark-remote.sh ${antidote_ip_file} ${instances} ${benchmark_configuration_file}"
+        echo "[RunRemoteBenchmark] done."
+        echo "[RunRemoteBenchmark] Collecting staleness logs from antidote."
+        ./execute-in-nodes.sh "$(< ${ANT_NODES})" \
+      "./run-benchmark-remote.sh ${antidote_ip_file} ${instances} ${benchmark_configuration_file}"
+
+
+        # Wait for the cluster to settle between runs
+#        sleep 60
+        re=$((re+1))
+      done
+    done
+  done
+
+
 }
 
 run () {
