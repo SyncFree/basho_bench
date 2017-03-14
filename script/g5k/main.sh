@@ -348,6 +348,7 @@ prepareClusters () {
   local total_dcs="$1"
   local antidote_ip_file="$2"
   ./prepare-clusters.sh ${ANTIDOTE_NODES} ${total_dcs}
+  local antidote_ip_file=".antidote_ip_file"
 
   local ant_offset=0
   local bench_offset=0
