@@ -19,6 +19,12 @@ source $CONFIG
 export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
 sites=( "${SITES[@]}" )
 
+export KEY_SPACES=( 10000000 1000000 100000 10000 )
+export ROUND_NUMBER=( 1 2  10 10 )
+export READ_NUMBER=( 100 100 90 75 50 )
+export UPDATE_NUMBER=( 1 2 10 25 50 )
+ANTIDOTE_IP_FILE="$1"
+
 buildReservation () {
   local reservation
   local node_number=$((DCS_PER_SITE * (ANTIDOTE_NODES + BENCH_NODES)))
@@ -83,6 +89,7 @@ trap 'cancelJob ${GRID_JOB_ID}' SIGINT SIGTERM
 SCRATCHFOLDER="/home/$(whoami)/grid-benchmark-${GRID_JOB_ID}"
 export LOGDIR=${SCRATCHFOLDER}/logs
 RESULTSDIR=${SCRATCHFOLDER}/results
+RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness
 
 export EXPERIMENT_PRIVATE_KEY=${SCRATCHFOLDER}/key
 EXPERIMENT_PUBLIC_KEY=${SCRATCHFOLDER}/exp_key.pub
@@ -354,7 +361,25 @@ collectResults () {
   done
   echo "[COLLECTING_RESULTS]: Done"
 
+
+  echo "[TARING STALENESS RESULTS AT ANTIDOTE NODES]: ......"
+  command="~/antidote/bin/physics_staleness/colect_staleness_and_clean.sh"
+  doForNodesIn ${ANT_IPS} "${command}" \
+    >> ${LOGDIR}/clean-antidote-${GLOBAL_TIMESTART} 2>&1
+
+
+   mkdir -p "${RESULTSSTALEDIRSDIR}"
+
+  echo "[COLLECTING STALENESS RESULTS FROM ANTIDOTE]: ......"
+  local antidote_nodes=( $(< ${ANT_NODES}) )
+  for node in "${antidote_nodes[@]}"; do
+    scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/*StalenessResults.tar "${RESULTSSTALEDIR}"
+  done
+
+
+
   echo "[MERGING_RESULTS]: Starting..."
+
   ./merge-results.sh "${RESULTSDIR}"
   echo "[MERGING_RESULTS]: Done"
 

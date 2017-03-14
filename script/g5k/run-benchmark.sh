@@ -39,6 +39,7 @@ prepareTests () {
 }
 
 changeReadWriteRatio () {
+  echo "[changeReadWriteRatio] Changing config files to send to nodes..."
   local config_file="$1"
   echo "Rounds = ${ROUNDS}"
   echo "READS = ${READS}"
@@ -46,6 +47,21 @@ changeReadWriteRatio () {
   sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_file}"
   sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_file}"
   sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_file}"
+}
+
+changeAntidoteIPs () {
+  local config_file="$1"
+  local IPS=( $(< ${ANTIDOTE_IP_FILE}) )
+
+  local ips_string
+  for ip in "${IPS[@]}"; do
+    ips_string+="'${ip}',"
+  done
+  ips_string=${ips_string%?}
+
+  echo "Antidote IPS: ${ips_string}"
+
+  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${config_file}"
 }
 
 changeKeyGen () {
@@ -61,7 +77,7 @@ changeOPs () {
 }
 
 changeBashoBenchConfig () {
-  local config_file="$1"
+#  local config_file="$1"
   changeAntidoteIPs "${CONFIG_FILE}"
 #  changeAntidoteCodePath "${config_file}"
 #  changeAntidotePBPort "${config_file}"
@@ -70,16 +86,65 @@ changeBashoBenchConfig () {
   changeKeyGen "${CONFIG_FILE}"
 }
 
+AntidoteCopyAndTruncateStalenessLogs () {
+  dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
+  echo -e "\t[GetAntidoteLogs]: creating command to send logs to dir $dir..."
+  local command="\
+    cd ~/antidote/; \
+    mkdir -p $dir; \
+    cp _build/_build/default/rel/antidote/data/Staleness* $dir; \
+  "
+  dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"; \
+
+  local nodes_str=( $(cat ".antidote_ip_file") )
+  for node in "${dc_nodes[@]}"; do
+    nodes_str+="'antidote@${node}' "
+  done
+
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:~/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  exec "~/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
+}
+
+collectResults () {
+  echo "[COLLECTING_RESULTS]: Starting..."
+  [[ -d "${RESULTSDIR}" ]] && rm -r "${RESULTSDIR}"
+  mkdir -p "${RESULTSDIR}"
+  local bench_nodes=( $(< ${BENCH_NODEF}) )
+  local antidote_nodes=( $(< ${ANT_NODES}) )
+  for node in "${bench_nodes[@]}"; do
+    scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/test* "${RESULTSDIR}"
+  done
+  echo "[COLLECTING_RESULTS]: Done"
+
+  echo "[COLLECTING_RESULTS]: COLLECTING ANTIDOTE STALENESS LOGS..."
+  for node in "${antidote_nodes[@]}"; do
+    scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:~/antidote/_build/default/rel/antidote/data/*.tar "${RESULTSSTALEDIR}"
+  done
+  echo "[COLLECTING_RESULTS]: Done"
+
+  echo "[MERGING_RESULTS]: Starting..."
+  ./merge-results.sh "${RESULTSDIR}"
+  echo "[MERGING_RESULTS]: Done"
+
+  pushd "${RESULTSDIR}" > /dev/null 2>&1
+  local tar_name=$(basename "${RESULTSDIR}")
+  tar -czf ../"${tar_name}".tar .
+  popd > /dev/null 2>&1
+}
+
 runRemoteBenchmark () {
+# THIS FUNCTION WILL MANY ROUNDS FOR ANTIDOTE:
+# ONE FOR EACH KEYSPACE, NUMBER OF ROUNDS, AND READ/UPDATE RATIO.
+# In between rounds, it will copy antidote logs to a folder in data, and truncate them.
   local instances="$1"
   local benchmark_configuration_file="$2"
   local antidote_ip_file="$3"
-
   local bench_nodes=( $(< ${BENCH_NODEF}) )
   for node in "${bench_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} ./run-benchmark-remote.sh root@${node}:/root/
   done
-
   export N_INSTANCES="$1"
   export CONFIG_FILE="$2"
   for keyspace in "${KEY_SPACES[@]}"; do
@@ -90,27 +155,21 @@ runRemoteBenchmark () {
       for reads in "${READ_NUMBER[@]}"; do
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
-        changeAllConfigs
+        changeBashoBenchConfig
         #NOW RUN A BENCH
         echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEY_SPACES ROUND_NUMBER=$ROUND_NUMBER READ_NUMBER=$READ_NUMBER UPDATES=$UPDATES"
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
       "./run-benchmark-remote.sh ${antidote_ip_file} ${instances} ${benchmark_configuration_file}"
         echo "[RunRemoteBenchmark] done."
-        echo "[RunRemoteBenchmark] Collecting staleness logs from antidote."
-        ./execute-in-nodes.sh "$(< ${ANT_NODES})" \
-      "./run-benchmark-remote.sh ${antidote_ip_file} ${instances} ${benchmark_configuration_file}"
-
-
+        # yea, that.
+        AntidoteCopyAndTruncateStalenessLogs
         # Wait for the cluster to settle between runs
 #        sleep 60
         re=$((re+1))
       done
     done
   done
-
-
 }
-
 run () {
   local total_dcs="$1"
   local antidote_ip_file=".antidote_ip_file"

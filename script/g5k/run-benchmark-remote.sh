@@ -7,28 +7,6 @@ if [[ $# -ne 3 ]]; then
   exit 1
 fi
 
-
-KEY_SPACES=( 10000000 1000000 100000 10000 )
-ROUND_NUMBER=( 1 2  10 10 )
-READ_NUMBER=( 100 100 90 75 50 )
-UPDATE_NUMBER=( 1 2 10 25 50 )
-ANTIDOTE_IP_FILE="$1"
-
-changeAntidoteIPs () {
-  local config_file="$1"
-  local IPS=( $(< ${ANTIDOTE_IP_FILE}) )
-
-  local ips_string
-  for ip in "${IPS[@]}"; do
-    ips_string+="'${ip}',"
-  done
-  ips_string=${ips_string%?}
-
-  echo "Antidote IPS: ${ips_string}"
-
-  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${config_file}"
-}
-
 changeAntidoteCodePath () {
   local config_file="$1"
   # TODO: Change
@@ -95,10 +73,8 @@ collectAll () {
   for i in $(seq 1 ${N_INSTANCES}); do
     local bench_folder="./basho_bench${i}"
     pushd "${bench_folder}" > /dev/null 2>&1
-
     local test_folder="./tests/"
     local result_f_name="test${i}-${own_node_name}-${CONFIG_FILE}-${KEYSPACE}-${ROUNDS}-${READS}.tar"
-
     tar czf /root/"${result_f_name}" "${test_folder}"
     popd > /dev/null 2>&1
   done

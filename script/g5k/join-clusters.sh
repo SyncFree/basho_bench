@@ -57,7 +57,8 @@ joinNodes () {
 
   # No point in clustering if we have only 1 node
   if [[ ${dc_size} -le 1 ]]; then
-    echo -e "\t[BUILDING_LOCAL_CLUSTER]: Skipping"
+    echo -e "\t[BUILDING_LOCAL_CLUSTER]: only starting background processes"
+    joinLocalDC .dc_nodes
   else
     echo -e "\t[BUILDING_LOCAL_CLUSTER]: Starting..."
 
