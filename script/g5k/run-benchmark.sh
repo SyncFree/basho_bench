@@ -106,6 +106,10 @@ collectResults () {
 }
 
 runRemoteBenchmark () {
+
+ echo $KEY_SPACES
+ echo $ROUND_NUMBER
+
 # THIS FUNCTION WILL MANY ROUNDS FOR ANTIDOTE:
 # ONE FOR EACH KEYSPACE, NUMBER OF ROUNDS, AND READ/UPDATE RATIO.
 # In between rounds, it will copy antidote logs to a folder in data, and truncate them.
