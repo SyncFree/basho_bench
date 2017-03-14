@@ -31,18 +31,18 @@ joinInterDCCluster() {
   local dc_size=$1
   local total_dcs=$2
 
+    # Get only one antidote node per DC
   for i in $(seq 1 ${total_dcs}); do
-    local head${i}=$(head -1 .dc_nodes{i})
+    local head${i}=$(head -1 .dc_nodes${i})
     nodes_str+="'antidote@$head${i}' "
   done
 
-  # Get only one antidote node per DC
-  local i=1
-  local nodes_str
-  while [[ i -lt ${total_dcs} ]]; do
-    nodes_str+="'antidote@$(sed -n "${i}p" ${ANT_IPS})' "
-    i=$((i + dc_size))
-  done
+#  local i=1
+#  local nodes_str
+#  while [[ i -lt ${total_dcs} ]]; do
+#    nodes_str+="'antidote@$(sed -n "${i}p" ${ANT_IPS})' "
+#    i=$((i + dc_size))
+#  done
 
   nodes_str=${nodes_str%?}
 
