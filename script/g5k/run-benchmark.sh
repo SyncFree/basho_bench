@@ -83,11 +83,13 @@ runRemoteBenchmark () {
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
         #NOW RUN A BENCH
-        local benchfilename=$(basename $BENCH_FILE)
 
+        local benchfilename=$(basename $BENCH_FILE)
+        params="${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
+        echo "[RunRemoteBenchmark] params=${params}"
         echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-      "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} $benchfilename ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
+      "./run-benchmark-remote.sh ${params}"
         echo "[RunRemoteBenchmark] done."
         # yea, that.
         AntidoteCopyAndTruncateStalenessLogs
