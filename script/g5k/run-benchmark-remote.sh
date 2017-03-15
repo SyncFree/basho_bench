@@ -2,10 +2,10 @@
 
 set -eo pipefail
 
-if [[ $# -ne 7 ]]; then
-  echo "Usage: ${0##/*} ip-file basho-instances benchmark-configuration-file keyspace rounds reads updates"
-  exit 1
-fi
+#if [[ $# -ne 7 ]]; then
+#  echo "Usage: ${0##/*} ip-file basho-instances benchmark-configuration-file keyspace rounds reads updates"
+#  exit 1
+#fi
 
 changeAntidoteCodePath () {
   local config_file="$1"
