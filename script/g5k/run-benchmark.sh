@@ -82,11 +82,10 @@ runRemoteBenchmark () {
       for reads in "${READ_NUMBER[@]}"; do
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
-        changeBashoBenchConfig
         #NOW RUN A BENCH
-        echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEY_SPACES ROUND_NUMBER=$ROUND_NUMBER READ_NUMBER=$READ_NUMBER UPDATES=$UPDATES"
+        echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-      "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${BENCH_FILE}"
+      "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${BENCH_FILE} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
         echo "[RunRemoteBenchmark] done."
         # yea, that.
         AntidoteCopyAndTruncateStalenessLogs
