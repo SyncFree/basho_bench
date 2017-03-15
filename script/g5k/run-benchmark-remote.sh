@@ -53,7 +53,8 @@ runAll () {
     local bench_folder="basho_bench${i}"
     local config_path="examples/${CONFIG_FILE}"
     pushd ${bench_folder} > /dev/null 2>&1
-    ./_build/default/bin/basho_bench "${config_path}" & pid_node${i}=$!
+    ./_build/default/bin/basho_bench "${config_path}" & "pid_node${i}=$!"
+
     echo "[RUNALL] ./_build/default/bin/basho_bench ${config_path}"
     echo "[RUNALL]  got pid: $pid_node${i}"
     popd
