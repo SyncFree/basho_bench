@@ -16,17 +16,17 @@ source configuration.sh
 
 changeReadWriteRatio () {
   echo "[changeReadWriteRatio] Changing config files to send to nodes..."
-  local config_file="$1"
+  local BENCH_FILE="$1"
   echo "Rounds = ${ROUNDS}"
   echo "READS = ${READS}"
   echo "UPDATES = ${UPDATES}"
-  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_file}"
-  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_file}"
-  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_file}"
+  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${BENCH_FILE}"
+  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${BENCH_FILE}"
+  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${BENCH_FILE}"
 }
 
 changeAntidoteIPs () {
-  local config_file="$1"
+  local BENCH_FILE="$1"
   local IPS=( $(< ${ANTIDOTE_IP_FILE}) )
 
   local ips_string
@@ -37,29 +37,29 @@ changeAntidoteIPs () {
 
   echo "Antidote IPS: ${ips_string}"
 
-  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${config_file}"
+  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${BENCH_FILE}"
 }
 
 changeKeyGen () {
-  local config_file="$1"
-  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${config_file}"
+  local BENCH_FILE="$1"
+  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${BENCH_FILE}"
 }
 
 changeOPs () {
-  local config_file="$1"
+  local BENCH_FILE="$1"
   # TODO: Config
   local ops="[{update_only_txn, 1}]"
-  sed -i.bak "s|^{operations.*|{operations, ${ops}}.|g" "${config_file}"
+  sed -i.bak "s|^{operations.*|{operations, ${ops}}.|g" "${BENCH_FILE}"
 }
 
 changeBashoBenchConfig () {
-#  local config_file="$1"
-  changeAntidoteIPs "${CONFIG_FILE}"
-#  changeAntidoteCodePath "${config_file}"
-#  changeAntidotePBPort "${config_file}"
-#  changeConcurrent "${config_file}"
-  changeReadWriteRatio "${CONFIG_FILE}"
-  changeKeyGen "${CONFIG_FILE}"
+#  local BENCH_FILE="$1"
+  changeAntidoteIPs "${BENCH_FILE}"
+#  changeAntidoteCodePath "${BENCH_FILE}"
+#  changeAntidotePBPort "${BENCH_FILE}"
+#  changeConcurrent "${BENCH_FILE}"
+  changeReadWriteRatio "${BENCH_FILE}"
+  changeKeyGen "${BENCH_FILE}"
 }
 
 AntidoteCopyAndTruncateStalenessLogs () {
@@ -111,25 +111,19 @@ collectResults () {
 }
 
 runRemoteBenchmark () {
-
- echo $KEY_SPACES
- echo $ROUND_NUMBER
-
 # THIS FUNCTION WILL MANY ROUNDS FOR ANTIDOTE:
 # ONE FOR EACH KEYSPACE, NUMBER OF ROUNDS, AND READ/UPDATE RATIO.
 # In between rounds, it will copy antidote logs to a folder in data, and truncate them.
-  local instances="$1"
-  local benchmark_configuration_file="$2"
   local antidote_ip_file="$3"
-
   echo "[Run remote benchmark] bench node file contains: "
+  local bench_nodes=( $(< ${BENCH_NODEF}) )
+  echo "[Run remote benchmark] this is the config file "
   local bench_nodes=( $(< ${BENCH_NODEF}) )
   echo "[RUN REMOTE BENCHMARK : ] bench_nodes=${bench_nodes[@]}"
   for node in "${bench_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} ./run-benchmark-remote.sh root@${node}:/root/
   done
-  export N_INSTANCES="$1"
-  export CONFIG_FILE="$2"
+
   for keyspace in "${KEY_SPACES[@]}"; do
     export KEYSPACE=${keyspace}
     for rounds in "${ROUND_NUMBER[@]}"; do
@@ -142,7 +136,7 @@ runRemoteBenchmark () {
         #NOW RUN A BENCH
         echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEY_SPACES ROUND_NUMBER=$ROUND_NUMBER READ_NUMBER=$READ_NUMBER UPDATES=$UPDATES"
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-      "./run-benchmark-remote.sh ${antidote_ip_file} ${instances} ${benchmark_configuration_file}"
+      "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${BENCH_FILE}"
         echo "[RunRemoteBenchmark] done."
         # yea, that.
         AntidoteCopyAndTruncateStalenessLogs
@@ -154,11 +148,8 @@ runRemoteBenchmark () {
   done
 }
 run () {
-
   local antidote_ip_file=".antidote_ip_file"
-  local bench_instances="${BENCH_INSTANCES}"
-  local benchmark_configuration_file="${BENCH_FILE}"
-  command="runRemoteBenchmark "${bench_instances}" "${benchmark_configuration_file}" "${antidote_ip_file}""
+  command="runRemoteBenchmark "${BENCH_INSTANCES}" "${BENCH_FILE}" "${antidote_ip_file}""
   echo "running $command"
   $command
 
