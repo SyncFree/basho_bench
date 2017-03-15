@@ -405,22 +405,25 @@ collectResults () {
   for node in "${bench_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/test* "${RESULTSDIR}"
   done
+  echo "[COLLECTING_BENCH_RESULTS]: Done"
+
+  echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
+
+  ./execute-in-nodes.sh "$(< ${ANT_NODES})" \
+        "~/antidote/bin/physics_staleness/tar-staleness-results-g5k.sh"
   echo "[COLLECTING_RESULTS]: Done"
 
 
-  echo "[TARING STALENESS RESULTS AT ANTIDOTE NODES]: ......"
-  command="/home/root/antidote/bin/physics_staleness/colect_staleness_and_clean.sh"
-  doForNodesIn ${ANT_IPS} "${command}" \
-    >> ${LOGDIR}/clean-antidote-${GLOBAL_TIMESTART} 2>&1
+  [[ -d "${RESULTSSTALEDIR}" ]] && rm -r "${RESULTSSTALEDIR}"
+   mkdir -p "${RESULTSSTALEDIR}"
 
-
-   mkdir -p "${RESULTSSTALEDIRSDIR}"
-
-  echo "[COLLECTING STALENESS RESULTS FROM ANTIDOTE]: ......"
+  echo "[COLLECTING TARED STALENESS RESULTS FROM ANTIDOTE]: ......"
   local antidote_nodes=( $(< ${ANT_NODES}) )
   for node in "${antidote_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/*StalenessResults.tar "${RESULTSSTALEDIR}"
   done
+    echo "[COLLECTING TARED STALENESS RESULTS FROM ANTIDOTE]: Done, put them in $RESULTSSTALEDIR......"
+
 
 
 

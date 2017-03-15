@@ -22,51 +22,29 @@ source configuration.sh
 
 AntidoteCopyAndTruncateStalenessLogs () {
   dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
-  echo "\t[GetAntidoteLogs]: creating command to send logs to dir $dir..."
-  local command="\
-    cd /home/root/antidote/; \
-    mkdir -p $dir; \
-    cp _build/default/rel/antidote/data/Staleness* $dir; \
-  "
 
-  local nodes_str=( $(cat ".antidote_ip_file") )
-  for node in "${dc_nodes[@]}"; do
+  command1="cd /home/root/antidote/; \
+    mkdir -p $dir; \
+    cp _build/default/rel/antidote/data/Staleness* $dir "
+
+  antidote_nodes=($(< ".antidote_ip_file"))
+
+  echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
+
+  ./execute-in-nodes.sh "${antidote_nodes[@]}" \
+        "$command1"
+
+  for node in ${antidote_nodes[@]}; do
     nodes_str+="'antidote@${node}' "
   done
 
+  node1=${antidote_nodes[0]}
+
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
-  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-  node1=${dc_nodes[1]}
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $node1 /home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   ./execute-in-nodes.sh "$node1" \
         "/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
-}
-
-collectResults () {
-  echo "[COLLECTING_RESULTS]: Starting..."
-  [[ -d "${RESULTSDIR}" ]] && rm -r "${RESULTSDIR}"
-  mkdir -p "${RESULTSDIR}"
-  local bench_nodes=( $(< ${BENCH_NODEF}) )
-  local antidote_nodes=( $(< ${ANT_NODES}) )
-  for node in "${bench_nodes[@]}"; do
-    scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/test* "${RESULTSDIR}"
-  done
-  echo "[COLLECTING_RESULTS]: Done"
-
-  echo "[COLLECTING_RESULTS]: COLLECTING ANTIDOTE STALENESS LOGS..."
-  for node in "${antidote_nodes[@]}"; do
-    scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/home/root/antidote/_build/default/rel/antidote/data/*.tar "${RESULTSSTALEDIR}"
-  done
-  echo "[COLLECTING_RESULTS]: Done"
-
-  echo "[MERGING_RESULTS]: Starting..."
-  ./merge-results.sh "${RESULTSDIR}"
-  echo "[MERGING_RESULTS]: Done"
-
-  pushd "${RESULTSDIR}" > /dev/null 2>&1
-  local tar_name=$(basename "${RESULTSDIR}")
-  tar -czf ../"${tar_name}".tar .
-  popd > /dev/null 2>&1
 }
 
 runRemoteBenchmark () {
