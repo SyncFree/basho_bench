@@ -83,7 +83,7 @@ runRemoteBenchmark () {
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
         #NOW RUN A BENCH
-        local benchfilename=$BENCH_FILE
+        local benchfilename=$(basename $BENCH_FILE)
 
         echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
