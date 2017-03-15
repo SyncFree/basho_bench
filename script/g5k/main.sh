@@ -229,7 +229,7 @@ cleanBench () {
     local bench_folder="basho_bench${i}"
     local command="\
       cd ~/$bench_folder
-      git pull ${BENCH_URL} --branch ${BENCH_BRANCH} --single-branch ${bench_folder} &&
+      git pull &&
       make
     "
     doForNodesIn ${BENCH_NODEF} "${command}" \
