@@ -148,8 +148,8 @@ runRemoteBenchmark () {
   done
 }
 run () {
-  local antidote_ip_file=".antidote_ip_file"
-  command="runRemoteBenchmark "${BENCH_INSTANCES}" "${BENCH_FILE}" "${antidote_ip_file}""
+  export ANTIDOTE_IP_FILE=".antidote_ip_file"
+  command="runRemoteBenchmark "${BENCH_INSTANCES}" "${BENCH_FILE}" "${ANTIDOTE_IP_FILE}""
   echo "running $command"
   $command
 
