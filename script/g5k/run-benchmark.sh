@@ -21,9 +21,10 @@ source configuration.sh
 
 
 AntidoteCopyAndTruncateStalenessLogs () {
-  dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
+  dir="_build/default/rel/antidote/data/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
 
-  command1="cd /home/root/antidote/; \
+  command1="cd ;\
+   cd antidote/; \
     mkdir -p $dir; \
     cp _build/default/rel/antidote/data/Staleness* $dir "
 
