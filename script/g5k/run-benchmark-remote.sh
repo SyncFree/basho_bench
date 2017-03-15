@@ -134,6 +134,14 @@ run () {
 # round number and read number.
 # Writes will be used for reads, complementary,
 # and do not generate extra rounds
+  echo "[run-benchmark-remote] got ANTIDOTE_IPS=$1
+  N_INSTANCES=$2
+  CONFIG_FILE=$3
+  KEYSPACE=$4
+  ROUNDS=$5
+  READS=$6
+  UPDATES=$7"
+
   export ANTIDOTE_IPS="$1"
   export N_INSTANCES="$2"
   export CONFIG_FILE="$3"
