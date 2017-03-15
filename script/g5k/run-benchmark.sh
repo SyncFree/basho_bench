@@ -18,7 +18,9 @@ if [[ $# -ne 1 ]]; then
 fi
 
 source configuration.sh
-
+doForNodesIn () {
+  ./execute-in-nodes.sh "$(cat "$1")" "$2"
+}
 
 AntidoteCopyAndTruncateStalenessLogs () {
   dir="_build/default/rel/antidote/data/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
