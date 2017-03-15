@@ -60,7 +60,7 @@ changeReadWriteRatio () {
 
 changeAntidoteIPs () {
   local config_path="$1"
-  local IPS=( $(< ${ANTIDOTE_IP_FILE}) )
+  local IPS=( $(< ${ANTIDOTE_IPS}) )
 
   local ips_string
   for ip in "${IPS[@]}"; do
