@@ -2,7 +2,7 @@
 
 #set -eo pipefail
 
-export KEY_SPACES=( 10000000 )
+export KEY_SPACES=( 10000000 1000000 100000 10000 )
 export ROUND_NUMBER=( 10 )
 export READ_NUMBER=( 100 )
 export UPDATE_NUMBER=( 2 )
