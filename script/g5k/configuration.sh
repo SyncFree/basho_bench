@@ -11,7 +11,7 @@ JUST_RUN=true
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # Different g5k sites to run the benchmark
-SITES=( "nancy" )
+SITES=( "grenoble" )
 
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
@@ -31,11 +31,11 @@ CLEAN_RUN=true
 DCS_PER_SITE=2
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=3
+ANTIDOTE_NODES=2
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=4
+BENCH_NODES=2
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=4
+BENCH_INSTANCES=2
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
@@ -48,7 +48,7 @@ BENCH_URL="https://github.com/SyncFree/basho_bench.git"
 BENCH_BRANCH="antidote_pb-g5k"
 
 # Name of the benchmark configuration file to use
-BENCH_FILE="~/basho_bench/antidote_pb.config"
+BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=57930
+GRID_JOB_ID=57956
