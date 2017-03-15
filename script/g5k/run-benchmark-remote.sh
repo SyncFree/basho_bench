@@ -2,10 +2,10 @@
 
 set -eo pipefail
 
-#if [[ $# -ne 7 ]]; then
-#  echo "Usage: ${0##/*} ip-file basho-instances benchmark-configuration-file keyspace rounds reads updates"
-#  exit 1
-#fi
+if [[ $# -ne 7 ]]; then
+  echo "Usage: ${0##/*} ip-file basho-instances benchmark-configuration-file keyspace rounds reads updates"
+  exit 1
+fi
 
 changeAntidoteCodePath () {
   local config_file="$1"
@@ -134,21 +134,21 @@ run () {
 # round number and read number.
 # Writes will be used for reads, complementary,
 # and do not generate extra rounds
-  echo "[run-benchmark-remote] got ANTIDOTE_IPS=$0
-  N_INSTANCES=$1
-  CONFIG_FILE=$2
-  KEYSPACE=$3
-  ROUNDS=$4
-  READS=$5
-  UPDATES=$6"
+  echo "[run-benchmark-remote] got ANTIDOTE_IPS=$1
+  N_INSTANCES=$2
+  CONFIG_FILE=$3
+  KEYSPACE=$4
+  ROUNDS=$5
+  READS=$6
+  UPDATES=$7"
 
-  export ANTIDOTE_IPS="$0"
-  export N_INSTANCES="$1"
-  export CONFIG_FILE="$2"
-  export KEYSPACE="$3"
-  export ROUNDS="$4"
-  export READS="$5"
-  export UPDATES="$6"
+  export ANTIDOTE_IPS="$1"
+  export N_INSTANCES="$2"
+  export CONFIG_FILE="$3"
+  export KEYSPACE="$4"
+  export ROUNDS="$5"
+  export READS="$6"
+  export UPDATES="$7"
 
         changeAllConfigs
         runAll
