@@ -101,18 +101,20 @@ runAll () {
     local bench_folder="basho_bench${i}"
     local config_path="examples/${CONFIG_FILE}"
     pushd ${bench_folder} > /dev/null 2>&1
-    ./_build/default/bin/basho_bench ${config_path} & export pid_node${i}=$!
+    ./_build/default/bin/basho_bench ${config_path} &
+#    export pid_node${i}=$!
 
     echo "[RUNALL] ./_build/default/bin/basho_bench ${config_path}"
     echo "[RUNALL]  got pid: $pid_node${i}"
     popd
   done
   echo "[RUNALL] waiting for bench processes to finish..."
-  for i in $(seq 1 ${N_INSTANCES}); do
-    while kill -0 $pid_node${i}; do
-      sleep 1
-    done
-  done
+#  for i in $(seq 1 ${N_INSTANCES}); do
+#    while kill -0 $pid_node${i}; do
+#      sleep 1
+#    done
+#  done
+  wait
   echo "[RUNALL] done!"
 
 }
