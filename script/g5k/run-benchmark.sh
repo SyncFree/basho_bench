@@ -32,7 +32,7 @@ AntidoteCopyAndTruncateStalenessLogs () {
 
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-  exec "/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  exec "/home/$(whoami)/antidote/bin/physics_staleness/truncate_staleness_logs.erl ${nodes_str}"
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
