@@ -48,7 +48,7 @@ BENCH_URL="https://github.com/SyncFree/basho_bench.git"
 BENCH_BRANCH="antidote_pb-g5k"
 
 # Name of the benchmark configuration file to use
-BENCH_FILE="antidote_pb.config"
+BENCH_FILE="~/basho_bench/antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
 GRID_JOB_ID=57930
