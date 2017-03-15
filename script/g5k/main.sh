@@ -479,28 +479,28 @@ configCluster () {
 
 run () {
   local antidote_ip_file=".antidote_ip_file"
-    if [[ "${JUST_RUN}" == "false" ]]; then
-      setupScript
-      #get machines and define which are antidote and bench,
-      # and deploy images
-      setupCluster
-      configCluster
-        if [[ "${CLEAN_RUN}" == "true" ]]; then
-    echo "[CLEAN_RUN]: Starting..."
-    rebuildAntidote
-    createCookies ${total_dcs}
-    distributeCookies
-    echo "[CLEAN_RUN]: Done"
-  else
-    cleanAntidote
-  fi
+        if [[ "${JUST_RUN}" == "false" ]]; then
+          setupScript
+          #get machines and define which are antidote and bench,
+          # and deploy images
+          setupCluster
+          configCluster
+            if [[ "${CLEAN_RUN}" == "true" ]]; then
+                echo "[CLEAN_RUN]: Starting..."
+                rebuildAntidote
+                createCookies ${total_dcs}
+                distributeCookies
+                echo "[CLEAN_RUN]: Done"
+              else
+                cleanAntidote
+            fi
+          setupTests
+          local total_dcs=$(getTotalDCCount)
+          prepareClusters ${total_dcs} "${antidote_ip_file}"
+        fi
   if [[ "${CLEAN_BENCH}" == "true" ]]; then
-    cleanBench
-  fi
-      setupTests
-      local total_dcs=$(getTotalDCCount)
-      prepareClusters ${total_dcs} "${antidote_ip_file}"
-    fi
+              cleanBench
+            fi
   runTests
   collectResults
 }
