@@ -155,4 +155,4 @@ run () {
         collectAll
 }
 
-run "$2" "$3"
+run "$@"

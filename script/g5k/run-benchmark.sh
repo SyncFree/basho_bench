@@ -112,5 +112,4 @@ run () {
 
 
 }
-echo "running $@"
 run "$@"
