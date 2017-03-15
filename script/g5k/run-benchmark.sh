@@ -14,53 +14,6 @@ fi
 
 source configuration.sh
 
-changeReadWriteRatio () {
-  echo "[changeReadWriteRatio] Changing config files to send to nodes..."
-  local BENCH_FILE="$1"
-  echo "Rounds = ${ROUNDS}"
-  echo "READS = ${READS}"
-  echo "UPDATES = ${UPDATES}"
-  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${BENCH_FILE}"
-  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${BENCH_FILE}"
-  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${BENCH_FILE}"
-}
-
-changeAntidoteIPs () {
-  local BENCH_FILE="$1"
-  local IPS=( $(< ${ANTIDOTE_IP_FILE}) )
-
-  local ips_string
-  for ip in "${IPS[@]}"; do
-    ips_string+="'${ip}',"
-  done
-  ips_string=${ips_string%?}
-
-  echo "Antidote IPS: ${ips_string}"
-
-  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${BENCH_FILE}"
-}
-
-changeKeyGen () {
-  local BENCH_FILE="$1"
-  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${BENCH_FILE}"
-}
-
-changeOPs () {
-  local BENCH_FILE="$1"
-  # TODO: Config
-  local ops="[{update_only_txn, 1}]"
-  sed -i.bak "s|^{operations.*|{operations, ${ops}}.|g" "${BENCH_FILE}"
-}
-
-changeBashoBenchConfig () {
-#  local BENCH_FILE="$1"
-  changeAntidoteIPs "${BENCH_FILE}"
-#  changeAntidoteCodePath "${BENCH_FILE}"
-#  changeAntidotePBPort "${BENCH_FILE}"
-#  changeConcurrent "${BENCH_FILE}"
-  changeReadWriteRatio "${BENCH_FILE}"
-  changeKeyGen "${BENCH_FILE}"
-}
 
 AntidoteCopyAndTruncateStalenessLogs () {
   dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
@@ -115,9 +68,6 @@ runRemoteBenchmark () {
 # ONE FOR EACH KEYSPACE, NUMBER OF ROUNDS, AND READ/UPDATE RATIO.
 # In between rounds, it will copy antidote logs to a folder in data, and truncate them.
   local antidote_ip_file="$3"
-  echo "[Run remote benchmark] bench node file contains: "
-  local bench_nodes=( $(< ${BENCH_NODEF}) )
-  echo "[Run remote benchmark] this is the config file "
   local bench_nodes=( $(< ${BENCH_NODEF}) )
   echo "[RUN REMOTE BENCHMARK : ] bench_nodes=${bench_nodes[@]}"
   for node in "${bench_nodes[@]}"; do

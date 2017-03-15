@@ -37,7 +37,7 @@ changeAllConfigs () {
     local config_path="${bench_folder}/examples/${CONFIG_FILE}"
     echo "[changeAllConfigs] changing config for basho_bench${i}"
     echo "[changeAllConfigs] config_path = ${config_path}"
-#    changeBashoBenchConfig "${config_path}"
+   changeBashoBenchConfig "${config_path}"
 
     if [[ -d ${bench_folder}/tests ]]; then
       rm -r ${bench_folder}/tests/
@@ -45,6 +45,54 @@ changeAllConfigs () {
       mkdir -p ${bench_folder}/tests/
     fi
   done
+}
+
+changeReadWriteRatio () {
+  echo "[changeReadWriteRatio] Changing config files to send to nodes..."
+  local config_path="$1"
+  echo "Rounds = ${ROUNDS}"
+  echo "READS = ${READS}"
+  echo "UPDATES = ${UPDATES}"
+  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_path}"
+  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_path}"
+  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_path}"
+}
+
+changeAntidoteIPs () {
+  local config_path="$1"
+  local IPS=( $(< ${ANTIDOTE_IP_FILE}) )
+
+  local ips_string
+  for ip in "${IPS[@]}"; do
+    ips_string+="'${ip}',"
+  done
+  ips_string=${ips_string%?}
+
+  echo "Changing antidote ipsAntidote IPS: ${ips_string}"
+
+  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${config_path}"
+}
+
+changeKeyGen () {
+  local config_path="$1"
+  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${config_path}"
+}
+
+changeOPs () {
+  local config_path="$1"
+  # TODO: Config
+  local ops="[{update_only_txn, 1}]"
+  sed -i.bak "s|^{operations.*|{operations, ${ops}}.|g" "${config_path}"
+}
+
+changeBashoBenchConfig () {
+  local config_path="$1"
+  changeAntidoteIPs "${config_path}"
+#  changeAntidoteCodePath "${config_path}"
+#  changeAntidotePBPort "${config_path}"
+#  changeConcurrent "${config_path}"
+  changeReadWriteRatio "${config_path}"
+  changeKeyGen "${config_path}"
 }
 
 # Launch N_INSTANCES of basho bench simultaneoustly
@@ -89,24 +137,14 @@ run () {
   export ANTIDOTE_IPS="$1"
   export N_INSTANCES="$2"
   export CONFIG_FILE="$3"
-#  for keyspace in "${KEY_SPACES[@]}"; do
-#    export KEYSPACE=${keyspace}
-#    for rounds in "${ROUND_NUMBER[@]}"; do
-#      export ROUNDS=${rounds}
-#      local re=0
-#      for reads in "${READ_NUMBER[@]}"; do
-#        export UPDATES=${UPDATE_NUMBER[re]}
-#        export READS=${reads}
+  export KEYSPACE="$4"
+  export ROUNDS="$5"
+  export READS="$6"
+  export UPDATES="$7"
+
         changeAllConfigs
         runAll
         collectAll
-
-        # Wait for the cluster to settle between runs
-#        sleep 60
-#        re=$((re+1))
-#      done
-#    done
-#  done
 }
 
 run "$2" "$3"

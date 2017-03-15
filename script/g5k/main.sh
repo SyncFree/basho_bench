@@ -124,7 +124,7 @@ getIPs () {
   while read n; do dig +short "${n}"; done < ${BENCH_NODEF} > ${BENCH_IPS}
   while read n; do dig +short "${n}"; done < ${ALL_NODES} > ${ALL_IPS}
   echo "[GATHER_MACHINES]: ANTIDOTE IPS: ${ANT_IPS}"
-  echo "[GATHER_MACHINES]: ANTIDOTE IPS: ${BENCH_IPS}"
+  echo "[GATHER_MACHINES]: BENCH IPS: ${BENCH_IPS}"
 }
 
 
@@ -470,16 +470,16 @@ sconfigCluster () {
 
 run () {
   local antidote_ip_file=".antidote_ip_file"
-if [[ "${JUST_RUN}" == "false" ]]; then
-  setupScript
-  #get machines and define which are antidote and bench,
-  # and deploy images
-  setupCluster
-  configCluster
-  setupTests
-  local total_dcs=$(getTotalDCCount)
-  prepareClusters ${total_dcs} "${antidote_ip_file}"
-fi
+    if [[ "${JUST_RUN}" == "false" ]]; then
+      setupScript
+      #get machines and define which are antidote and bench,
+      # and deploy images
+      setupCluster
+      configCluster
+      setupTests
+      local total_dcs=$(getTotalDCCount)
+      prepareClusters ${total_dcs} "${antidote_ip_file}"
+    fi
   runTests
   collectResults
 }
