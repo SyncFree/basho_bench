@@ -32,7 +32,9 @@ AntidoteCopyAndTruncateStalenessLogs () {
 
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-  exec "/home/$(whoami)/antidote/bin/physics_staleness/truncate_staleness_logs.erl ${nodes_str}"
+  node1=${dc_nodes[1]}
+  ./execute-in-nodes.sh "$node1" \
+        "/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
@@ -90,8 +92,7 @@ runRemoteBenchmark () {
         echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
 
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-        "./run-benchmark-remote.sh .antidote_ip_file 2 antidote_pb.config 10000000 1 100 1"
-#        "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
+        "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
 
         echo "[RunRemoteBenchmark] done."
         # yea, that.
