@@ -228,9 +228,9 @@ cleanBench () {
   for i in $(seq 1 ${BENCH_INSTANCES}); do
     local bench_folder="basho_bench${i}"
     local command="\
-      cd ~/$bench_folder
-      git pull &&
-      sed -i -e 's/bb/bb${i}/g' rebar.config
+      cd ~/$bench_folder && \
+      git pull && \
+      sed -i -e 's/bb/bb${i}/g' rebar.config && \
       make
     "
     doForNodesIn ${BENCH_NODEF} "${command}" \

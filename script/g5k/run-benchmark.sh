@@ -23,17 +23,21 @@ source configuration.sh
 AntidoteCopyAndTruncateStalenessLogs () {
   dir="_build/default/rel/antidote/data/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
 
-  command1="cd ;\
-   cd antidote/; \
-    mkdir -p $dir; \
-    cp _build/default/rel/antidote/data/Staleness* $dir "
+  command1="\
+    cd ~/antidote && \
+    mkdir -p $dir && \
+    cp _build/default/rel/antidote/data/Staleness* $dir"
 
   antidote_nodes=($(< ".antidote_ip_file"))
 
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
+    doForNodesIn ".antidote_ip_file" "${command1}"
 
-  ./execute-in-nodes.sh "${antidote_nodes[@]}" \
-        "$command1"
+
+  doForNodesIn ".antidote_ip_file" \
+  "cd ~/antidote; \
+  chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
+  ./bin/physics_staleness/tar-staleness-results-g5k.sh"
 
   for node in ${antidote_nodes[@]}; do
     nodes_str+="'antidote@${node}' "
@@ -42,9 +46,9 @@ AntidoteCopyAndTruncateStalenessLogs () {
   node1=${antidote_nodes[0]}
 
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
-  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $node1 /home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $node1 /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   ./execute-in-nodes.sh "$node1" \
-        "/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+        "/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
