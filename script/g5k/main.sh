@@ -211,9 +211,7 @@ provisionBench () {
     local bench_folder="basho_bench${i}"
     local command="\
       rm -rf ${bench_folder} && \
-      git clone ${BENCH_URL} --branch ${BENCH_BRANCH} --single-branch ${bench_folder} && \
-      cd ${bench_folder} && \
-      make all
+      git clone ${BENCH_URL} --branch ${BENCH_BRANCH} --single-branch ${bench_folder}
     "
 
     doForNodesIn ${BENCH_NODEF} "${command}" \
@@ -230,9 +228,7 @@ provisionAntidote () {
 
   local command="\
     rm -rf antidote && \
-    git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote && \
-    cd antidote && \
-    make relnocert
+    git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote &&
   "
   # We need antidote in all nodes even if we don't use it
   # basho_bench will need the sources to start
@@ -449,7 +445,7 @@ setupCluster () {
 # Provision the nodes with the appropiate versions of antidote and
 # basho_bench.
 # Also create and distribute the erlang cookies to all nodes.
-configCluster () {
+sconfigCluster () {
   local total_dcs=$(getTotalDCCount)
 
   if [[ "${PROVISION_IMAGES}" == "true" ]]; then
@@ -476,7 +472,8 @@ run () {
   local antidote_ip_file=".antidote_ip_file"
 if [[ "${JUST_RUN}" == "false" ]]; then
   setupScript
-  #get machines and define which are antidote and bench
+  #get machines and define which are antidote and bench,
+  # and deploy images
   setupCluster
   configCluster
   setupTests
