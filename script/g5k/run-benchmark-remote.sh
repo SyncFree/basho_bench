@@ -86,9 +86,9 @@ run () {
 # round number and read number.
 # Writes will be used for reads, complementary,
 # and do not generate extra rounds
-
-  export N_INSTANCES="$1"
-  export CONFIG_FILE="$2"
+  export ANTIDOTE_IPS="$1"
+  export N_INSTANCES="$2"
+  export CONFIG_FILE="$3"
 #  for keyspace in "${KEY_SPACES[@]}"; do
 #    export KEYSPACE=${keyspace}
 #    for rounds in "${ROUND_NUMBER[@]}"; do
