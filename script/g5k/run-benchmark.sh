@@ -2,10 +2,15 @@
 
 #set -eo pipefail
 
-export KEY_SPACES=( 10000000 1000000 100000 10000 )
-export ROUND_NUMBER=( 1 2  10 10 )
-export READ_NUMBER=( 100 100 90 75 50 )
-export UPDATE_NUMBER=( 1 2 10 25 50 )
+export KEY_SPACES=( 10000000 )
+export ROUND_NUMBER=( 10 )
+export READ_NUMBER=( 100 )
+export UPDATE_NUMBER=( 2 )
+
+#export KEY_SPACES=( 10000000 1000000 100000 10000 )
+#export ROUND_NUMBER=( 1 2 5 10 )
+#export READ_NUMBER=( 100 100 90 )
+#export UPDATE_NUMBER=( 1 2 10 )
 
 if [[ $# -ne 1 ]]; then
   echo "Usage: ${0##/*} total-dcs"
@@ -17,13 +22,12 @@ source configuration.sh
 
 AntidoteCopyAndTruncateStalenessLogs () {
   dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
-  echo -e "\t[GetAntidoteLogs]: creating command to send logs to dir $dir..."
+  echo "\t[GetAntidoteLogs]: creating command to send logs to dir $dir..."
   local command="\
     cd /home/root/antidote/; \
     mkdir -p $dir; \
-    cp _build/_build/default/rel/antidote/data/Staleness* $dir; \
+    cp _build/default/rel/antidote/data/Staleness* $dir; \
   "
-  dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"; \
 
   local nodes_str=( $(cat ".antidote_ip_file") )
   for node in "${dc_nodes[@]}"; do

@@ -125,7 +125,7 @@ collectAll () {
     local bench_folder="./basho_bench${i}"
     pushd "${bench_folder}" > /dev/null 2>&1
     local test_folder="./tests/"
-    local result_f_name="test${i}-${own_node_name}-${CONFIG_FILE}-${KEYSPACE}-${ROUNDS}-${READS}.tar"
+    local result_f_name="test${i}-${own_node_name}-${CONFIG_FILE}-${KEYSPACE}-${ROUNDS}-${READS}-${UPDATES}.tar"
     tar czf /root/"${result_f_name}" "${test_folder}"
     popd > /dev/null 2>&1
   done
