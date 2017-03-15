@@ -228,8 +228,8 @@ cleanBench () {
   for i in $(seq 1 ${BENCH_INSTANCES}); do
     local bench_folder="basho_bench${i}"
     local command="\
+      cd ~/$bench_folder
       git pull ${BENCH_URL} --branch ${BENCH_BRANCH} --single-branch ${bench_folder} &&
-      cd ~/basho_bench${i}
       make
     "
     doForNodesIn ${BENCH_NODEF} "${command}" \
