@@ -66,7 +66,7 @@ AntidoteCopyAndTruncateStalenessLogs () {
   dir="_build/default/rel/antidote/data/Stale-$GLOBAL_TIMESTART-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
   echo -e "\t[GetAntidoteLogs]: creating command to send logs to dir $dir..."
   local command="\
-    cd ~/antidote/; \
+    cd /home/root/antidote/; \
     mkdir -p $dir; \
     cp _build/_build/default/rel/antidote/data/Staleness* $dir; \
   "
@@ -78,8 +78,8 @@ AntidoteCopyAndTruncateStalenessLogs () {
   done
 
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
-  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:~/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-  exec "~/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  exec "/home/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
@@ -96,7 +96,7 @@ collectResults () {
 
   echo "[COLLECTING_RESULTS]: COLLECTING ANTIDOTE STALENESS LOGS..."
   for node in "${antidote_nodes[@]}"; do
-    scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:~/antidote/_build/default/rel/antidote/data/*.tar "${RESULTSSTALEDIR}"
+    scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/home/root/antidote/_build/default/rel/antidote/data/*.tar "${RESULTSSTALEDIR}"
   done
   echo "[COLLECTING_RESULTS]: Done"
 

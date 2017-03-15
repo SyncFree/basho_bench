@@ -388,7 +388,7 @@ collectResults () {
 
 
   echo "[TARING STALENESS RESULTS AT ANTIDOTE NODES]: ......"
-  command="~/antidote/bin/physics_staleness/colect_staleness_and_clean.sh"
+  command="/home/root/antidote/bin/physics_staleness/colect_staleness_and_clean.sh"
   doForNodesIn ${ANT_IPS} "${command}" \
     >> ${LOGDIR}/clean-antidote-${GLOBAL_TIMESTART} 2>&1
 

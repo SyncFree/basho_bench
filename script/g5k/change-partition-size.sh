@@ -28,7 +28,7 @@ setRingSize () {
 # TODO: rm -r ./antidote/rel/antidote/data/* ?
 changePartition () {
   local command="
-    cd ~/antidote && \
+    cd /home/root/antidote && \
     sed -i.bak \
       's|.*ring_creation_size.*|{ring_creation_size, $1}.|g' \
       config/vars.config rel/vars/dev_vars.config.src
