@@ -409,8 +409,11 @@ collectResults () {
 
   echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
 
-  ./execute-in-nodes.sh "$(< ${ANT_NODES})" \
-        "~/antidote/bin/physics_staleness/tar-staleness-results-g5k.sh"
+  doForNodesIn ${ANT_NODES} \
+  "cd ~/antidote; \
+  chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
+  ./bin/physics_staleness/tar-staleness-results-g5k.sh"
+
   echo "[COLLECTING_RESULTS]: Done"
 
 
