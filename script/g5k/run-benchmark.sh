@@ -112,5 +112,5 @@ run () {
 
 
 }
-
+echo "running $@"
 run "$@"
