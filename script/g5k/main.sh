@@ -230,6 +230,7 @@ cleanBench () {
     local command="\
       cd ~/$bench_folder
       git pull &&
+      sed -i -e 's/bb/bb${i}/g' rebar.config
       make
     "
     doForNodesIn ${BENCH_NODEF} "${command}" \
