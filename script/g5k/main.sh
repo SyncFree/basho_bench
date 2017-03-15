@@ -445,7 +445,7 @@ setupCluster () {
 # Provision the nodes with the appropiate versions of antidote and
 # basho_bench.
 # Also create and distribute the erlang cookies to all nodes.
-sconfigCluster () {
+configCluster () {
   local total_dcs=$(getTotalDCCount)
 
   if [[ "${PROVISION_IMAGES}" == "true" ]]; then
