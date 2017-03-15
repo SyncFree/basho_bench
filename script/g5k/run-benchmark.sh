@@ -121,8 +121,10 @@ runRemoteBenchmark () {
   local instances="$1"
   local benchmark_configuration_file="$2"
   local antidote_ip_file="$3"
+
+  echo "[Run remote benchmark] bench node file contains: "
   local bench_nodes=( $(< ${BENCH_NODEF}) )
-  echo "[RUN REMOTE BENCHMARK : ] bench_nodes=$bench_nodes"
+  echo "[RUN REMOTE BENCHMARK : ] bench_nodes=${bench_nodes[@]}"
   for node in "${bench_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} ./run-benchmark-remote.sh root@${node}:/root/
   done
