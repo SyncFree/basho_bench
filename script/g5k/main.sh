@@ -222,6 +222,24 @@ provisionBench () {
   echo -e "\t[PROVISION_BENCH_NODES]: Done"
 }
 
+cleanBench () {
+  echo -e "\t[CLEAN-BENCH]: Starting..."
+
+  for i in $(seq 1 ${BENCH_INSTANCES}); do
+    local bench_folder="basho_bench${i}"
+    local command="\
+      git pull ${BENCH_URL} --branch ${BENCH_BRANCH} --single-branch ${bench_folder} &&
+      cd ~/basho_bench${i}
+      make
+    "
+    doForNodesIn ${BENCH_NODEF} "${command}" \
+      >> "${LOGDIR}/basho-bench-clean-job-${GLOBAL_TIMESTART}" 2>&1
+
+  done
+
+  echo -e "\t[CLEAN-BENCH]: Done"
+}
+
 
 provisionAntidote () {
   echo -e "\t[PROVISION_ANTIDOTE_NODES]: Starting... (This may take a while)"
@@ -456,15 +474,6 @@ configCluster () {
     echo "[PROVISION_NODES]: Skipping"
   fi
 
-  if [[ "${CLEAN_RUN}" == "true" ]]; then
-    echo "[CLEAN_RUN]: Starting..."
-    rebuildAntidote
-    createCookies ${total_dcs}
-    distributeCookies
-    echo "[CLEAN_RUN]: Done"
-  else
-    cleanAntidote
-  fi
 }
 
 
@@ -476,6 +485,18 @@ run () {
       # and deploy images
       setupCluster
       configCluster
+        if [[ "${CLEAN_RUN}" == "true" ]]; then
+    echo "[CLEAN_RUN]: Starting..."
+    rebuildAntidote
+    createCookies ${total_dcs}
+    distributeCookies
+    echo "[CLEAN_RUN]: Done"
+  else
+    cleanAntidote
+  fi
+  if [[ "${CLEAN_BENCH}" == "true" ]]; then
+    cleanBench
+  fi
       setupTests
       local total_dcs=$(getTotalDCCount)
       prepareClusters ${total_dcs} "${antidote_ip_file}"

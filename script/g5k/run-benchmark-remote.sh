@@ -102,7 +102,7 @@ runAll () {
     local config_path="examples/${CONFIG_FILE}"
     pushd ${bench_folder} > /dev/null 2>&1
     ./_build/default/bin/basho_bench "${config_path}" & export "pid_node${i}"=$!
-
+    
     echo "[RUNALL] ./_build/default/bin/basho_bench ${config_path}"
     echo "[RUNALL]  got pid: $pid_node${i}"
     popd

@@ -25,6 +25,9 @@ PROVISION_IMAGES=true
 # Download and compile antidote and basho bench from scratch
 CLEAN_RUN=true
 
+# Make a basho_bench git pull and make at bench nodes
+CLEAN_BENCH=true
+
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
