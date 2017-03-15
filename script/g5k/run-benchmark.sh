@@ -90,7 +90,8 @@ runRemoteBenchmark () {
         echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
 
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-        "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
+        "./run-benchmark-remote.sh .antidote_ip_file 2 antidote_pb.config 10000000 1 100 1"
+#        "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
 
         echo "[RunRemoteBenchmark] done."
         # yea, that.
