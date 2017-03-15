@@ -35,12 +35,7 @@ AntidoteCopyAndTruncateStalenessLogs () {
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
     doForNodesIn ".antidote_ip_file" "${command1}"
 
-
-  doForNodesIn ".antidote_ip_file" \
-  "cd ~/antidote; \
-  chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
-  ./bin/physics_staleness/tar-staleness-results-g5k.sh"
-
+  nodnodes_str=""
   for node in ${antidote_nodes[@]}; do
     nodes_str+="'antidote@${node}' "
   done
