@@ -136,7 +136,7 @@ run () {
 # and do not generate extra rounds
   export ANTIDOTE_IPS="$1"
   export N_INSTANCES="$2"
-  export CONFIG_FILE="$3"
+  export CONFIG_FILE="antidote_pb.config"
   export KEYSPACE="$4"
   export ROUNDS="$5"
   export READS="$6"
