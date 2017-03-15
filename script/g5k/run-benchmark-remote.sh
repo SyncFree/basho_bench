@@ -33,10 +33,10 @@ changeConcurrent () {
 changeAllConfigs () {
 # create a folder for each basho bench instance
   for i in $(seq 1 ${N_INSTANCES}); do
+    echo "[changeAllConfigs] changing config for basho_bench${i}"
+    echo "[changeAllConfigs] config_path = ${CONFIG_FILE}"
     local bench_folder="basho_bench${i}"
     local config_path="${bench_folder}/examples/${CONFIG_FILE}"
-    echo "[changeAllConfigs] changing config for basho_bench${i}"
-    echo "[changeAllConfigs] config_path = ${config_path}"
    changeBashoBenchConfig "${config_path}"
 
     if [[ -d ${bench_folder}/tests ]]; then
