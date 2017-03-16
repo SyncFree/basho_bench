@@ -31,9 +31,11 @@ AntidoteCopyAndTruncateStalenessLogs () {
     cp _build/default/rel/antidote/data/Staleness* $dir"
 
   antidote_nodes=($(< ".antidote_ip_file"))
-
+  echo "[COPYING STALENESS LOGS]: moving logs to directory: $dir at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
     doForNodesIn ".antidote_ip_file" "${command1}"
+   echo "[COPYING STALENESS LOGS]: done! "
+
 
   nodnodes_str=""
   for node in ${antidote_nodes[@]}; do
