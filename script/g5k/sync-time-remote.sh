@@ -5,12 +5,12 @@ if [[ $# -ne 1 ]]; then
 fi
 
 ntpClock () {
+service ntp stop
   for i in 1 2 3
   do
-    service ntp stop
     /usr/sbin/ntpdate -b ntp2.grid5000.fr
-    service ntp start
   done
+  service ntp start
 }
 
 start () {

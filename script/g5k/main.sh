@@ -472,6 +472,9 @@ deployImages () {
   fi
 }
 
+syncClocks () {
+    ./sync-time.sh --start
+}
 
 run () {
 #  echo "[UPDATING ANTIDOTE AND BASHO BENCH WITH GIT PULL]"
@@ -510,6 +513,7 @@ run () {
               cleanBench
               echo "[BUILD_BENCH]: Done"
             fi
+  syncClocks
   runTests
   collectResults
   collectStalenessResults
