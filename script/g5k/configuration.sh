@@ -6,7 +6,7 @@ PBKFILE=~/.ssh/id_rsa.pub
 
 # If set to true, the bench will just run,
 # without reserving, deploying, building, cleanning.
-JUST_RUN=false
+JUST_RUN=true
 # The url of the k3 env to deploy on the nodes
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
@@ -43,7 +43,7 @@ BENCH_INSTANCES=6
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="physics-g5k-clocksi"
+ANTIDOTE_BRANCH="physics-g5k-physics"
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
