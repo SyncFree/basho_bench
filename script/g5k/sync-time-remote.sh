@@ -8,7 +8,7 @@ ntpClock () {
   while :
   do
     service ntp stop
-    /usr/sbin/ntpdate -b ntp2.grid5000.fr > /dev/null 2>&1
+    /usr/sbin/ntpdate -b ntp2.grid5000.fr
     service ntp start
     sleep 60
   done &
