@@ -427,7 +427,7 @@ collectStalenessResults(){
   doForNodesIn ${ANT_NODES} \
   "cd ~/antidote; \
   chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
-  ./bin/physics_staleness/tar-staleness-results-g5k.sh"
+  ./bin/physics_staleness/tar-staleness-results-g5k.sh -${GLOBAL_TIMESTART}-${ANTIDOTE_BRANCH}"
 
   echo "[COLLECTING_RESULTS]: Done TARING"
 
