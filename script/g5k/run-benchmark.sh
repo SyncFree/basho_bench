@@ -37,7 +37,7 @@ AntidoteCopyAndTruncateStalenessLogs () {
    echo "[COPYING STALENESS LOGS]: done! "
 
 
-  nodnodes_str=""
+  nodes_str=""
   for node in ${antidote_nodes[@]}; do
     nodes_str+="'antidote@${node}' "
   done
