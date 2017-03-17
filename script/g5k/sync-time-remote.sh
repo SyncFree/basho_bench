@@ -5,28 +5,18 @@ if [[ $# -ne 1 ]]; then
 fi
 
 ntpClock () {
-  while :
+  for i in 1 2 3
   do
     service ntp stop
     /usr/sbin/ntpdate -b ntp2.grid5000.fr
     service ntp start
-    sleep 60
-  done &
-  echo "${!}"
+  done
 }
 
 start () {
   ntpClock
 }
 
-stop () {
-  if [[ -f .ntp_timer_pid ]]; then
-    local timer_pid=$(< .ntp_timer_pid)
-    kill ${timer_pid}
-  fi
-}
-
 case "$1" in
   "--start") start;;
-  "*") stop
 esac
