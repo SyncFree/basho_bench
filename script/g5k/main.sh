@@ -409,7 +409,7 @@ collectResults () {
   done
   echo "[COLLECTING_BENCH_RESULTS]: Done"
 
-  echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
+
 
   echo "[MERGING_RESULTS]: Starting..."
 
@@ -424,6 +424,7 @@ collectResults () {
 }
 
 collectStalenessResults(){
+echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
   doForNodesIn ${ANT_NODES} \
   "cd ~/antidote; \
   chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
@@ -512,6 +513,7 @@ run () {
   runTests
   collectResults
   collectStalenessResults
+  echo "done collecting staleness results"
 }
 
 run
