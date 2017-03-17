@@ -473,6 +473,7 @@ deployImages () {
 
 
 run () {
+  echo "[UPDATING ANTIDOTE AND BASHO BENCH WITH GIT PULL]"
   cd ~/antidote/
   git pull
   cd ~/basho_bench/
