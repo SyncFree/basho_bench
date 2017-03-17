@@ -19,10 +19,12 @@ source $CONFIG
 export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
 sites=( "${SITES[@]}" )
 
+
 export KEY_SPACES=( 10000000 1000000 100000 10000 )
 export ROUND_NUMBER=( 10 )
-export READ_NUMBER=( 100 100 100)
-export UPDATE_NUMBER=( 2 10 100 )
+export READ_NUMBER=( 100 )
+export UPDATE_NUMBER=( 2 )
+
 ANTIDOTE_IP_FILE="$1"
 
 buildReservation () {
