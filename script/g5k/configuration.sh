@@ -26,7 +26,7 @@ INSTALL_ANTIDOTE_AND_BBENCH=true
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=false
+CLEAN_BENCH=true
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
@@ -38,7 +38,7 @@ ANTIDOTE_NODES=15
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=5
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=6
+BENCH_INSTANCES=8
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
