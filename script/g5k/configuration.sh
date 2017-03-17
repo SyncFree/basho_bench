@@ -34,11 +34,11 @@ CLEAN_BENCH=true
 DCS_PER_SITE=1
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=10
+ANTIDOTE_NODES=15
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=10
+BENCH_NODES=5
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=10
+BENCH_INSTANCES=6
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
