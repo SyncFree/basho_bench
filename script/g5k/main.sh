@@ -473,6 +473,10 @@ deployImages () {
 
 
 run () {
+  cd ~/antidote/
+  git pull
+  cd ~/basho_bench/
+  git pull
   local antidote_ip_file=".antidote_ip_file"
         if [[ "${JUST_RUN}" == "false" ]]; then
           setupKeys
