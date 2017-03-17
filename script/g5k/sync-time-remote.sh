@@ -16,7 +16,7 @@ ntpClock () {
 }
 
 start () {
-  ntpClock > .ntp_timer_pid
+  ntpClock
 }
 
 stop () {
