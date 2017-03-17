@@ -26,7 +26,7 @@ INSTALL_ANTIDOTE_AND_BBENCH=true
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=true
+CLEAN_BENCH=false
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
