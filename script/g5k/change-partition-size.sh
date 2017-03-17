@@ -10,17 +10,17 @@ fi
 setRingSize () {
   local nodes_per_dc=$1
   if [[ ${nodes_per_dc} -lt 2 ]]; then
-    echo 8
+    echo 64
   elif [[ ${nodes_per_dc} -lt 3 ]]; then
-    echo 128
+    echo 256
   elif [[ ${nodes_per_dc} -lt 14 ]]; then
-    echo 256
-  elif [[ ${nodes_per_dc} -lt 33 ]]; then
-    echo 128
-  elif [[ ${nodes_per_dc} -lt 65 ]]; then
-    echo 256
-  else
     echo 512
+  elif [[ ${nodes_per_dc} -lt 33 ]]; then
+    echo 1024
+  elif [[ ${nodes_per_dc} -lt 65 ]]; then
+    echo 1024
+  else
+    echo 2048
   fi
 }
 

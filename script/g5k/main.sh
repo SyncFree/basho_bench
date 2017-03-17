@@ -365,7 +365,7 @@ transferIPs () {
   done
 }
 
-setupTests () {
+changeRingSize () {
   echo "[SETUP_TESTS]: Starting..."
 
   local dc_size=${ANTIDOTE_NODES}
@@ -446,7 +446,7 @@ collectResults () {
 
 # Prepare the experiment, create the output folder,
 # logs and key pairs.
-setupScript () {
+setupKeys () {
   echo "[SETUP_KEYS]: Starting..."
   mkdir -p ${SCRATCHFOLDER}
   mkdir -p ${LOGDIR}
@@ -460,7 +460,7 @@ setupScript () {
 # node names and IPs, and split them into antidote and basho_bench
 # nodes. If selected, it will also go ahead and deploy the k3 image
 # into the nodes.
-setupCluster () {
+deployImages () {
   gatherMachines
   if [[ "${DEPLOY_IMAGE}" == "true" ]]; then
     echo "[DEPLOY_IMAGE]: Starting..."
@@ -471,46 +471,38 @@ setupCluster () {
   fi
 }
 
-# Provision the nodes with the appropiate versions of antidote and
-# basho_bench.
-# Also create and distribute the erlang cookies to all nodes.
-configCluster () {
-  local total_dcs=$(getTotalDCCount)
-
-  if [[ "${PROVISION_IMAGES}" == "true" ]]; then
-    echo "[PROVISION_NODES]: Starting..."
-    provisionNodes
-    echo "[PROVISION_NODES]: Done"
-  else
-    echo "[PROVISION_NODES]: Skipping"
-  fi
-
-}
-
 
 run () {
   local antidote_ip_file=".antidote_ip_file"
         if [[ "${JUST_RUN}" == "false" ]]; then
-          setupScript
+          setupKeys
           #get machines and define which are antidote and bench,
           # and deploy images
-          setupCluster
-          configCluster
-            if [[ "${CLEAN_RUN}" == "true" ]]; then
-                echo "[CLEAN_RUN]: Starting..."
+          deployImages
+          if [[ "${INSTALL_ANTIDOTE_AND_BBENCH}" == "true" ]]; then
+                echo "[DOWNLOAD_ANTIDOTE_AND_BBENCH]: Starting..."
+                provisionNodes
+                echo "[DOWNLOAD_ANTIDOTE_AND_BBENCH]: Done"
+              else
+                echo "[DOWNLOAD_ANTIDOTE_AND_BBENCH]: Skipping"
+              fi
+            if [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
+                echo "[BUILD_ANTIDOTE]: Starting..."
                 rebuildAntidote
                 createCookies ${total_dcs}
                 distributeCookies
-                echo "[CLEAN_RUN]: Done"
               else
                 cleanAntidote
             fi
-          setupTests
+            echo "[BUILD_ANTIDOTE]: Done"
+          changeRingSize
           local total_dcs=$(getTotalDCCount)
           prepareClusters ${total_dcs} "${antidote_ip_file}"
         fi
   if [[ "${CLEAN_BENCH}" == "true" ]]; then
+            echo "[BUILD_BENCH]: Starting..."
               cleanBench
+              echo "[BUILD_BENCH]: Done"
             fi
   runTests
   collectResults

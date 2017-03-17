@@ -3,6 +3,7 @@
 run () {
   local dc_size=$1
   local total_dcs=$2
+  echo "[restarting antidote to build cluster]: Starting..."
 
   echo "[STOP_ANTIDOTE]: Starting..."
   ./control-nodes.sh --stop

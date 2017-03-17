@@ -20,10 +20,10 @@ RESERVE_SITES=false
 DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
-PROVISION_IMAGES=true
+INSTALL_ANTIDOTE_AND_BBENCH=true
 
 # Download and compile antidote and basho bench from scratch
-CLEAN_RUN=false
+CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
 CLEAN_BENCH=true
