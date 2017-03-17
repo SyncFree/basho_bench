@@ -411,12 +411,25 @@ collectResults () {
 
   echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
 
+  echo "[MERGING_RESULTS]: Starting..."
+
+  ./merge-results.sh "${RESULTSDIR}"
+  echo "[MERGING_RESULTS]: Done"
+
+  pushd "${RESULTSDIR}" > /dev/null 2>&1
+  local tar_name=$(basename "${RESULTSDIR}")
+  tar -czf ../"${tar_name}".tar .
+  popd > /dev/null 2>&1
+
+}
+
+collectStalenessResults(){
   doForNodesIn ${ANT_NODES} \
   "cd ~/antidote; \
   chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
   ./bin/physics_staleness/tar-staleness-results-g5k.sh"
 
-  echo "[COLLECTING_RESULTS]: Done"
+  echo "[COLLECTING_RESULTS]: Done TARING"
 
 
   [[ -d "${RESULTSSTALEDIR}" ]] && rm -r "${RESULTSSTALEDIR}"
@@ -429,20 +442,7 @@ collectResults () {
   done
     echo "[COLLECTING TARED STALENESS RESULTS FROM ANTIDOTE]: Done, put them in $RESULTSSTALEDIR......"
 
-
-
-
-  echo "[MERGING_RESULTS]: Starting..."
-
-  ./merge-results.sh "${RESULTSDIR}"
-  echo "[MERGING_RESULTS]: Done"
-
-  pushd "${RESULTSDIR}" > /dev/null 2>&1
-  local tar_name=$(basename "${RESULTSDIR}")
-  tar -czf ../"${tar_name}".tar .
-  popd > /dev/null 2>&1
 }
-
 
 # Prepare the experiment, create the output folder,
 # logs and key pairs.
@@ -506,6 +506,7 @@ run () {
             fi
   runTests
   collectResults
+  collectStalenessResults
 }
 
 run

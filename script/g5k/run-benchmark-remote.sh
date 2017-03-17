@@ -25,7 +25,7 @@ changeAntidotePBPort () {
 changeConcurrent () {
   local config_file="$1"
   # TODO: Change
-  local concurrent_value=200
+  local concurrent_value=40
 
   sed -i.bak "s|^{concurrent.*|{concurrent, ${concurrent_value}}.|g" "${config_file}"
 }
@@ -90,7 +90,7 @@ changeBashoBenchConfig () {
   changeAntidoteIPs "${config_path}"
 #  changeAntidoteCodePath "${config_path}"
 #  changeAntidotePBPort "${config_path}"
-#  changeConcurrent "${config_path}"
+  changeConcurrent "${config_path}"
   changeReadWriteRatio "${config_path}"
   changeKeyGen "${config_path}"
 }
