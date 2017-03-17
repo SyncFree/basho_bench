@@ -20,7 +20,7 @@ RESERVE_SITES=false
 DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
-INSTALL_ANTIDOTE_AND_BBENCH=false
+INSTALL_ANTIDOTE_AND_BBENCH=true
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
@@ -34,11 +34,11 @@ CLEAN_BENCH=true
 DCS_PER_SITE=1
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=15
+ANTIDOTE_NODES=10
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=5
+BENCH_NODES=10
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=9
+BENCH_INSTANCES=10
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
