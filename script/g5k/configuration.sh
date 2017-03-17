@@ -48,7 +48,7 @@ ANTIDOTE_BRANCH="physics-g5k-physics"
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
 # git branch of Basho Bench to use
-BENCH_BRANCH="antidote_pb-g5k"
+BENCH_BRANCH="antidote_pb-g5k-physics"
 
 # Name of the benchmark configuration file to use
 BENCH_FILE="antidote_pb.config"
