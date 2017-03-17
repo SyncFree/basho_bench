@@ -6,12 +6,12 @@ PBKFILE=~/.ssh/id_rsa.pub
 
 # If set to true, the bench will just run,
 # without reserving, deploying, building, cleanning.
-JUST_RUN=true
+JUST_RUN=false
 # The url of the k3 env to deploy on the nodes
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # Different g5k sites to run the benchmark
-SITES=( "grenoble" )
+SITES=( "nancy" )
 
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
@@ -23,7 +23,7 @@ DEPLOY_IMAGE=true
 PROVISION_IMAGES=true
 
 # Download and compile antidote and basho bench from scratch
-CLEAN_RUN=true
+CLEAN_RUN=false
 
 # Make a basho_bench git pull and make at bench nodes
 CLEAN_BENCH=true
@@ -31,14 +31,14 @@ CLEAN_BENCH=true
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
-DCS_PER_SITE=2
+DCS_PER_SITE=1
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=2
+ANTIDOTE_NODES=15
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=2
+BENCH_NODES=5
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=2
+BENCH_INSTANCES=9
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
@@ -54,4 +54,4 @@ BENCH_BRANCH="antidote_pb-g5k"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=57956
+GRID_JOB_ID=57983
