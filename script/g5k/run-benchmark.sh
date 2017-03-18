@@ -95,8 +95,5 @@ run () {
   command="runRemoteBenchmark ${BENCH_INSTANCES} ${BENCH_FILE} ${ANTIDOTE_IP_FILE}"
   echo "running $command"
   $command
-
-
-
 }
 run "$@"

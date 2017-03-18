@@ -20,10 +20,10 @@ export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
 sites=( "${SITES[@]}" )
 
 
-export KEY_SPACES=( 10000000 1000000 100000 10000 )
+export KEY_SPACES=( 10000000 1000000 )
 export ROUND_NUMBER=( 10 )
-export READ_NUMBER=( 100 100 100)
-export UPDATE_NUMBER=( 2 10 100)
+export READ_NUMBER=( 100 )
+export UPDATE_NUMBER=( 2 )
 
 ANTIDOTE_IP_FILE="$1"
 
@@ -89,7 +89,7 @@ fi
 trap 'cancelJob ${GRID_JOB_ID}' SIGINT SIGTERM
 
 SCRATCHFOLDER="/home/$(whoami)/grid-benchmark-${GRID_JOB_ID}"
-export LOGDIR=${SCRATCHFOLDER}/logs
+export LOGDIR=${SCRATCHFOLDER}/logs/${GLOBAL_TIMESTART}
 RESULTSDIR=${SCRATCHFOLDER}/results/bench-${GLOBAL_TIMESTART}-${ANTIDOTE_BRANCH}
 RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness/staleness-${GLOBAL_TIMESTART}-${ANTIDOTE_BRANCH}
 
@@ -232,7 +232,7 @@ cleanBench () {
     local command="\
       cd ~/$bench_folder && \
       git pull && \
-      sed -i -e 's/bb/bb${i}/g' rebar.config && \
+      sed -i -e 's/bb@127.0.0.1/bb${i}@127.0.0.1/g' rebar.config && \
       make
     "
     doForNodesIn ${BENCH_NODEF} "${command}" \
@@ -248,6 +248,7 @@ provisionAntidote () {
   echo -e "\t[PROVISION_ANTIDOTE_NODES]: Starting... (This may take a while)"
 
   local command="\
+    pkill beam && \
     rm -rf antidote && \
     git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote && \
     cd ~/antidote && \
@@ -299,8 +300,39 @@ cleanAntidote () {
 
 # Provision all the nodes with Antidote and Basho Bench
 provisionNodes () {
-  provisionAntidote
-  provisionBench
+if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
+                echo "[DOWNLOAD_ANTIDOTE]: Starting..."
+                changeRingSize
+                provisionAntidote
+                cleanAntidote
+                echo "[DOWNLOAD_ANTIDOTE]: Done"
+              else
+                if [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
+                  echo "[BUILD_ANTIDOTE]: Starting..."
+                  rebuildAntidote
+                else
+                  cleanAntidote
+                fi
+
+                echo "[DOWNLOAD_ANTIDOTE]: Skipping, just building"
+  fi
+
+            echo "[BUILD_ANTIDOTE]: Done"
+
+if [[ "${DOWNLOAD_BENCH}" == "true" ]]; then
+                echo "[DOWNLOAD_BENCH]: Starting..."
+                provisionBench
+                cleanBench
+                echo "[DOWNLOAD_BENCH]: Done"
+              else
+                    echo "[DOWNLOAD_BENCH]: Skipping, just building"
+                      if [[ "${CLEAN_BENCH}" == "true" ]]; then
+                echo "[BUILD_BENCH]: Starting..."
+                  cleanBench
+                  echo "[BUILD_BENCH]: Done"
+                fi
+              fi
+
 }
 
 
@@ -375,8 +407,13 @@ changeRingSize () {
 }
 
 prepareClusters () {
+if [[ "${CONNECT_CLUSTERS_AND_DCS}" == "true" ]]; then
+
   local total_dcs="$1"
   local antidote_ip_file="$2"
+
+            createCookies ${total_dcs}
+          distributeCookies
   ./prepare-clusters.sh ${ANTIDOTE_NODES} ${total_dcs}
 
   local ant_offset=0
@@ -390,6 +427,35 @@ prepareClusters () {
     ant_offset=$((ant_offset + ANTIDOTE_NODES))
     bench_offset=$((bench_offset + BENCH_NODES))
   done
+  # if the cluster was not rebuilt, start background processes in antidote
+  else if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]] || [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
+  echo "[START_ANTIDOTE]: Starting..."
+  ./control-nodes.sh --start
+  echo "[START_ANTIDOTE]: Done"
+    echo "[ONLY STARTING BG PROCESSES]"
+    startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
+    echo "[DONE STARTING BG PROCESSES!]"
+  fi
+  fi
+}
+
+startBGprocesses() {
+  local total_dcs=$1
+
+    # Get only one antidote node per DC
+  for i in $(seq 1 ${total_dcs}); do
+    local clusterhead=$(head -1 .dc_nodes${i})
+    nodes_str+="'antidote@${clusterhead}' "
+  done
+
+  nodes_str=${nodes_str%?}
+
+  local head=$(head -1 .dc_nodes1)
+
+  local join_cluster="\
+    ./antidote/bin/start_bg_processes.erl ${nodes_str}
+  "
+  ./execute-in-nodes.sh "${head}" "${join_cluster}" "-debug"
 }
 
 runTests () {
@@ -408,19 +474,13 @@ collectResults () {
     scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/test* "${RESULTSDIR}"
   done
   echo "[COLLECTING_BENCH_RESULTS]: Done"
-
-
-
-  echo "[MERGING_RESULTS]: Starting..."
-
-  ./merge-results.sh "${RESULTSDIR}"
-  echo "[MERGING_RESULTS]: Done"
-
+#  echo "[MERGING_RESULTS]: Starting..."
+#  ./merge-results.sh "${RESULTSDIR}"
+#  echo "[MERGING_RESULTS]: Done"
   pushd "${RESULTSDIR}" > /dev/null 2>&1
   local tar_name=$(basename "${RESULTSDIR}")
   tar -czf ../"${tar_name}".tar .
   popd > /dev/null 2>&1
-
 }
 
 collectStalenessResults(){
@@ -442,7 +502,10 @@ echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes
     scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/*StalenessResults.tar "${RESULTSSTALEDIR}"
   done
     echo "[COLLECTING TARED STALENESS RESULTS FROM ANTIDOTE]: Done, put them in $RESULTSSTALEDIR......"
-
+  pushd "${RESULTSSTALEDIR}" > /dev/null 2>&1
+  local tar_name=$(basename "${RESULTSSTALEDIR}")
+  tar -czf ../"${tar_name}".tar .
+  popd > /dev/null 2>&1
 }
 
 # Prepare the experiment, create the output folder,
@@ -473,50 +536,27 @@ deployImages () {
 }
 
 syncClocks () {
+    echo "[SYNC CLOCKS]: Starting..."
     ./sync-time.sh --start
+    echo "[SYNC CLOCKS]: Done"
+
 }
 
 run () {
-#  echo "[UPDATING ANTIDOTE AND BASHO BENCH WITH GIT PULL]"
-#  cd ~/antidote/
-#  git pull
-#  cd ~/basho_bench/
-#  git pull
+
   local antidote_ip_file=".antidote_ip_file"
-        if [[ "${JUST_RUN}" == "false" ]]; then
-          setupKeys
+  setupKeys
           #get machines and define which are antidote and bench,
           # and deploy images
           deployImages
-          if [[ "${INSTALL_ANTIDOTE_AND_BBENCH}" == "true" ]]; then
-                echo "[DOWNLOAD_ANTIDOTE_AND_BBENCH]: Starting..."
-                provisionNodes
-                echo "[DOWNLOAD_ANTIDOTE_AND_BBENCH]: Done"
-              else
-                echo "[DOWNLOAD_ANTIDOTE_AND_BBENCH]: Skipping"
-              fi
-            if [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
-                echo "[BUILD_ANTIDOTE]: Starting..."
-                rebuildAntidote
-                createCookies ${total_dcs}
-                distributeCookies
-              else
-                cleanAntidote
-            fi
-            echo "[BUILD_ANTIDOTE]: Done"
-          changeRingSize
+          provisionNodes
           local total_dcs=$(getTotalDCCount)
           prepareClusters ${total_dcs} "${antidote_ip_file}"
-        fi
-  if [[ "${CLEAN_BENCH}" == "true" ]]; then
-            echo "[BUILD_BENCH]: Starting..."
-              cleanBench
-              echo "[BUILD_BENCH]: Done"
-            fi
+
   syncClocks
   runTests
-  collectResults
-  collectStalenessResults
+  collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
+  collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
   echo "done collecting staleness results"
 }
 

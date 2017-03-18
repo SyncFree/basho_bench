@@ -19,7 +19,6 @@ joinLocalDC () {
   done
 
   nodes_str=${nodes_str%?}
-
   local join_dc="\
     ~/antidote/bin/join_cluster_script.erl ${nodes_str}
   "

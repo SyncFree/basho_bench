@@ -4,29 +4,31 @@
 PRKFILE=~/.ssh/id_rsa
 PBKFILE=~/.ssh/id_rsa.pub
 
-# If set to true, the bench will just run,
-# without reserving, deploying, building, cleanning.
-JUST_RUN=false
 # The url of the k3 env to deploy on the nodes
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
-# Different g5k sites to run the benchmark
-SITES=( "nancy" )
-
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
+
+# Different g5k sites to run the benchmark
+SITES=( "nancy" )
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
-INSTALL_ANTIDOTE_AND_BBENCH=true
+DOWNLOAD_ANTIDOTE=true
+
+DOWNLOAD_BENCH=true
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=true
+CLEAN_BENCH=false
+
+# Connect servers in clusters and DCs
+CONNECT_CLUSTERS_AND_DCS=true
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
