@@ -27,20 +27,16 @@ doForNodes () {
           -o StrictHostKeyChecking=no \
           root@"${node}" "${command//localhost/${node}}" &
 
-      echo "[EXECUTE-IN-NODES]: ssh -i ${EXPERIMENT_PRIVATE_KEY} -T \
-          -o ConnectTimeout=3 \
-          -o StrictHostKeyChecking=no \
-          root@"${node}" "${command//localhost/${node}}" &"
-
       pids+=($!)
     done
-
+    echo "[GOT PIDS: ] ${pids[@]}"
     local fail=0
     for pid in "${pids[@]}"; do
       wait ${pid} || fail=$((fail + 1))
     done
 
     if [[ "${fail}" != "0" ]]; then
+      echo "[THESE PIDS FAILED] ${fail}"
       exit 1
     fi
   fi
