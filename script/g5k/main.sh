@@ -299,7 +299,7 @@ if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
                 echo "[DOWNLOAD_ANTIDOTE]: Starting..."
                 provisionAntidote
                 changeRingSize
-                cleanAntidote
+                rebuildAntidote
                 echo "[DOWNLOAD_ANTIDOTE]: Done"
               else
                 if [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
