@@ -27,6 +27,11 @@ doForNodes () {
           -o StrictHostKeyChecking=no \
           root@"${node}" "${command//localhost/${node}}" &
 
+          echo "      ssh -i ${EXPERIMENT_PRIVATE_KEY} -T \
+          -o ConnectTimeout=3 \
+          -o StrictHostKeyChecking=no \
+          root@"${node}" "${command//localhost/${node}}" &"
+
       pids+=($!)
     done
     echo "[GOT PIDS: ] ${pids[@]}"
