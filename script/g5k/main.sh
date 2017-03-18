@@ -297,8 +297,8 @@ cleanAntidote () {
 provisionNodes () {
 if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
                 echo "[DOWNLOAD_ANTIDOTE]: Starting..."
-                changeRingSize
                 provisionAntidote
+                changeRingSize
                 cleanAntidote
                 echo "[DOWNLOAD_ANTIDOTE]: Done"
               else
