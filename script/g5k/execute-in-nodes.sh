@@ -22,12 +22,12 @@ doForNodes () {
   else
     local pids=()
     for node in ${nodes}; do
-      ssh -i ${EXPERIMENT_PRIVATE_KEY} -T \
+      ssh  -vvv -i ${EXPERIMENT_PRIVATE_KEY} -T \
           -o ConnectTimeout=3 \
           -o StrictHostKeyChecking=no \
           root@"${node}" "${command//localhost/${node}}" &
 
-          echo "      ssh -i ${EXPERIMENT_PRIVATE_KEY} -T \
+          echo "      ssh -vvv -i ${EXPERIMENT_PRIVATE_KEY} -T \
           -o ConnectTimeout=3 \
           -o StrictHostKeyChecking=no \
           root@"${node}" "${command//localhost/${node}}" &"
