@@ -402,6 +402,15 @@ changeRingSize () {
 }
 
 prepareClusters () {
+
+  echo "[STOP_ANTIDOTE]: Starting..."
+  ./control-nodes.sh --stop
+  echo "[STOP_ANTIDOTE]: Done"
+
+  echo "[START_ANTIDOTE]: Starting..."
+  ./control-nodes.sh --start
+  echo "[START_ANTIDOTE]: Done"
+
 if [[ "${CONNECT_CLUSTERS_AND_DCS}" == "true" ]]; then
 
   local total_dcs="$1"

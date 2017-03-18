@@ -5,14 +5,6 @@ run () {
   local total_dcs=$2
   echo "[restarting antidote to build cluster]: Starting..."
 
-  echo "[STOP_ANTIDOTE]: Starting..."
-  ./control-nodes.sh --stop
-  echo "[STOP_ANTIDOTE]: Done"
-
-  echo "[START_ANTIDOTE]: Starting..."
-  ./control-nodes.sh --start
-  echo "[START_ANTIDOTE]: Done"
-
   # TODO: Find a better way to do this -> Wait until all the nodes respond to ping?
   sleep 30
 
