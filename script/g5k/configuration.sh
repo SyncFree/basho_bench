@@ -40,10 +40,10 @@ ANTIDOTE_NODES=4
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=2
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=4
+BENCH_INSTANCES=3
 
 #force time sync before running
-FORCE_NTP_SYNC=false
+FORCE_NTP_SYNC=true
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
