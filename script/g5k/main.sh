@@ -20,10 +20,7 @@ export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
 sites=( "${SITES[@]}" )
 
 
-export KEY_SPACES=( 10000000 1000000 )
-export ROUND_NUMBER=( 10 )
-export READ_NUMBER=( 100 )
-export UPDATE_NUMBER=( 2 )
+st
 
 ANTIDOTE_IP_FILE="$1"
 
@@ -479,7 +476,7 @@ collectResults () {
 #  echo "[MERGING_RESULTS]: Done"
   pushd "${RESULTSDIR}" > /dev/null 2>&1
   local tar_name=$(basename "${RESULTSDIR}")
-  tar -czf ../"${tar_name}".tar .
+  tar -czf ../"${tar_name}".tar ${SCRATCHFOLDER}
   popd > /dev/null 2>&1
 }
 
@@ -504,7 +501,7 @@ echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes
     echo "[COLLECTING TARED STALENESS RESULTS FROM ANTIDOTE]: Done, put them in $RESULTSSTALEDIR......"
   pushd "${RESULTSSTALEDIR}" > /dev/null 2>&1
   local tar_name=$(basename "${RESULTSSTALEDIR}")
-  tar -czf ../"${tar_name}".tar .
+  tar -czf ../"${tar_name}".tar ${SCRATCHFOLDER}
   popd > /dev/null 2>&1
 }
 
@@ -542,8 +539,15 @@ syncClocks () {
 
 }
 
-run () {
+tarLogs () {
+  pushd "${LOGDIR}" > /dev/null 2>&1
+  local tar_name=$(basename "${LOGDIR}")
+  tar -czf ../"${tar_name}".tar ${SCRATCHFOLDER}
+  popd > /dev/null 2>&1
 
+}
+
+run () {
   local antidote_ip_file=".antidote_ip_file"
   setupKeys
           #get machines and define which are antidote and bench,
@@ -557,6 +561,7 @@ run () {
   runTests
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
   collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
+  tarLogs
   echo "done collecting staleness results"
 }
 
