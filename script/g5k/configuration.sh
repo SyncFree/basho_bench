@@ -42,6 +42,9 @@ BENCH_NODES=2
 # Number of instances of basho_bench to run per node
 BENCH_INSTANCES=4
 
+#force time sync before running
+FORCE_NTP_SYNC=true
+
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on

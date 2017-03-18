@@ -411,6 +411,9 @@ prepareClusters () {
   ./control-nodes.sh --start
   echo "[START_ANTIDOTE]: Done"
 
+    # TODO: Find a better way to do this -> Wait until all the nodes respond to ping?
+  sleep 30
+
 if [[ "${CONNECT_CLUSTERS_AND_DCS}" == "true" ]]; then
 
   local total_dcs="$1"
@@ -540,9 +543,13 @@ deployImages () {
 }
 
 syncClocks () {
+if [[ "${FORCE_NTP_SYNC}" == "true" ]]; then
     echo "[SYNC CLOCKS]: Starting..."
     ./sync-time.sh --start
     echo "[SYNC CLOCKS]: Done"
+    else
+        echo "[SYNC CLOCKS]: Disabled"
+    fi
 
 }
 
