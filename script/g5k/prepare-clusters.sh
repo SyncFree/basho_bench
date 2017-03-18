@@ -14,7 +14,7 @@ run () {
   echo "[START_ANTIDOTE]: Done"
 
   # TODO: Find a better way to do this -> Wait until all the nodes respond to ping?
-#  sleep 30
+  sleep 30
 
   echo "[BUILD_CLUSTER]: Starting..."
   ./join-clusters.sh ${dc_size} ${total_dcs}
