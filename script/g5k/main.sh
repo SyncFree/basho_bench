@@ -480,12 +480,20 @@ collectResults () {
 #  echo "[MERGING_RESULTS]: Starting..."
 #  ./merge-results.sh "${RESULTSDIR}"
 #  echo "[MERGING_RESULTS]: Done"
-  pushd "${RESULTSDIR}" > /dev/null 2>&1
-  local tar_name=$(basename "${RESULTSDIR}")
-  tar -czf ../"${tar_name}".tar ${SCRATCHFOLDER}
-  popd > /dev/null 2>&1
+
 }
 
+tarEverything () {
+  pushd "${SCRATCHFOLDER}" > /dev/null 2>&1
+  local tar_name=$(basename "${RESULTSDIR}")
+  tar -czf ../"${tar_name}".tar ${SCRATCHFOLDER}
+  rm -rf results
+  rm -rf logs
+  rm -rf staleness
+  popd > /dev/null 2>&1
+
+
+}
 collectStalenessResults(){
 echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
   doForNodesIn ${ANT_NODES} \
@@ -505,10 +513,6 @@ echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes
     scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/*StalenessResults.tar "${RESULTSSTALEDIR}"
   done
     echo "[COLLECTING TARED STALENESS RESULTS FROM ANTIDOTE]: Done, put them in $RESULTSSTALEDIR......"
-  pushd "${RESULTSSTALEDIR}" > /dev/null 2>&1
-  local tar_name=$(basename "${RESULTSSTALEDIR}")
-  tar -czf ../"${tar_name}".tar ${SCRATCHFOLDER}
-  popd > /dev/null 2>&1
 }
 
 # Prepare the experiment, create the output folder,
