@@ -22,7 +22,7 @@ DOWNLOAD_ANTIDOTE=false
 DOWNLOAD_BENCH=false
 
 # Download and compile antidote and basho bench from scratch
-CLEAN_ANTIDOTE=true
+CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
 CLEAN_BENCH=true
