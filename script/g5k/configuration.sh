@@ -11,10 +11,10 @@ K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "nancy" )
+SITES=( "grenoble" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -36,16 +36,16 @@ CONNECT_CLUSTERS_AND_DCS=true
 DCS_PER_SITE=1
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=15
+ANTIDOTE_NODES=4
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=5
+BENCH_NODES=2
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=8
+BENCH_INSTANCES=4
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="physics-g5k-clocksi"
+ANTIDOTE_BRANCH="physics-g5k-physics"
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -56,4 +56,4 @@ BENCH_BRANCH="antidote_pb-g5k"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=57983
+GRID_JOB_ID=57995
