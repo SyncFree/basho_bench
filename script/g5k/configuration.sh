@@ -25,7 +25,7 @@ DOWNLOAD_BENCH=false
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=true
+CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
 CONNECT_CLUSTERS_AND_DCS=false
