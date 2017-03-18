@@ -435,14 +435,10 @@ if [[ "${CONNECT_CLUSTERS_AND_DCS}" == "true" ]]; then
     bench_offset=$((bench_offset + BENCH_NODES))
   done
   # if the cluster was not rebuilt, start background processes in antidote
-  else if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]] || [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
-  echo "[START_ANTIDOTE]: Starting..."
-  ./control-nodes.sh --start
-  echo "[START_ANTIDOTE]: Done"
+  else
     echo "[ONLY STARTING BG PROCESSES]"
     startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
     echo "[DONE STARTING BG PROCESSES!]"
-  fi
   fi
 }
 
