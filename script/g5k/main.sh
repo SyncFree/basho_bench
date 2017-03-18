@@ -20,8 +20,6 @@ export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
 sites=( "${SITES[@]}" )
 
 
-st
-
 ANTIDOTE_IP_FILE="$1"
 
 buildReservation () {
