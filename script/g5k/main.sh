@@ -553,13 +553,7 @@ if [[ "${FORCE_NTP_SYNC}" == "true" ]]; then
 
 }
 
-tarLogs () {
-  pushd "${LOGDIR}" > /dev/null 2>&1
-  local tar_name=$(basename "${LOGDIR}")
-  tar -czf ../"${tar_name}".tar ${SCRATCHFOLDER}
-  popd > /dev/null 2>&1
 
-}
 
 run () {
   local antidote_ip_file=".antidote_ip_file"
@@ -575,7 +569,7 @@ run () {
   runTests
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
   collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
-  tarLogs
+  tarEverything
   echo "done collecting staleness results"
 }
 
