@@ -6,7 +6,7 @@ fi
 
 ntpClock () {
 service ntp stop
-  for i in 1 2 3
+  for i in 1 2 3 4
   do
     /usr/sbin/ntpdate -b ntp2.grid5000.fr
   done
