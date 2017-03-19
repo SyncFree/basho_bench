@@ -17,6 +17,9 @@ clean:
 results:
 	Rscript --vanilla priv/summary.r -i tests/current
 
+local-results:
+	Rscript --vanilla ~/basho_bench/priv/summary.r -i $(pwd)
+
 byte_sec-results:
 	Rscript --vanilla priv/summary.r --ylabel1stgraph byte/sec -i tests/current
 
