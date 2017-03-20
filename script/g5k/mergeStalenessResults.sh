@@ -62,9 +62,9 @@ for keyspace in "${KEY_SPACES[@]}"; do
 
             StaleDirectories=$(find . -type d -name "Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES")
         # create the summary result
-            summaryDir="staleness_summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
-            mkdir -p $summaryDir
-            echo "---### MASTER: created summary directory : $summaryDir"
+#            summaryDir="staleness_summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
+#            mkdir -p $summaryDir
+#            echo "---### MASTER: created summary directory : $summaryDir"
 
 
             echo "~/antidote/bin/physics_staleness/process_staleness.erl "\"Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES ${StaleDirectories[@]}\"""
