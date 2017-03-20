@@ -486,7 +486,8 @@ collectResults () {
 tarEverything () {
   pushd "${SCRATCHFOLDER}" > /dev/null 2>&1
   local tar_name="$(basename "${SCRATCHFOLDER}")-$GLOBAL_TIMESTART"
-  tar -czf "../${tar_name}.tar ${SCRATCHFOLDER}"
+  command="tar -czf ../${tar_name}.tar ${SCRATCHFOLDER}"
+  $command
 #  rm -rf results
 #  rm -rf logs
 #  rm -rf results-staleness

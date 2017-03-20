@@ -122,11 +122,16 @@ runAll () {
 collectAll () {
    own_node_name="${HOSTNAME::-12}" # remove the .grid5000.fr part of the name
   for i in $(seq 1 ${N_INSTANCES}); do
+  echo "bench_folder="/root/basho_bench${i}""
      bench_folder="/root/basho_bench${i}"
     pushd "${bench_folder}" > /dev/null 2>&1
      test_folder="$bench_folder/tests/"
-     result_f_name="test${i}-${own_node_name}-${KEYSPACE}-${ROUNDS}-${READS}-${UPDATES}.tar"
-    tar czf /root/"${result_f_name} ${test_folder}"
+     echo $test_folder
+         result_f_name="test${i}-${own_node_name}-${KEYSPACE}-${ROUNDS}-${READS}-${UPDATES}.tar"
+         echo $result_f_name
+    command="tar czf /root/${result_f_name} ${test_folder}"
+    echo $command
+    $command
     popd > /dev/null 2>&1
   done
 }
