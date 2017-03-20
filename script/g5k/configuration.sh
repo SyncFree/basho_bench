@@ -25,7 +25,7 @@ DOWNLOAD_BENCH=false
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=false
+CLEAN_BENCH=true
 
 # Connect servers in clusters and DCs
 CONNECT_CLUSTERS_AND_DCS=false
@@ -40,10 +40,10 @@ ANTIDOTE_NODES=4
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=2
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=3
+BENCH_INSTANCES=2
 
 #force time sync before running
-FORCE_NTP_SYNC=true
+FORCE_NTP_SYNC=false
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
