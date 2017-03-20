@@ -14,12 +14,12 @@ RESERVE_SITES=false
 SITES=( "nancy" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=true
+DOWNLOAD_ANTIDOTE=false
 
-DOWNLOAD_BENCH=true
+DOWNLOAD_BENCH=false
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
@@ -28,7 +28,7 @@ CLEAN_ANTIDOTE=false
 CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
-CONNECT_CLUSTERS_AND_DCS=true
+CONNECT_CLUSTERS_AND_DCS=false
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
@@ -40,7 +40,7 @@ ANTIDOTE_NODES=4
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=2
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=9
+BENCH_INSTANCES=3
 
 #force time sync before running
 FORCE_NTP_SYNC=true

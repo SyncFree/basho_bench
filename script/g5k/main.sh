@@ -487,9 +487,9 @@ tarEverything () {
   pushd "${SCRATCHFOLDER}" > /dev/null 2>&1
   local tar_name="$(basename "${SCRATCHFOLDER}")-$GLOBAL_TIMESTART"
   tar -czf "../${tar_name}.tar --directory=${SCRATCHFOLDER}"
-  rm -rf results
-  rm -rf logs
-  rm -rf staleness
+#  rm -rf results
+#  rm -rf logs
+#  rm -rf results-staleness
   popd > /dev/null 2>&1
 
 
