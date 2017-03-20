@@ -61,7 +61,7 @@ for keyspace in "${KEY_SPACES[@]}"; do
 
 
         # create the summary result
-            summaryDir="summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
+            summaryDir="basho_bench_summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
             mkdir -p $summaryDir
             echo "---### MASTER: created summary directory : $summaryDir"
 
