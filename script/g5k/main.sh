@@ -227,6 +227,7 @@ cleanBench () {
     local bench_folder="basho_bench${i}"
     local command="\
       cd ~/$bench_folder && \
+      git stash && \
       git pull && \
       sed -i -e 's/bb@127.0.0.1/bb${i}@127.0.0.1/g' rebar.config && \
       make
