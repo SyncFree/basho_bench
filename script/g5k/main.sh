@@ -311,11 +311,12 @@ if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
               else
                 if [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
                   echo "[BUILD_ANTIDOTE]: Starting..."
+                  changeRingSize
                   rebuildAntidote
                 else
+                  changeRingSize
                   cleanAntidote
                 fi
-
                 echo "[DOWNLOAD_ANTIDOTE]: Skipping, just building"
   fi
 
