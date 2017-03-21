@@ -8,7 +8,7 @@ PBKFILE=~/.ssh/id_rsa.pub
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # JUST RUN, NO CONFIG
-JUST_RUN=false
+JUST_RUN=true
 
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
