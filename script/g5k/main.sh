@@ -564,8 +564,9 @@ if [[ "${FORCE_NTP_SYNC}" == "true" ]]; then
 
 run () {
   local antidote_ip_file=".antidote_ip_file"
-  if [[ "${JUST_RUN}" == "false" ]]; then
   setupKeys
+  if [[ "${JUST_RUN}" == "false" ]]; then
+
           #get machines and define which are antidote and bench,
           # and deploy images
           deployImages
