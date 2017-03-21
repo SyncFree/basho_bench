@@ -85,8 +85,8 @@ trap 'cancelJob ${GRID_JOB_ID}' SIGINT SIGTERM
 
 SCRATCHFOLDER="/home/$(whoami)/grid-benchmark-${GRID_JOB_ID}"
 export LOGDIR=${SCRATCHFOLDER}/logs/${GLOBAL_TIMESTART}
-RESULTSDIR=${SCRATCHFOLDER}/results/bench-${GLOBAL_TIMESTART}-${ANTIDOTE_BRANCH}
-RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness/staleness-${GLOBAL_TIMESTART}-${ANTIDOTE_BRANCH}
+RESULTSDIR=${SCRATCHFOLDER}/results/bench-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
+RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness/staleness-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
 
 export EXPERIMENT_PRIVATE_KEY=${SCRATCHFOLDER}/key
 EXPERIMENT_PUBLIC_KEY=${SCRATCHFOLDER}/exp_key.pub
@@ -506,7 +506,7 @@ echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes
   doForNodesIn ${ANT_NODES} \
   "cd ~/antidote; \
   chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
-  ./bin/physics_staleness/tar-staleness-results-g5k.sh -${GLOBAL_TIMESTART}-${ANTIDOTE_BRANCH}"
+  ./bin/physics_staleness/tar-staleness-results-g5k.sh -${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}"
 
   echo "[COLLECTING_RESULTS]: Done TARING"
 

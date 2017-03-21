@@ -46,14 +46,14 @@ BENCH_NODES=5
 BENCH_INSTANCES=3
 
 #force time sync before running
-FORCE_NTP_SYNC=true
+FORCE_NTP_SYNC=false
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="physics-g5k-physics"
 
-ANTIDOTE_PROTOCOL="clocksi"
+ANTIDOTE_PROTOCOL="physics"
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
