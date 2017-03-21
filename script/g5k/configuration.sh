@@ -8,7 +8,7 @@ PBKFILE=~/.ssh/id_rsa.pub
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # JUST RUN, NO CONFIG
-JUST_RUN=true
+JUST_RUN=false
 
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
@@ -25,13 +25,13 @@ DOWNLOAD_ANTIDOTE=false
 DOWNLOAD_BENCH=false
 
 # Download and compile antidote and basho bench from scratch
-CLEAN_ANTIDOTE=true
+CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=true
+CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
-CONNECT_CLUSTERS_AND_DCS=true
+CONNECT_CLUSTERS_AND_DCS=false
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="physics-g5k-physics"
 
-ANTIDOTE_PROTOCOL="physics"
+ANTIDOTE_PROTOCOL="clocksi"
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
