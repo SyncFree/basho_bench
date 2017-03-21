@@ -267,7 +267,9 @@ rebuildAntidote () {
     sed -i.bak 's/127.0.0.1/localhost/g' rel/vars/dev_vars.config.src rel/files/app.config; \
     sed -i.bak 's/127.0.0.1/localhost/g' config/vars.config; \
     rm -rf ./_build; \
-    git pull; ./rebar3 upgrade; make rel
+    git pull; ./rebar3 upgrade; \
+
+    make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
   doForNodesIn ${ALL_NODES} "${command}" \

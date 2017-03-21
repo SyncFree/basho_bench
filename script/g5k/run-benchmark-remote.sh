@@ -75,8 +75,11 @@ changeAntidoteIPs () {
 
 changeKeyGen () {
   local config_path="$1"
-  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${KEYSPACE}}}.|g" "${config_path}"
+  keys=$(($KEYSPACE * $ANTIDOTE_NODES))
+  sed -i.bak "s|^{key_generator.*|{key_generator, {pareto_int, ${keys}}}.|g" "${config_path}"
 }
+
+
 
 changeOPs () {
   local config_path="$1"
@@ -156,6 +159,7 @@ run () {
   export ROUNDS="$5"
   export READS="$6"
   export UPDATES="$7"
+  export ANTIDOTE_NODES="$8"
 
         changeAllConfigs
         runAll

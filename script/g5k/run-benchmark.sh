@@ -8,8 +8,8 @@
 #export UPDATE_NUMBER=( 2 10 )
 
 export KEY_SPACES=( 10000000 1000000 100000 10000 )
-export ROUND_NUMBER=( 20 )
-export READ_NUMBER=( 100 100 90 )
+export ROUND_NUMBER=( 10 )
+export READ_NUMBER=( 100 100 100 )
 export UPDATE_NUMBER=( 2 10 100 )
 
 if [[ $# -ne 1 ]]; then
@@ -23,6 +23,23 @@ doForNodesIn () {
 }
 
 AntidoteCopyAndTruncateStalenessLogs () {
+
+  antidote_nodes=($(< ".antidote_ip_file"))
+  nodes_str=""
+  for node in ${antidote_nodes[@]}; do
+    nodes_str+="'antidote@${node}' "
+  done
+
+  node1=${antidote_nodes[0]}
+
+  echo "[SYNCING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
+  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $node1 /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+  ./execute-in-nodes.sh "$node1" \
+        "chmod +x /root/antidote/bin/sync_staleness_logs.erl && \
+        /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+  echo -e "\t[SYNCING ANTIDOTE STALENESS LOGS]: Done"
+
+
   dir="_build/default/rel/antidote/data/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
 
   command1="\
@@ -30,19 +47,13 @@ AntidoteCopyAndTruncateStalenessLogs () {
     mkdir -p $dir && \
     cp _build/default/rel/antidote/data/Staleness* $dir"
 
-  antidote_nodes=($(< ".antidote_ip_file"))
   echo "[COPYING STALENESS LOGS]: moving logs to directory: $dir at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
     doForNodesIn ".antidote_ip_file" "${command1}"
    echo "[COPYING STALENESS LOGS]: done! "
 
 
-  nodes_str=""
-  for node in ${antidote_nodes[@]}; do
-    nodes_str+="'antidote@${node}' "
-  done
 
-  node1=${antidote_nodes[0]}
 
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $node1 /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
@@ -75,7 +86,7 @@ runRemoteBenchmark () {
         local benchfilename=$(basename $BENCH_FILE)
         echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
 
-        echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
+        echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES}"
 
         ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
         "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES}"
