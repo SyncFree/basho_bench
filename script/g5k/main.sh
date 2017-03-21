@@ -248,6 +248,7 @@ provisionAntidote () {
     rm -rf antidote && \
     git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote && \
     cd ~/antidote && \
+    sed -i.bak s|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g src/antidote.app.src && \
     make rel
   "
   # We need antidote in all nodes even if we don't use it
@@ -268,7 +269,6 @@ rebuildAntidote () {
     sed -i.bak 's/127.0.0.1/localhost/g' config/vars.config; \
     rm -rf ./_build; \
     git pull; ./rebar3 upgrade; \
-
     make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
@@ -280,7 +280,6 @@ rebuildAntidote () {
 
 cleanAntidote () {
   echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
-
   local command="\
     cd antidote; \
     pkill beam; \
