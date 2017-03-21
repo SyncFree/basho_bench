@@ -25,13 +25,13 @@ DOWNLOAD_ANTIDOTE=false
 DOWNLOAD_BENCH=false
 
 # Download and compile antidote and basho bench from scratch
-CLEAN_ANTIDOTE=false
+CLEAN_ANTIDOTE=true
 
 # Make a basho_bench git pull and make at bench nodes
 CLEAN_BENCH=true
 
 # Connect servers in clusters and DCs
-CONNECT_CLUSTERS_AND_DCS=false
+CONNECT_CLUSTERS_AND_DCS=true
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
