@@ -11,10 +11,10 @@
 # This is only necessary when running on OS X, erlang 19
 # might be removed, but won't harm otherwise...
 
-export KEY_SPACES=( 10000000 1000000 100000 10000 )
+export KEY_SPACES=( 10000000 )
 export ROUND_NUMBER=( 10 )
-export READ_NUMBER=( 100 100 100)
-export UPDATE_NUMBER=( 2 10  100)
+export READ_NUMBER=( 100 100 )
+export UPDATE_NUMBER=( 2 10 )
 
 
 PATH="$PATH:/opt/local/lib/erlang/erts-8.1/bin/"
@@ -67,7 +67,7 @@ for keyspace in "${KEY_SPACES[@]}"; do
 #            echo "---### MASTER: created summary directory : $summaryDir"
 
 
-            echo "~/antidote/bin/physics_staleness/process_staleness.erl "\"Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES ${StaleDirectories[@]}\"""
+            echo "~/antidote/bin/physics_staleness/process_staleness.erl Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES ${StaleDirectories[@]}"
             ~/antidote/bin/physics_staleness/process_staleness.erl "Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES ${StaleDirectories[@]}"
 
 

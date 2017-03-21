@@ -14,18 +14,18 @@ RESERVE_SITES=false
 SITES=( "nancy" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=false
+DOWNLOAD_ANTIDOTE=true
 
-DOWNLOAD_BENCH=false
+DOWNLOAD_BENCH=true
 
 # Download and compile antidote and basho bench from scratch
-CLEAN_ANTIDOTE=true
+CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=true
+CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
 CONNECT_CLUSTERS_AND_DCS=true
@@ -36,14 +36,14 @@ CONNECT_CLUSTERS_AND_DCS=true
 DCS_PER_SITE=1
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=4
+ANTIDOTE_NODES=15
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=2
+BENCH_NODES=5
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=2
+BENCH_INSTANCES=3
 
 #force time sync before running
-FORCE_NTP_SYNC=false
+FORCE_NTP_SYNC=true
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
@@ -59,4 +59,4 @@ BENCH_BRANCH="antidote_pb-g5k"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=58001
+GRID_JOB_ID=58024

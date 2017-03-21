@@ -11,10 +11,10 @@
 # This is only necessary when running on OS X, erlang 19
 # might be removed, but won't harm otherwise...
 
-export KEY_SPACES=( 10000000 1000000 100000 10000 )
+export KEY_SPACES=( 10000000 )
 export ROUND_NUMBER=( 10 )
-export READ_NUMBER=( 100 100 100)
-export UPDATE_NUMBER=( 2 10  100)
+export READ_NUMBER=( 100 100 )
+export UPDATE_NUMBER=( 2 10 )
 
 
 PATH="$PATH:/opt/local/lib/erlang/erts-8.1/bin/"
@@ -75,17 +75,18 @@ for keyspace in "${KEY_SPACES[@]}"; do
             TxnLatencyFile=txn_latencies.csv
             SummaryFiles=""
             TxnLatencyFiles=""
-            for Dir in test*-$KEYSPACE-$ROUNDS-$READS-$UPDATES ; do
-                    echo "---### MASTER: Collecting all ${SummaryFile} in $BenchResultsDirectory"
-                    SummaryFiles="$BenchResultsDirectory/$Dir/tests/*/${SummaryFile} $SummaryFiles"
+            Dirs=( $(find . -type d -name "test*-$KEYSPACE-$ROUNDS-$READS-$UPDATES") )
+            for Dir in  ${Dirs[@]}; do
+                    echo "---### MASTER: Collecting all ${SummaryFile} in $Dir"
+                    thisSummaryFile=( $(find "$Dir" -type f -name "$SummaryFile") )
+                    SummaryFiles="$thisSummaryFile $SummaryFiles"
 
                    ########################################################
                     # get all the latency files (that end with _latencies.csv") in the results directory
                     ########################################################
-                   cd $BenchResultsDirectory/$Dir/tests/*/
-                        echo "---### MASTER: Collecting all ${TxnLatencyFile} in $BenchResultsDirectory/$Dir"
-            #            echo "---### MASTER: cding back into $BenchResultsDirectory"
-                        TxnLatencyFiles=""$BenchResultsDirectory"/"$Dir"/tests/*/${TxnLatencyFile} "$TxnLatencyFiles""
+                        echo "---### MASTER: Collecting all ${TxnLatencyFile} in $Dir"
+                    thisLatencyFile=( $(find "$Dir" -type f -name "$TxnLatencyFile") )
+                    TxnLatencyFiles="$thisLatencyFile $TxnLatencyFiles"
                     cd $BenchResultsDirectory
             done
 
