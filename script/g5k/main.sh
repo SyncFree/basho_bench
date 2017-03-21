@@ -248,7 +248,7 @@ provisionAntidote () {
     rm -rf antidote && \
     git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote && \
     cd ~/antidote && \
-    sed -i.bak s|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g src/antidote.app.src && \
+    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
     make rel
   "
   # We need antidote in all nodes even if we don't use it
@@ -271,7 +271,7 @@ rebuildAntidote () {
     git checkout ${ANTIDOTE_BRANCH}; \
     git pull; \
     ./rebar3 upgrade; \
-    sed -i.bak s|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g src/antidote.app.src && \
+    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
     make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
@@ -290,7 +290,7 @@ cleanAntidote () {
     git pull; \
     make relclean; \
     ./rebar3 upgrade; \
-    sed -i.bak s|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g src/antidote.app.src && \
+    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
     make rel
   "
   doForNodesIn ${ALL_NODES} "${command}" \
