@@ -564,6 +564,7 @@ if [[ "${FORCE_NTP_SYNC}" == "true" ]]; then
 
 run () {
   local antidote_ip_file=".antidote_ip_file"
+  if [[ "${JUST_RUN}" == "false" ]]; then
   setupKeys
           #get machines and define which are antidote and bench,
           # and deploy images
@@ -571,8 +572,8 @@ run () {
           provisionNodes
           local total_dcs=$(getTotalDCCount)
           prepareClusters ${total_dcs} "${antidote_ip_file}"
-
   syncClocks
+  fi
   runTests
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
   collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
