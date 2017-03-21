@@ -268,7 +268,10 @@ rebuildAntidote () {
     sed -i.bak 's/127.0.0.1/localhost/g' rel/vars/dev_vars.config.src rel/files/app.config; \
     sed -i.bak 's/127.0.0.1/localhost/g' config/vars.config; \
     rm -rf ./_build; \
-    git pull; ./rebar3 upgrade; \
+    git checkout ${ANTIDOTE_BRANCH}; \
+    git pull; \
+    ./rebar3 upgrade; \
+    sed -i.bak s|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g src/antidote.app.src && \
     make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
@@ -283,9 +286,11 @@ cleanAntidote () {
   local command="\
     cd antidote; \
     pkill beam; \
+    git checkout ${ANTIDOTE_BRANCH}; \
     git pull; \
     make relclean; \
     ./rebar3 upgrade; \
+    sed -i.bak s|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g src/antidote.app.src && \
     make rel
   "
   doForNodesIn ${ALL_NODES} "${command}" \
