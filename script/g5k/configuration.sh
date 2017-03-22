@@ -28,7 +28,7 @@ DOWNLOAD_BENCH=true
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=false
+CLEAN_BENCH=true
 
 # Connect servers in clusters and DCs
 CONNECT_CLUSTERS_AND_DCS=true
@@ -36,14 +36,14 @@ CONNECT_CLUSTERS_AND_DCS=true
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
-DCS_PER_SITE=1
+DCS_PER_SITE=3
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=15
+ANTIDOTE_NODES=5
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=5
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=3
+BENCH_INSTANCES=2
 
 #force time sync before running
 FORCE_NTP_SYNC=true
@@ -67,7 +67,7 @@ BENCH_FILE="antidote_pb.config"
 GRID_JOB_ID=58035
 
 # workloads
-KEY_SPACES=( 10000000 1000000 100000 )
-ROUND_NUMBER=( 10 10 )
+KEY_SPACES=( 10000000 1000000 )
+ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 100 100 )
 UPDATE_NUMBER=( 2 10 100 )

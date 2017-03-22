@@ -11,7 +11,7 @@
 # This is only necessary when running on OS X, erlang 19
 # might be removed, but won't harm otherwise...
 
-source configuration.sh
+source ~/basho_bench/script/g5k/configuration.sh
 
 
 PATH="$PATH:/opt/local/lib/erlang/erts-8.1/bin/"

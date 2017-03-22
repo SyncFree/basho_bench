@@ -226,6 +226,8 @@ cleanBench () {
   for i in $(seq 1 ${BENCH_INSTANCES}); do
     local bench_folder="basho_bench${i}"
     local command="\
+      cd ~ && \
+      rm -rf *.tar && \
       cd ~/$bench_folder && \
       git stash && \
       git pull && \
