@@ -2,15 +2,6 @@
 
 #set -eo pipefail
 
-export KEY_SPACES=( 10000000 )
-export ROUND_NUMBER=( 10 )
-export READ_NUMBER=( 100 100 )
-export UPDATE_NUMBER=( 2 10 )
-
-#export KEY_SPACES=( 10000000 1000000 100000 10000 )
-#export ROUND_NUMBER=( 10 )
-#export READ_NUMBER=( 100 100 100 )
-#export UPDATE_NUMBER=( 2 10 100 )
 
 if [[ $# -ne 1 ]]; then
   echo "Usage: ${0##/*} total-dcs"
@@ -18,6 +9,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 source configuration.sh
+
 doForNodesIn () {
   ./execute-in-nodes.sh "$(cat "$1")" "$2"
 }

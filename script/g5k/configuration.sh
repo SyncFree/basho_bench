@@ -51,7 +51,7 @@ FORCE_NTP_SYNC=true
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="physics-g5k-physics"
+ANTIDOTE_BRANCH="physics-g5k-stable-multidc"
 
 ANTIDOTE_PROTOCOL="clocksi"
 
@@ -65,3 +65,9 @@ BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
 GRID_JOB_ID=58035
+
+# workloads
+KEY_SPACES=( 10000000 1000000 100000 )
+ROUND_NUMBER=( 10 10 )
+READ_NUMBER=( 100 100 100 )
+UPDATE_NUMBER=( 2 10 100 )

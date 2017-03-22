@@ -11,10 +11,7 @@
 # This is only necessary when running on OS X, erlang 19
 # might be removed, but won't harm otherwise...
 
-export KEY_SPACES=( 10000000 )
-export ROUND_NUMBER=( 10 )
-export READ_NUMBER=( 100 100 )
-export UPDATE_NUMBER=( 2 10 )
+source configuration.sh
 
 
 PATH="$PATH:/opt/local/lib/erlang/erts-8.1/bin/"
