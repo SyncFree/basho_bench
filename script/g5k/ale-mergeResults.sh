@@ -55,10 +55,13 @@ for keyspace in "${KEY_SPACES[@]}"; do
       for reads in "${READ_NUMBER[@]}"; do
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
+        for thread_number in "${BENCH_THREAD_NUMBER[@]}"; do
+        export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
+
 
 
         # create the summary result
-            summaryDir="basho_bench_summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
+            summaryDir="basho_bench_summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
             mkdir -p $summaryDir
             echo "---### MASTER: created summary directory : $summaryDir"
 
@@ -72,7 +75,7 @@ for keyspace in "${KEY_SPACES[@]}"; do
             TxnLatencyFile=txn_latencies.csv
             SummaryFiles=""
             TxnLatencyFiles=""
-            Dirs=( $(find . -type d -name "test*-$KEYSPACE-$ROUNDS-$READS-$UPDATES") )
+            Dirs=( $(find . -type d -name "test*-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE") )
             for Dir in  ${Dirs[@]}; do
                     echo "---### MASTER: Collecting all ${SummaryFile} in $Dir"
                     thisSummaryFile=( $(find "$Dir" -type f -name "$SummaryFile") )
@@ -105,6 +108,7 @@ for keyspace in "${KEY_SPACES[@]}"; do
                         echo "---### MASTER: done"
                          echo "---### MASTER: creating pretty summary.png"
                         Rscript --vanilla ~/basho_bench/priv/summary.r -i "$BenchResultsDirectory/$summaryDir/"
+        done
         re=$((re+1))
       done
     done

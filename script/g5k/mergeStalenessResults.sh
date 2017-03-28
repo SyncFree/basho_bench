@@ -56,19 +56,21 @@ for keyspace in "${KEY_SPACES[@]}"; do
       for reads in "${READ_NUMBER[@]}"; do
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
+        for thread_number in "${BENCH_THREAD_NUMBER[@]}"; do
+            export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
 
-            StaleDirectories=$(find . -type d -name "Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES")
+            StaleDirectories=$(find . -type d -name "Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE")
         # create the summary result
 #            summaryDir="staleness_summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
 #            mkdir -p $summaryDir
 #            echo "---### MASTER: created summary directory : $summaryDir"
 
 
-            echo "~/antidote/bin/physics_staleness/process_staleness.erl Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES ${StaleDirectories[@]}"
-            ~/antidote/bin/physics_staleness/process_staleness.erl "Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES ${StaleDirectories[@]}"
+            echo "~/antidote/bin/physics_staleness/process_staleness.erl Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE ${StaleDirectories[@]}"
+            ~/antidote/bin/physics_staleness/process_staleness.erl "Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE ${StaleDirectories[@]}"
 
 
-
+        done
 
 
 

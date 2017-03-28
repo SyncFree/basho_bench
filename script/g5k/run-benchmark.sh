@@ -9,6 +9,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 source configuration.sh
+source main.sh
 
 doForNodesIn () {
   ./execute-in-nodes.sh "$(cat "$1")" "$2"
@@ -32,14 +33,18 @@ AntidoteCopyAndTruncateStalenessLogs () {
   echo -e "\t[SYNCING ANTIDOTE STALENESS LOGS]: Done"
 
 
-  dir="_build/default/rel/antidote/data/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
+  dirStale="_build/default/rel/antidote/benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
+  dirLog="_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
     cd ~/antidote && \
-    mkdir -p $dir && \
-    cp _build/default/rel/antidote/data/Staleness* $dir"
+    mkdir -p $dirStale && \
+    cp _build/default/rel/antidote/data/Staleness* $dirStale && \
+    mkdir -p $dirLog && \
+    cp _build/default/rel/antidote/log/* $dirLog"
 
-  echo "[COPYING STALENESS LOGS]: moving logs to directory: $dir at all antidote nodes... "
+  echo "[COPYING STALENESS LOGS]: moving logs to directory: $dirStale at all antidote nodes... "
+  echo "[COPYING LOGS]: moving logs to directory: $dirLog at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
     doForNodesIn ".antidote_ip_file" "${command1}"
    echo "[COPYING STALENESS LOGS]: done! "
@@ -54,11 +59,30 @@ AntidoteCopyAndTruncateStalenessLogs () {
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
+CleanAndRebuildAntidote () {
+  echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
+  local command="\
+    cd ~/antidote; \
+    pkill beam; \
+    git checkout ${ANTIDOTE_BRANCH}; \
+    git pull; \
+    make relclean; \
+    ./rebar3 upgrade; \
+    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
+    make rel
+  "
+  doForNodesIn ${ALL_NODES} "${command}" \
+    >> ${LOGDIR}/clean-and-rebuildantidote-${GLOBAL_TIMESTART} 2>&1
+
+  echo -e "\t[CLEAN_ANTIDOTE]: Done"
+}
+
 runRemoteBenchmark () {
 # THIS FUNCTION WILL MANY ROUNDS FOR ANTIDOTE:
 # ONE FOR EACH KEYSPACE, NUMBER OF ROUNDS, AND READ/UPDATE RATIO.
 # In between rounds, it will copy antidote logs to a folder in data, and truncate them.
   local antidote_ip_file="$3"
+  local total_dcs="$4"
   local bench_nodes=( $(< ${BENCH_NODEF}) )
   echo "[RUN REMOTE BENCHMARK : ] bench_nodes=${bench_nodes[@]}"
   for node in "${bench_nodes[@]}"; do
@@ -73,29 +97,48 @@ runRemoteBenchmark () {
       for reads in "${READ_NUMBER[@]}"; do
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
-        #NOW RUN A BENCH
+        for clients_per_bench_instance in "${BENCH_THREAD_NUMBER[@]}"; do
+            export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
 
-        local benchfilename=$(basename $BENCH_FILE)
-        echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
 
-        echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES}"
+            #NOW RUN A BENCH
 
-        ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-        "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES}"
+            local benchfilename=$(basename $BENCH_FILE)
+            echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
 
-        echo "[RunRemoteBenchmark] done."
-        # yea, that.
-        AntidoteCopyAndTruncateStalenessLogs
-        # Wait for the cluster to settle between runs
-#        sleep 60
+            echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
+
+            ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
+            "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
+
+                        # yea, that.
+            AntidoteCopyAndTruncateStalenessLogs
+
+            echo "[STOP_ANTIDOTE]: Starting..."
+            ./control-nodes.sh --stop
+            echo "[STOP_ANTIDOTE]: Done"
+
+            echo "[START_ANTIDOTE]: Starting..."
+            ./control-nodes.sh --start
+            echo "[START_ANTIDOTE]: Done"
+
+            echo "[RunRemoteBenchmark] done."
+
+            echo "[ONLY STARTING BG PROCESSES]"
+            startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
+            echo "[DONE STARTING BG PROCESSES!]"
+            # Wait for the cluster to settle between runs
+#            sleep 15
+        done
         re=$((re+1))
       done
     done
   done
 }
 run () {
+  export TOTAL_DCS=$1
   export ANTIDOTE_IP_FILE=".antidote_ip_file"
-  command="runRemoteBenchmark ${BENCH_INSTANCES} ${BENCH_FILE} ${ANTIDOTE_IP_FILE}"
+  command="runRemoteBenchmark ${BENCH_INSTANCES} ${BENCH_FILE} ${ANTIDOTE_IP_FILE} ${TOTAL_DCS}"
   echo "running $command"
   $command
 }

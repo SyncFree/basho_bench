@@ -463,12 +463,12 @@ startBGprocesses() {
 
   nodes_str=${nodes_str%?}
 
-  local head=$(head -1 .dc_nodes1)
+#  local head=$(head -1 .dc_nodes1)
 
   local join_cluster="\
     ./antidote/bin/start_bg_processes.erl ${nodes_str}
   "
-  ./execute-in-nodes.sh "${head}" "${join_cluster}" "-debug"
+  ./execute-in-nodes.sh "${nodes_str}" "${join_cluster}" "-debug"
 }
 
 runTests () {
@@ -476,6 +476,7 @@ runTests () {
   echo "[RUNNING_TEST]: Starting..."
   ./run-benchmark.sh ${total_dcs} >> ${LOGDIR}/basho-bench-execution-${GLOBAL_TIMESTART} 2>&1
   echo "[RUNNING_TEST]: Done"
+
 }
 
 collectResults () {
@@ -575,7 +576,7 @@ run () {
           provisionNodes
           local total_dcs=$(getTotalDCCount)
           prepareClusters ${total_dcs} "${antidote_ip_file}"
-  syncClocks
+          syncClocks
   fi
   runTests
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1

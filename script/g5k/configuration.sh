@@ -51,9 +51,9 @@ FORCE_NTP_SYNC=true
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="master"
+ANTIDOTE_BRANCH="physics-g5k-stable-multidc"
 
-ANTIDOTE_PROTOCOL="clocksi"
+ANTIDOTE_PROTOCOL="physics"
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -71,3 +71,4 @@ KEY_SPACES=( 1000000 )
 ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 )
 UPDATE_NUMBER=( 100 )
+BENCH_THREAD_NUMBER=( 20 40 60 80 )
