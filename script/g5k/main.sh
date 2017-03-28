@@ -487,10 +487,14 @@ collectResults () {
   for node in "${bench_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} root@${node}:/root/test* "${RESULTSDIR}"
   done
-  echo "[COLLECTING_BENCH_RESULTS]: Done"
-#  echo "[MERGING_RESULTS]: Starting..."
-#  ./merge-results.sh "${RESULTSDIR}"
-#  echo "[MERGING_RESULTS]: Done"
+
+    echo "[COLLECTING_RESULTS]: Done..."
+  echo "[DELETING RESULTS FROM NODES]: Starting..."
+
+  doForNodesIn ${BENCH_NODEF} \
+  "rm -rf /root/test*"
+
+    echo "[DELETING RESULTS FROM NODES]: DONE..."
 
 }
 
