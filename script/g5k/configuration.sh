@@ -51,7 +51,7 @@ FORCE_NTP_SYNC=false
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="physics-g5k-stable-multidc"
+ANTIDOTE_BRANCH="physics-g5k-physics"
 
 ANTIDOTE_PROTOCOL="clocksi"
 
