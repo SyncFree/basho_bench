@@ -20,15 +20,15 @@ SITES=( "nancy" )
 DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=false
+DOWNLOAD_ANTIDOTE=true
 
-DOWNLOAD_BENCH=false
+DOWNLOAD_BENCH=true
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=true
+CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
 CONNECT_CLUSTERS_AND_DCS=true
