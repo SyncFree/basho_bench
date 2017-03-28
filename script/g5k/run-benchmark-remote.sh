@@ -25,7 +25,7 @@ changeAntidotePBPort () {
 changeConcurrent () {
   local config_file="$1"
   # TODO: Change
-  local concurrent_value=40
+  local concurrent_value="${BENCH_CLIENTS_PER_INSTANCE}"
 
   sed -i.bak "s|^{concurrent.*|{concurrent, ${concurrent_value}}.|g" "${config_file}"
 }
@@ -130,7 +130,7 @@ collectAll () {
     pushd "${bench_folder}" > /dev/null 2>&1
      test_folder="$bench_folder/tests/"
      echo $test_folder
-         result_f_name="test${i}-${own_node_name}-${KEYSPACE}-${ROUNDS}-${READS}-${UPDATES}.tar"
+         result_f_name="test${i}-${own_node_name}-${KEYSPACE}-${ROUNDS}-${READS}-${UPDATES}-${BENCH_CLIENTS_PER_INSTANCE}.tar"
          echo $result_f_name
     command="tar czf /root/${result_f_name} ${test_folder}"
     echo $command
@@ -160,6 +160,7 @@ run () {
   export READS="$6"
   export UPDATES="$7"
   export ANTIDOTE_NODES="$8"
+  export BENCH_CLIENTS_PER_INSTANCE="$9"
 
         changeAllConfigs
         runAll
