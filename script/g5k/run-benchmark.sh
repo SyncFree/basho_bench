@@ -9,7 +9,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 source configuration.sh
-source main.sh
+source ~/basho_bench/script/g5k/main.sh
 
 doForNodesIn () {
   ./execute-in-nodes.sh "$(cat "$1")" "$2"
@@ -17,17 +17,23 @@ doForNodesIn () {
 
 AntidoteCopyAndTruncateStalenessLogs () {
 
-  antidote_nodes=($(< ".antidote_ip_file"))
-  nodes_str=""
-  for node in ${antidote_nodes[@]}; do
-    nodes_str+="'antidote@${node}' "
+
+  local total_dcs=$1
+
+    # Get only one antidote node per DC
+  for i in $(seq 1 ${total_dcs}); do
+    local clusterhead=$(head -1 .dc_nodes${i})
+    nodes_str+="'antidote@${clusterhead}' "
   done
 
-  node1=${antidote_nodes[0]}
+  clusterhead=$(head -1 .dc_nodes1)
+  nodes_str=${nodes_str%?}
+
+#  local head=$(head -1 .dc_nodes1)
 
   echo "[SYNCING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
-  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $node1 /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
-  ./execute-in-nodes.sh "$node1" \
+  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+  ./execute-in-nodes.sh "$clusterhead" \
         "chmod +x /root/antidote/bin/sync_staleness_logs.erl && \
         /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   echo -e "\t[SYNCING ANTIDOTE STALENESS LOGS]: Done"
@@ -53,29 +59,29 @@ AntidoteCopyAndTruncateStalenessLogs () {
 
 
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
-  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $node1 /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-  ./execute-in-nodes.sh "$node1" \
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  ./execute-in-nodes.sh "$clusterhead" \
         "/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
-CleanAndRebuildAntidote () {
-  echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
-  local command="\
-    cd ~/antidote; \
-    pkill beam; \
-    git checkout ${ANTIDOTE_BRANCH}; \
-    git pull; \
-    make relclean; \
-    ./rebar3 upgrade; \
-    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
-    make rel
-  "
-  doForNodesIn ${ALL_NODES} "${command}" \
-    >> ${LOGDIR}/clean-and-rebuildantidote-${GLOBAL_TIMESTART} 2>&1
-
-  echo -e "\t[CLEAN_ANTIDOTE]: Done"
-}
+#CleanAndRebuildAntidote () {
+#  echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
+#  local command="\
+#    cd ~/antidote; \
+#    pkill beam; \
+#    git checkout ${ANTIDOTE_BRANCH}; \
+#    git pull; \
+#    make relclean; \
+#    ./rebar3 upgrade; \
+#    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
+#    make rel
+#  "
+#  doForNodesIn ${ALL_NODES} "${command}" \
+#    >> ${LOGDIR}/clean-and-rebuildantidote-${GLOBAL_TIMESTART} 2>&1
+#
+#  echo -e "\t[CLEAN_ANTIDOTE]: Done"
+#}
 
 runRemoteBenchmark () {
 # THIS FUNCTION WILL MANY ROUNDS FOR ANTIDOTE:
@@ -112,7 +118,7 @@ runRemoteBenchmark () {
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
 
                         # yea, that.
-            AntidoteCopyAndTruncateStalenessLogs
+            AntidoteCopyAndTruncateStalenessLogs "${total_dcs}"
 
             echo "[STOP_ANTIDOTE]: Starting..."
             ./control-nodes.sh --stop
@@ -124,7 +130,7 @@ runRemoteBenchmark () {
 
             echo "[RunRemoteBenchmark] done."
 
-            echo "[ONLY STARTING BG PROCESSES]"
+            echo "[STARTING BG PROCESSES]"
             startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
             echo "[DONE STARTING BG PROCESSES!]"
             # Wait for the cluster to settle between runs

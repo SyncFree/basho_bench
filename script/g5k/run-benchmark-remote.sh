@@ -25,9 +25,7 @@ changeAntidotePBPort () {
 changeConcurrent () {
   local config_file="$1"
   # TODO: Change
-  local concurrent_value="${BENCH_CLIENTS_PER_INSTANCE}"
-
-  sed -i.bak "s|^{concurrent.*|{concurrent, ${concurrent_value}}.|g" "${config_file}"
+  sed -i.bak "s|^{concurrent.*|{concurrent, ${BENCH_CLIENTS_PER_INSTANCE}}.|g" "${config_file}"
 }
 
 changeAllConfigs () {
@@ -150,7 +148,9 @@ run () {
   KEYSPACE=$4
   ROUNDS=$5
   READS=$6
-  UPDATES=$7"
+  UPDATES=$7
+  ANTIDOTE_NODES=$8
+  BENCH_CLIENTS_PER_INSTANCE=$9"
 
   export ANTIDOTE_IPS="$1"
   export N_INSTANCES="$2"
