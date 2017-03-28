@@ -14,7 +14,7 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "rennes" )
+SITES=( "nancy" )
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -28,7 +28,7 @@ DOWNLOAD_BENCH=true
 CLEAN_ANTIDOTE=false
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=true
+CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
 CONNECT_CLUSTERS_AND_DCS=true
@@ -43,7 +43,7 @@ ANTIDOTE_NODES=5
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=5
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=2
+BENCH_INSTANCES=3
 
 #force time sync before running
 FORCE_NTP_SYNC=true
