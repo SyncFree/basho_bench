@@ -46,7 +46,7 @@ BENCH_NODES=5
 BENCH_INSTANCES=3
 
 #force time sync before running
-FORCE_NTP_SYNC=true
+FORCE_NTP_SYNC=false
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
