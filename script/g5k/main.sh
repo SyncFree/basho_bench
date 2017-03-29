@@ -441,30 +441,11 @@ if [[ "${CONNECT_CLUSTERS_AND_DCS}" == "true" ]]; then
     bench_offset=$((bench_offset + BENCH_NODES))
   done
   # if the cluster was not rebuilt, start background processes in antidote
-  else
-    echo "[ONLY STARTING BG PROCESSES]"
-    startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
-    echo "[DONE STARTING BG PROCESSES!]"
+#  else
+#    echo "[ONLY STARTING BG PROCESSES]"
+#    startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
+#    echo "[DONE STARTING BG PROCESSES!]"
   fi
-}
-
-startBGprocesses() {
-  local total_dcs=$1
-
-    # Get only one antidote node per DC
-  for i in $(seq 1 ${total_dcs}); do
-    local clusterhead=$(head -1 .dc_nodes${i})
-    nodes_str+="'antidote@${clusterhead}' "
-  done
-
-  nodes_str=${nodes_str%?}
-
-#  local head=$(head -1 .dc_nodes1)
-
-  local join_cluster="\
-    ./antidote/bin/start_bg_processes.erl ${nodes_str}
-  "
-  ./execute-in-nodes.sh "${nodes_str}" "${join_cluster}" "-debug"
 }
 
 runTests () {

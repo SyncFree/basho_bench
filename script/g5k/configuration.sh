@@ -14,7 +14,7 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "rennes" )
+SITES=( "nancy" )
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -64,11 +64,11 @@ BENCH_BRANCH="antidote_pb-g5k"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=58076
+GRID_JOB_ID=58080
 
 # workloads
 KEY_SPACES=( 10000000 )
 ROUND_NUMBER=( 10 )
-READ_NUMBER=( 100 )
-UPDATE_NUMBER=( 2 )
+READ_NUMBER=( 100 100 )
+UPDATE_NUMBER=( 2 100 )
 BENCH_THREAD_NUMBER=( 20 40 60 80 )

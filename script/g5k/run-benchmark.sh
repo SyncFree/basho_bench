@@ -14,7 +14,7 @@ doForNodesIn () {
   ./execute-in-nodes.sh "$(cat "$1")" "$2"
 }
 
-AntidoteCopyAndTruncateStalenessLogs () {
+CopyStalenessLogs () {
   local total_dcs=$1
 
     # Get only one antidote node per DC
@@ -55,11 +55,11 @@ AntidoteCopyAndTruncateStalenessLogs () {
 
 
 
-  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
-  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-  ./execute-in-nodes.sh "$clusterhead" \
-        "/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-  echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
+#  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
+#  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+#  ./execute-in-nodes.sh "$clusterhead" \
+#        "/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+#  echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
 startBGprocesses() {
@@ -106,9 +106,10 @@ runRemoteBenchmark () {
             ./control-nodes.sh --start
             echo "[START_ANTIDOTE]: Done"
             echo "[RunRemoteBenchmark] done."
-            echo "[STARTING BG PROCESSES]"
-            startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
-            echo "[DONE STARTING BG PROCESSES!]"
+#            no need to start bg processes as a restart does it itself
+#            echo "[STARTING BG PROCESSES]"
+#            startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
+#            echo "[DONE STARTING BG PROCESSES!]"
             # Wait for the cluster to settle between runs
             sleep 30
 
@@ -120,7 +121,7 @@ runRemoteBenchmark () {
             ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
                         # yea, that.
-            AntidoteCopyAndTruncateStalenessLogs "${total_dcs}" >> "${LOGDIR}"/truncate-staleness-logs-${GLOBAL_TIMESTART} 2>&1
+            CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
 
         done
         re=$((re+1))
