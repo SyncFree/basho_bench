@@ -20,9 +20,9 @@ SITES=( "rennes" )
 DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=true
+DOWNLOAD_ANTIDOTE=false
 
-DOWNLOAD_BENCH=true
+DOWNLOAD_BENCH=false
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
@@ -31,7 +31,7 @@ CLEAN_ANTIDOTE=false
 CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
-CONNECT_CLUSTERS_AND_DCS=true
+CONNECT_CLUSTERS_AND_DCS=false
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="physics-g5k-stable-multidc"
 
-ANTIDOTE_PROTOCOL="physics"
+ANTIDOTE_PROTOCOL="clocksi"
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
