@@ -8,7 +8,7 @@ PBKFILE=~/.ssh/id_rsa.pub
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # JUST RUN, NO CONFIG
-JUST_RUN=true
+JUST_RUN=false
 
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
@@ -20,9 +20,9 @@ SITES=( "rennes" )
 DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=true
+DOWNLOAD_ANTIDOTE=false
 
-DOWNLOAD_BENCH=true
+DOWNLOAD_BENCH=false
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
@@ -31,7 +31,7 @@ CLEAN_ANTIDOTE=false
 CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
-CONNECT_CLUSTERS_AND_DCS=true
+CONNECT_CLUSTERS_AND_DCS=false
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
