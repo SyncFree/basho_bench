@@ -8,7 +8,7 @@ PBKFILE=~/.ssh/id_rsa.pub
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # JUST RUN, NO CONFIG
-JUST_RUN=false
+JUST_RUN=true
 
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
@@ -67,8 +67,8 @@ BENCH_FILE="antidote_pb.config"
 GRID_JOB_ID=58076
 
 # workloads
-KEY_SPACES=( 10000000 1000000 100000 )
+KEY_SPACES=( 10000000 )
 ROUND_NUMBER=( 10 )
-READ_NUMBER=( 100 100 100)
-UPDATE_NUMBER=( 2 10 100 )
+READ_NUMBER=( 100 )
+UPDATE_NUMBER=( 2 )
 BENCH_THREAD_NUMBER=( 20 40 60 80 )

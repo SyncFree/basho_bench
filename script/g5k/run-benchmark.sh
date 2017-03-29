@@ -98,14 +98,7 @@ runRemoteBenchmark () {
         export READS=${reads}
         for clients_per_bench_instance in "${BENCH_THREAD_NUMBER[@]}"; do
             export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
-            #NOW RUN A BENCH
-            local benchfilename=$(basename $BENCH_FILE)
-            echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
-            echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
-            ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-            "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
-                        # yea, that.
-            AntidoteCopyAndTruncateStalenessLogs "${total_dcs}" >> "${LOGDIR}"/truncate-staleness-logs-${GLOBAL_TIMESTART} 2>&1
+
             echo "[STOP_ANTIDOTE]: Starting..."
             ./control-nodes.sh --stop
             echo "[STOP_ANTIDOTE]: Done"
@@ -117,7 +110,18 @@ runRemoteBenchmark () {
             startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
             echo "[DONE STARTING BG PROCESSES!]"
             # Wait for the cluster to settle between runs
-#            sleep 15
+            sleep 15
+
+
+            #NOW RUN A BENCH
+            local benchfilename=$(basename $BENCH_FILE)
+            echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
+            echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
+            ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
+            "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
+                        # yea, that.
+            AntidoteCopyAndTruncateStalenessLogs "${total_dcs}" >> "${LOGDIR}"/truncate-staleness-logs-${GLOBAL_TIMESTART} 2>&1
+
         done
         re=$((re+1))
       done
