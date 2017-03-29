@@ -5,8 +5,8 @@ run () {
   local command="$1"
   ip=${ip%?}
 
-  if [[ "${command}" == "start" ]]; then
-    INSTANCE_NAME=antidote PB_IP=${ip} IP=${ip} ./antidote/_build/default/rel/antidote/bin/env foreground &
+  if [[ "${command}" == "foreground" ]]; then
+    INSTANCE_NAME=antidote PB_IP=${ip} IP=${ip} ./antidote/_build/default/rel/antidote/bin/env foreground
   else if [[ "${command}" == "stop" ]]; then
      ./antidote/_build/default/rel/antidote/bin/antidote stop
   else
