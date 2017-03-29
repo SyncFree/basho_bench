@@ -110,7 +110,7 @@ runRemoteBenchmark () {
             startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
             echo "[DONE STARTING BG PROCESSES!]"
             # Wait for the cluster to settle between runs
-            sleep 15
+            sleep 30
 
 
             #NOW RUN A BENCH
