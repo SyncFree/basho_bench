@@ -56,7 +56,7 @@ for keyspace in "${KEY_SPACES[@]}"; do
         export UPDATES=${UPDATE_NUMBER[re]}
         export READS=${reads}
         for thread_number in "${BENCH_THREAD_NUMBER[@]}"; do
-        export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
+        export BENCH_CLIENTS_PER_INSTANCE=${thread_number}
 
 
 
