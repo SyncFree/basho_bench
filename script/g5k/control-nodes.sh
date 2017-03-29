@@ -11,7 +11,7 @@ startNodes () {
     scp -i ${EXPERIMENT_PRIVATE_KEY} ./control-nodes-remote.sh root@${node}:/root/
   done
 
-  ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "./control-nodes-remote.sh foreground" "-debug"
+  ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "./control-nodes-remote.sh start" "-debug"
 }
 
 stopNodes () {
