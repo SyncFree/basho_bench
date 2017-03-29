@@ -17,12 +17,12 @@ RESERVE_SITES=false
 SITES=( "nancy" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=false
+DOWNLOAD_ANTIDOTE=true
 
-DOWNLOAD_BENCH=false
+DOWNLOAD_BENCH=true
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
@@ -46,7 +46,7 @@ BENCH_NODES=5
 BENCH_INSTANCES=3
 
 #force time sync before running
-FORCE_NTP_SYNC=false
+FORCE_NTP_SYNC=true
 
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
@@ -67,8 +67,8 @@ BENCH_FILE="antidote_pb.config"
 GRID_JOB_ID=58082
 
 # workloads
-KEY_SPACES=( 10000000 )
-ROUND_NUMBER=( 10 )
+KEY_SPACES=( 10000000 1000000 100000 )
+ROUND_NUMBER=( 10 10 )
 READ_NUMBER=( 100 100 100 )
 UPDATE_NUMBER=( 2 10 100 )
-BENCH_THREAD_NUMBER=( 10 20 30 40 )
+BENCH_THREAD_NUMBER=( 10 20 30 40 50 )
