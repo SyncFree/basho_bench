@@ -78,6 +78,7 @@ startBGprocesses() {
 }
 
 runRemoteBenchmark () {
+  firstround=1
 # THIS FUNCTION WILL MANY ROUNDS FOR ANTIDOTE:
 # ONE FOR EACH KEYSPACE, NUMBER OF ROUNDS, AND READ/UPDATE RATIO.
 # In between rounds, it will copy antidote logs to a folder in data, and truncate them.
@@ -98,14 +99,18 @@ runRemoteBenchmark () {
         export READS=${reads}
         for clients_per_bench_instance in "${BENCH_THREAD_NUMBER[@]}"; do
             export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
+            if [[ "${firstround}" == 1 ]]; then
+                sleep 30
+                firstround=0
+            else
+                echo "[STOP_ANTIDOTE]: Starting..."
+                ./control-nodes.sh --stop
+                echo "[STOP_ANTIDOTE]: Done"
+                echo "[START_ANTIDOTE]: Starting..."
+                ./control-nodes.sh --start
+                echo "[START_ANTIDOTE]: Done"
+            fi
 
-            echo "[STOP_ANTIDOTE]: Starting..."
-            ./control-nodes.sh --stop
-            echo "[STOP_ANTIDOTE]: Done"
-            echo "[START_ANTIDOTE]: Starting..."
-            ./control-nodes.sh --start
-            echo "[START_ANTIDOTE]: Done"
-            echo "[RunRemoteBenchmark] done."
 #            no need to start bg processes as a restart does it itself
 #            echo "[STARTING BG PROCESSES]"
 #            startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
@@ -122,6 +127,8 @@ runRemoteBenchmark () {
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
                         # yea, that.
             CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
+            echo "[RunRemoteBenchmark] done."
+
 
         done
         re=$((re+1))
