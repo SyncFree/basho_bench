@@ -9,15 +9,12 @@ if [[ $# -ne 1 ]]; then
 fi
 
 source configuration.sh
-source ~/basho_bench/script/g5k/main.sh
 
 doForNodesIn () {
   ./execute-in-nodes.sh "$(cat "$1")" "$2"
 }
 
 AntidoteCopyAndTruncateStalenessLogs () {
-
-
   local total_dcs=$1
 
     # Get only one antidote node per DC
@@ -65,23 +62,20 @@ AntidoteCopyAndTruncateStalenessLogs () {
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
-#CleanAndRebuildAntidote () {
-#  echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
-#  local command="\
-#    cd ~/antidote; \
-#    pkill beam; \
-#    git checkout ${ANTIDOTE_BRANCH}; \
-#    git pull; \
-#    make relclean; \
-#    ./rebar3 upgrade; \
-#    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
-#    make rel
-#  "
-#  doForNodesIn ${ALL_NODES} "${command}" \
-#    >> ${LOGDIR}/clean-and-rebuildantidote-${GLOBAL_TIMESTART} 2>&1
-#
-#  echo -e "\t[CLEAN_ANTIDOTE]: Done"
-#}
+startBGprocesses() {
+  local total_dcs=$1
+    # Get only one antidote node per DC
+  for i in $(seq 1 ${total_dcs}); do
+    local clusterhead=$(head -1 .dc_nodes${i})
+    nodes_str+="'antidote@${clusterhead}' "
+  done
+  nodes_str=${nodes_str%?}
+#  local head=$(head -1 .dc_nodes1)
+  local join_cluster="\
+    ./antidote/bin/start_bg_processes.erl ${nodes_str}
+  "
+  ./execute-in-nodes.sh "${nodes_str}" "${join_cluster}" "-debug"
+}
 
 runRemoteBenchmark () {
 # THIS FUNCTION WILL MANY ROUNDS FOR ANTIDOTE:
@@ -94,7 +88,6 @@ runRemoteBenchmark () {
   for node in "${bench_nodes[@]}"; do
     scp -i ${EXPERIMENT_PRIVATE_KEY} ./run-benchmark-remote.sh root@${node}:/root/
   done
-
   for keyspace in "${KEY_SPACES[@]}"; do
     export KEYSPACE=${keyspace}
     for rounds in "${ROUND_NUMBER[@]}"; do
@@ -105,31 +98,21 @@ runRemoteBenchmark () {
         export READS=${reads}
         for clients_per_bench_instance in "${BENCH_THREAD_NUMBER[@]}"; do
             export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
-
-
             #NOW RUN A BENCH
-
             local benchfilename=$(basename $BENCH_FILE)
             echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
-
             echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
-
             ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
-
                         # yea, that.
-            AntidoteCopyAndTruncateStalenessLogs "${total_dcs}"
-
+            AntidoteCopyAndTruncateStalenessLogs "${total_dcs}" >> "${LOGDIR}"/truncate-staleness-logs-${GLOBAL_TIMESTART} 2>&1
             echo "[STOP_ANTIDOTE]: Starting..."
             ./control-nodes.sh --stop
             echo "[STOP_ANTIDOTE]: Done"
-
             echo "[START_ANTIDOTE]: Starting..."
             ./control-nodes.sh --start
             echo "[START_ANTIDOTE]: Done"
-
             echo "[RunRemoteBenchmark] done."
-
             echo "[STARTING BG PROCESSES]"
             startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
             echo "[DONE STARTING BG PROCESSES!]"

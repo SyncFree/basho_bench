@@ -248,11 +248,7 @@ provisionAntidote () {
 
   local command="\
     rm -rf antidote && \
-    git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote && \
-    cd ~/antidote && \
-    sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
-    make rel
-  "
+    git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote"
   # We need antidote in all nodes even if we don't use it
   # basho_bench will need the sources to start
   doForNodesIn ${ALL_NODES} "${command}" \
