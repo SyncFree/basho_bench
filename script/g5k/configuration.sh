@@ -8,7 +8,7 @@ PBKFILE=~/.ssh/id_rsa.pub
 K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 
 # JUST RUN, NO CONFIG
-JUST_RUN=true
+JUST_RUN=false
 
 # Reserve sites and nodes through oargridsub
 RESERVE_SITES=false
@@ -31,7 +31,7 @@ CLEAN_ANTIDOTE=false
 CLEAN_BENCH=false
 
 # Connect servers in clusters and DCs
-CONNECT_CLUSTERS_AND_DCS=false
+CONNECT_CLUSTERS_AND_DCS=true
 
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
@@ -67,7 +67,7 @@ BENCH_FILE="antidote_pb.config"
 GRID_JOB_ID=58082
 
 # workloads
-KEY_SPACES=( 10000000 1000000 )
+KEY_SPACES=( 10000000 )
 ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 100 100 )
 UPDATE_NUMBER=( 2 10 100 )
