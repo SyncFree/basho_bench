@@ -20,7 +20,7 @@ setRingSize () {
   elif [[ ${nodes_per_dc} -lt 65 ]]; then
     echo 1024
   else
-    echo 2048
+    echo 1024
   fi
 }
 
