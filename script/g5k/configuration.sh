@@ -39,9 +39,9 @@ CONNECT_CLUSTERS_AND_DCS=true
 DCS_PER_SITE=3
 
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=5
+ANTIDOTE_NODES=15
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=5
+BENCH_NODES=6
 # Number of instances of basho_bench to run per node
 BENCH_INSTANCES=3
 
