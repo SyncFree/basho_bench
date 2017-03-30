@@ -16,61 +16,7 @@ if [[ -z ${CONFIG} ]]; then
 fi
 source $CONFIG
 
-for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
-    export ANTIDOTE_PROTOCOL=${protocol}
 
-
-
-    export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
-    sites=( "${SITES[@]}" )
-
-
-    ANTIDOTE_IP_FILE="$1"
-
-
-
-    if [[ "${RESERVE_SITES}" == "true" ]]; then
-      echo "[RESERVING_SITES]: Starting..."
-      export GRID_JOB_ID=$(reserveSites)
-
-      if [[ -z "${GRID_JOB_ID}" ]]; then
-        echo "Uh-oh! Something went wrong while reserving. Maybe try again?"
-        exit 1
-      fi
-
-      sed -i.bak '/^GRID_JOB_ID.*/d' configuration.sh
-      echo "GRID_JOB_ID=${GRID_JOB_ID}" >> configuration.sh
-      echo "[RESERVING_SITES]: Done. Successfully reserved with id ${GRID_JOB_ID}"
-    else
-      echo "[RESERVING_SITES]: Skipping"
-    fi
-
-    # Delete the reservation if script is killed
-    trap 'cancelJob ${GRID_JOB_ID}' SIGINT SIGTERM
-
-    SCRATCHFOLDER="/home/$(whoami)/grid-benchmark-${GRID_JOB_ID}"
-    export LOGDIR=${SCRATCHFOLDER}/logs/${GLOBAL_TIMESTART}
-    RESULTSDIR=${SCRATCHFOLDER}/results/bench-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
-    RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness/staleness-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
-
-    export EXPERIMENT_PRIVATE_KEY=${SCRATCHFOLDER}/key
-    EXPERIMENT_PUBLIC_KEY=${SCRATCHFOLDER}/exp_key.pub
-
-    export ALL_NODES=${SCRATCHFOLDER}/.all_nodes
-    export BENCH_NODEF=${SCRATCHFOLDER}/.bench_nodes
-    export ANT_NODES=${SCRATCHFOLDER}/.antidote_nodes
-
-    export ALL_IPS=${SCRATCHFOLDER}/.all_ips
-    BENCH_IPS=${SCRATCHFOLDER}/.bench_ips
-    export ANT_IPS=${SCRATCHFOLDER}/.antidote_ips
-
-    export ALL_COOKIES=${SCRATCHFOLDER}/.all_cookies
-    ANT_COOKIES=${SCRATCHFOLDER}/.antidote_cookies
-    BENCH_COOKIES=${SCRATCHFOLDER}/.bench_cookies
-
-    run
-
-done
 
 
 
@@ -704,3 +650,59 @@ runRemoteBenchmark () {
     done
   done
 }
+
+for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
+    export ANTIDOTE_PROTOCOL=${protocol}
+
+
+
+    export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
+    sites=( "${SITES[@]}" )
+
+
+    ANTIDOTE_IP_FILE="$1"
+
+
+
+    if [[ "${RESERVE_SITES}" == "true" ]]; then
+      echo "[RESERVING_SITES]: Starting..."
+      export GRID_JOB_ID=$(reserveSites)
+
+      if [[ -z "${GRID_JOB_ID}" ]]; then
+        echo "Uh-oh! Something went wrong while reserving. Maybe try again?"
+        exit 1
+      fi
+
+      sed -i.bak '/^GRID_JOB_ID.*/d' configuration.sh
+      echo "GRID_JOB_ID=${GRID_JOB_ID}" >> configuration.sh
+      echo "[RESERVING_SITES]: Done. Successfully reserved with id ${GRID_JOB_ID}"
+    else
+      echo "[RESERVING_SITES]: Skipping"
+    fi
+
+    # Delete the reservation if script is killed
+    trap 'cancelJob ${GRID_JOB_ID}' SIGINT SIGTERM
+
+    SCRATCHFOLDER="/home/$(whoami)/grid-benchmark-${GRID_JOB_ID}"
+    export LOGDIR=${SCRATCHFOLDER}/logs/${GLOBAL_TIMESTART}
+    RESULTSDIR=${SCRATCHFOLDER}/results/bench-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
+    RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness/staleness-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
+
+    export EXPERIMENT_PRIVATE_KEY=${SCRATCHFOLDER}/key
+    EXPERIMENT_PUBLIC_KEY=${SCRATCHFOLDER}/exp_key.pub
+
+    export ALL_NODES=${SCRATCHFOLDER}/.all_nodes
+    export BENCH_NODEF=${SCRATCHFOLDER}/.bench_nodes
+    export ANT_NODES=${SCRATCHFOLDER}/.antidote_nodes
+
+    export ALL_IPS=${SCRATCHFOLDER}/.all_ips
+    BENCH_IPS=${SCRATCHFOLDER}/.bench_ips
+    export ANT_IPS=${SCRATCHFOLDER}/.antidote_ips
+
+    export ALL_COOKIES=${SCRATCHFOLDER}/.all_cookies
+    ANT_COOKIES=${SCRATCHFOLDER}/.antidote_cookies
+    BENCH_COOKIES=${SCRATCHFOLDER}/.bench_cookies
+
+    run
+
+done
