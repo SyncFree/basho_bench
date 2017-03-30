@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="physics-g5k-stable-multidc"
 
-ANTIDOTE_PROTOCOL="clocksi"
+ANTIDOTE_PROTOCOLS=( "ec" "clocksi" "physics" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -64,7 +64,7 @@ BENCH_BRANCH="antidote_pb-g5k"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=58083
+GRID_JOB_ID=58087
 
 # workloads
 KEY_SPACES=( 10000000 1000000 100000 )
