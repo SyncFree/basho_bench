@@ -9,6 +9,8 @@ if [[ -z ${SELF} ]]; then
   SELF=$0
 fi
 
+cd $(dirname "$SELF")
+
 if [[ -z ${CONFIG} ]]; then
   CONFIG=configuration.sh
 fi
@@ -17,7 +19,7 @@ source $CONFIG
 for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
     export ANTIDOTE_PROTOCOL=${protocol}
 
-    cd $(dirname "$SELF")
+
 
     export GLOBAL_TIMESTART=$(date +"%Y-%m-%d-%s")
     sites=( "${SITES[@]}" )
