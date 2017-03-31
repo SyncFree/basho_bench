@@ -366,7 +366,7 @@ changeRingSize () {
 prepareClusters () {
 
   echo "[STOP_ANTIDOTE]: Starting..."
-  ./control-nodes.sh --stop
+  ./control-nodes.sh --stop >> ${LOGDIR}/stop-antidote-${GLOBAL_TIMESTART} 2>&1
   echo "[STOP_ANTIDOTE]: Done"
 
   echo "[START_ANTIDOTE]: Starting..."
