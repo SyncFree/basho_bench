@@ -620,20 +620,19 @@ runRemoteBenchmark () {
         for clients_per_bench_instance in "${BENCH_THREAD_NUMBER[@]}"; do
             export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
             if [[ "${firstround}" == 1 ]]; then
-                sleep 30
                 firstround=0
             else
                   cleanAntidote
                   local total_dcs=$(getTotalDCCount)
                   prepareClusters ${total_dcs} "${antidote_ip_file}"
-            fi
 
+            fi
+            # Wait for the cluster to settle between runs
+            sleep 30
 #            no need to start bg processes as a restart does it itself
 #            echo "[STARTING BG PROCESSES]"
 #            startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
 #            echo "[DONE STARTING BG PROCESSES!]"
-            # Wait for the cluster to settle between runs
-            sleep 60
 
 
             #NOW RUN A BENCH
