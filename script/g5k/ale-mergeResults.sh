@@ -39,7 +39,7 @@ cd $BenchResultsDirectory
 ########################################################
     # Untar files into a dir with the tarfile name
 #########################################################
-for File in ./*.tar ; do
+for File in $BenchResultsDirectory/*.tar ; do
         echo "---### MASTER: Untaring file ${File} into directory ${FileWithoutExtension}"
         FileWithoutExtension="${File%.*}"
         mkdir $FileWithoutExtension

@@ -17,12 +17,12 @@ RESERVE_SITES=false
 SITES=( "nancy" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=false
+DOWNLOAD_ANTIDOTE=true
 
-DOWNLOAD_BENCH=false
+DOWNLOAD_BENCH=true
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="ec"
 
-ANTIDOTE_PROTOCOLS=( "clocksi" "physics" "ec" )
+ANTIDOTE_PROTOCOLS=( "ec" "clocksi" "physics" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -64,7 +64,7 @@ BENCH_BRANCH="antidote_pb-g5k"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=58088
+GRID_JOB_ID=58090
 
 # workloads
 #KEY_SPACES=( 10000000 1000000 100000 )
@@ -74,7 +74,7 @@ GRID_JOB_ID=58088
 #BENCH_THREAD_NUMBER=( 15 30 45 60 )
 
 # workloads
-KEY_SPACES=( 10000000 )
+KEY_SPACES=( 10000000 1000000 )
 ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 )
 UPDATE_NUMBER=( 10 )
