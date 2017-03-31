@@ -392,8 +392,6 @@ if [[ "${CONNECT_CLUSTERS_AND_DCS}" == "true" ]]; then
     head -$((ANTIDOTE_NODES + ant_offset)) "${ANT_IPS}" > "${antidote_ip_file}"
     head -$((BENCH_NODES + bench_offset)) "${BENCH_NODEF}" > .dc_bench_nodes
 
-    transferIPs .dc_bench_nodes "${antidote_ip_file}"
-
     ant_offset=$((ant_offset + ANTIDOTE_NODES))
     bench_offset=$((bench_offset + BENCH_NODES))
   done
@@ -519,6 +517,7 @@ run () {
           deployImages
           provisionNodes
           local total_dcs=$(getTotalDCCount)
+          transferIPs .dc_bench_nodes "${antidote_ip_file}"
           prepareClusters ${total_dcs} "${antidote_ip_file}"
           syncClocks
   fi
