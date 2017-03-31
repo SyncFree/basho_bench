@@ -349,8 +349,9 @@ transferIPs () {
   local antidote_ips_file_name=$(basename "${antidote_ips_file}")
 
   local bench_dc_nodes=( $(< "${bench_node_file}") )
+  echo "copying dc files to nodes!!!"
   for node in "${bench_dc_nodes[@]}"; do
-    scp -i ${EXPERIMENT_PRIVATE_KEY} ".dc_nodes*" root@${node}:/root/
+    scp -i ${EXPERIMENT_PRIVATE_KEY} "~/basho_bench/script/g5k/.dc_nodes*" root@${node}:/root/
   done
 }
 
