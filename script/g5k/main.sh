@@ -352,6 +352,7 @@ transferIPs () {
   echo "[DISTRIBUTE NODES FILES ] copying dc files to nodes!!!"
   for node in "${bench_dc_nodes[@]}"; do
     command="scp -i ${EXPERIMENT_PRIVATE_KEY} ~/basho_bench/script/g5k/.dc_nodes* root@${node}:/root/"
+    echo "running: $command"
     $command
   done
 }
