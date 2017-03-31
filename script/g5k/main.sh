@@ -365,9 +365,9 @@ changeRingSize () {
 
 prepareClusters () {
 
-  echo "[STOP_ANTIDOTE]: Starting..."
-  ./control-nodes.sh --stop
-  echo "[STOP_ANTIDOTE]: Done"
+#  echo "[STOP_ANTIDOTE]: Starting..."
+#  ./control-nodes.sh --stop
+#  echo "[STOP_ANTIDOTE]: Done"
 
   echo "[START_ANTIDOTE]: Starting..."
   ./control-nodes.sh --start
@@ -529,7 +529,7 @@ run () {
 }
 
 
-CopyStalenessLogs () {
+KillAntidoteAndCopyStalenessLogs () {
   local total_dcs=$1
 
     # Get only one antidote node per DC
@@ -543,12 +543,14 @@ CopyStalenessLogs () {
 
 #  local head=$(head -1 .dc_nodes1)
 
-  echo "[SYNCING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
-  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+  echo "[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
+  echo "[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   ./execute-in-nodes.sh "$clusterhead" \
         "chmod +x /root/antidote/bin/sync_staleness_logs.erl && \
-        /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
-  echo -e "\t[SYNCING ANTIDOTE STALENESS LOGS]: Done"
+        /root/antidote/bin/sync_staleness_logs.erl ${nodes_str} && \
+        chmod +x /root/antidote/bin/close_staleness_logs.erl && \
+        /root/antidote/bin/close_staleness_logs.erl ${nodes_str}"
+  echo -e "\t[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: Done"
 
 
   dirStale="_build/default/rel/antidote/benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
@@ -556,11 +558,12 @@ CopyStalenessLogs () {
 
   command1="\
     cd ~/antidote && \
+    pkill beam && \
     mkdir -p $dirStale && \
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
     cp _build/default/rel/antidote/log/* $dirLog"
-
+  echo "[KILLING ANTIDOTE!]: ... "
   echo "[COPYING STALENESS LOGS]: moving logs to directory: $dirStale at all antidote nodes... "
   echo "[COPYING LOGS]: moving logs to directory: $dirLog at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
@@ -636,11 +639,9 @@ runRemoteBenchmark () {
             echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
             ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
-            echo "[STOP_ANTIDOTE]: Starting..."
-            ./control-nodes.sh --stop
-            echo "[STOP_ANTIDOTE]: Done"
+
                         # yea, that.
-            CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
+            KillAntidoteAndCopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
             echo "[RunRemoteBenchmark] done."
         done
         re=$((re+1))
