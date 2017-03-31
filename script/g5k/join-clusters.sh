@@ -63,7 +63,7 @@ joinNodes () {
         line_end=`expr $offset + $dc_size - 1`
         sed -n "${offset}, ${line_end}p" "${ANT_IPS}" > .dc_nodes${i}
 
-      joinLocalDC .dc_nodes${i} >> "${LOGDIR}"/join-local-dc-${GLOBAL_TIMESTART} 2>&1
+      joinLocalDC .dc_nodes${i} >> "${LOGDIR}"/join-local-dc${GLOBAL_TIMESTART} 2>&1
       offset=$((offset + dc_size))
     done
 
