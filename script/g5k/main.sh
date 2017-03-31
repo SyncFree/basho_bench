@@ -350,7 +350,7 @@ transferIPs () {
 
   local bench_dc_nodes=( $(< "${bench_node_file}") )
   for node in "${bench_dc_nodes[@]}"; do
-    scp -i ${EXPERIMENT_PRIVATE_KEY} ".*" root@${node}:/root/${antidote_ips_file_name}
+    scp -i ${EXPERIMENT_PRIVATE_KEY} ".dc_nodes*" root@${node}:/root/
   done
 }
 
