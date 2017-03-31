@@ -17,12 +17,12 @@ RESERVE_SITES=false
 SITES=( "grenoble" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=true
+DOWNLOAD_ANTIDOTE=false
 
-DOWNLOAD_BENCH=true
+DOWNLOAD_BENCH=false
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false
