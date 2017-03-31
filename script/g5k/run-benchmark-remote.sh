@@ -94,7 +94,7 @@ changeBashoBenchConfig () {
   local dc_to_bench=$(($instance % $TOTAL_DCS + 1))
   changeAntidoteIPs "${config_path}" "${dc_to_bench}"
 #  changeAntidoteCodePath "${config_path}"
-#  changeAntidotePBPort "${config_path}"
+  changeAntidotePBPort "${config_path}"
   changeConcurrent "${config_path}"
   changeReadWriteRatio "${config_path}"
   changeKeyGen "${config_path}"
