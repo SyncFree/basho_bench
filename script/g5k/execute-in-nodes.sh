@@ -41,8 +41,8 @@ doForNodes () {
     done
 
     if [[ "${fail}" != "0" ]]; then
-      echo "[THESE PIDS FAILED] ${fail}"
-      exit 1
+      echo "[ERROR THESE PIDS FAILED, CONTINUING ] ${fail}"
+#      exit 1
     fi
   fi
 }

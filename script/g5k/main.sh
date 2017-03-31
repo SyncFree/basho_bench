@@ -564,7 +564,7 @@ KillAntidoteAndCopyStalenessLogs () {
     mkdir -p $dirStale && \
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
-    cp _build/default/rel/antidote/log/* $dirLog"
+    cp _build/default/rel/antidote/log/*.log $dirLog"
   echo "[KILLING ANTIDOTE!]: ... "
   echo "[COPYING STALENESS LOGS]: moving logs to directory: $dirStale at all antidote nodes... "
   echo "[COPYING LOGS]: moving logs to directory: $dirLog at all antidote nodes... "
