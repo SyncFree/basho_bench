@@ -257,18 +257,6 @@ cleanAntidote () {
   echo -e "\t[CLEAN_ANTIDOTE]: Done"
 }
 
-stopAntidote () {
-  echo -e "\t[STOP ANTIDOTE]: Starting..."
-  local command="\
-    cd antidote; \
-    pkill beam
-  "
-  doForNodesIn ${ALL_NODES} "${command}" \
-    >> ${LOGDIR}/clean-antidote-${GLOBAL_TIMESTART} 2>&1
-
-  echo -e "\t[CLEAN_ANTIDOTE]: Done"
-}
-
 # Provision all the nodes with Antidote and Basho Bench
 provisionNodes () {
 if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
@@ -652,7 +640,9 @@ runRemoteBenchmark () {
             echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
             ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
-            stopAntidote
+            echo "[STOP_ANTIDOTE]: Starting..."
+            ./control-nodes.sh --stop
+            echo "[STOP_ANTIDOTE]: Done"
                         # yea, that.
             CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
             echo "[RunRemoteBenchmark] done."
