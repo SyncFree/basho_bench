@@ -15,18 +15,12 @@ startNodes () {
 }
 
 stopNodes () {
-
-  local antidote_nodes=( $(cat ${ANT_NODES}) )
-  for node in "${antidote_nodes[@]}"; do
-    scp -i ${EXPERIMENT_PRIVATE_KEY} ./control-nodes-remote.sh root@${node}:/root/
-  done
-
   local command="\
     [[ -f control-nodes-remote.sh ]] && ./control-nodes-remote.sh stop; \
     pkill beam; \
+    rm -rf antidote/_build/default/rel/antidote/data/*.LOG; \
+    rm -rf antidote/_build/default/rel/antidote/log/*; \
   "
-  echo "running $command at $(cat ${ANT_NODES})"
-
   ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "${command}" "-debug"
 }
 
