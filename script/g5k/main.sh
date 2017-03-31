@@ -519,8 +519,8 @@ run () {
           deployImages
           provisionNodes
           local total_dcs=$(getTotalDCCount)
-          transferIPs .dc_bench_nodes "${antidote_ip_file}"
           prepareClusters ${total_dcs} "${antidote_ip_file}"
+          transferIPs .dc_bench_nodes "${antidote_ip_file}"
           syncClocks
   fi
   runTests
