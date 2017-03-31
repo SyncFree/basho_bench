@@ -63,9 +63,20 @@ joinNodes () {
         line_end=`expr $offset + $dc_size - 1`
         sed -n "${offset}, ${line_end}p" "${ANT_IPS}" > .dc_nodes${i}
 
-      joinLocalDC .dc_nodes${i} >> "${LOGDIR}"/join-local-dc${GLOBAL_TIMESTART} 2>&1
+      joinLocalDC .dc_nodes${i} >> "${LOGDIR}"/join-local-dc-${i}-${GLOBAL_TIMESTART} 2>&1 &
+        pids+=($!)
       offset=$((offset + dc_size))
     done
+    echo "[GOT CLUSTERING : ] ${pids[@]}"
+    local fail=0
+    for pid in "${pids[@]}"; do
+      wait ${pid} || fail=$((fail + 1))
+    done
+
+    if [[ "${fail}" != "0" ]]; then
+      echo "[ERROR THESE PIDS FAILED, CONTINUING ] ${fail}"
+#      exit 1
+    fi
 
     echo -e "\t[BUILDING_LOCAL_CLUSTER]: Done"
   fi
