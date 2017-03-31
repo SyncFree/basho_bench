@@ -58,24 +58,18 @@ ANTIDOTE_PROTOCOLS=( "clocksi" "physics" "ec" )
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
 # git branch of Basho Bench to use
-BENCH_BRANCH="antidote_pb-g5k"
+BENCH_BRANCH="ec1"
 
 # Name of the benchmark configuration file to use
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=58088
+GRID_JOB_ID=57997
 
 # workloads
-#KEY_SPACES=( 10000000 1000000 100000 )
-#ROUND_NUMBER=( 10 )
-#READ_NUMBER=( 100 100 100 )
-#UPDATE_NUMBER=( 2 10 100 )
-#BENCH_THREAD_NUMBER=( 15 30 45 60 )
-
-# workloads
-KEY_SPACES=( 10000000 )
+KEY_SPACES=( 10000000 1000000 100000 )
 ROUND_NUMBER=( 10 )
-READ_NUMBER=( 100 )
-UPDATE_NUMBER=( 10 )
-BENCH_THREAD_NUMBER=( 45 60 )
+READ_NUMBER=( 100 100 100 )
+UPDATE_NUMBER=( 2 10 100 )
+BENCH_THREAD_NUMBER=( 15 30 45 60 )
+
