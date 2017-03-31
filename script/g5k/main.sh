@@ -276,7 +276,6 @@ if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
                 fi
                 echo "[DOWNLOAD_ANTIDOTE]: Skipping, just building"
   fi
-
             echo "[BUILD_ANTIDOTE]: Done"
 
 if [[ "${DOWNLOAD_BENCH}" == "true" ]]; then
@@ -292,9 +291,7 @@ if [[ "${DOWNLOAD_BENCH}" == "true" ]]; then
                   echo "[BUILD_BENCH]: Done"
                 fi
               fi
-
 }
-
 
 # Creates unique erlang cookies for all basho_bench and antidote nodes.
 # All nodes of the same type inside the same datacenter hold the same cookie.
@@ -353,7 +350,7 @@ transferIPs () {
 
   local bench_dc_nodes=( $(< "${bench_node_file}") )
   for node in "${bench_dc_nodes[@]}"; do
-    scp -i ${EXPERIMENT_PRIVATE_KEY} "${antidote_ips_file}" root@${node}:/root/${antidote_ips_file_name}
+    scp -i ${EXPERIMENT_PRIVATE_KEY} ".*" root@${node}:/root/${antidote_ips_file_name}
   done
 }
 
@@ -636,10 +633,9 @@ runRemoteBenchmark () {
 
             #NOW RUN A BENCH
             local benchfilename=$(basename $BENCH_FILE)
-            echo "[RunRemoteBenchmark] Running bench with: KEY_SPACES=$KEYSPACE ROUND_NUMBER=$ROUNDS READ_NUMBER=$READS UPDATES=$UPDATES"
-            echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
+            echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
             ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-            "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE}"
+            "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
             echo "[STOP_ANTIDOTE]: Starting..."
             ./control-nodes.sh --stop
             echo "[STOP_ANTIDOTE]: Done"

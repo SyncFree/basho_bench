@@ -35,7 +35,7 @@ changeAllConfigs () {
     echo "[changeAllConfigs] config_path = ${CONFIG_FILE}"
     local bench_folder="basho_bench${i}"
     local config_path="${bench_folder}/examples/${CONFIG_FILE}"
-   changeBashoBenchConfig "${config_path}"
+   changeBashoBenchConfig "${config_path}" "${i}"
 
     if [[ -d ${bench_folder}/tests ]]; then
       rm -r ${bench_folder}/tests/
@@ -58,7 +58,9 @@ changeReadWriteRatio () {
 
 changeAntidoteIPs () {
   local config_path="$1"
-  local IPS=( $(< ${ANTIDOTE_IPS}) )
+  local dc_to_bench="$2"
+  local antidote_dc_nodes=".dc_nodes${dc_to_bench}"
+  local IPS=( $(< ${antidote_dc_nodes}) )
 
   local ips_string
   for ip in "${IPS[@]}"; do
@@ -88,7 +90,9 @@ changeOPs () {
 
 changeBashoBenchConfig () {
   local config_path="$1"
-  changeAntidoteIPs "${config_path}"
+  local instance=$2
+  local dc_to_bench=$(($instance % $TOTAL_DCS + 1))
+  changeAntidoteIPs "${config_path}" "${dc_to_bench}"
 #  changeAntidoteCodePath "${config_path}"
 #  changeAntidotePBPort "${config_path}"
   changeConcurrent "${config_path}"
@@ -151,6 +155,7 @@ run () {
   UPDATES=$7
   ANTIDOTE_NODES=$8
   BENCH_CLIENTS_PER_INSTANCE=$9"
+  TOTAL_DCS=${10}
 
   export ANTIDOTE_IPS="$1"
   export N_INSTANCES="$2"
@@ -161,6 +166,7 @@ run () {
   export UPDATES="$7"
   export ANTIDOTE_NODES="$8"
   export BENCH_CLIENTS_PER_INSTANCE="$9"
+  export TOTAL_DCS="${10}"
 
         changeAllConfigs
         runAll
