@@ -17,9 +17,9 @@ startNodes () {
 stopNodes () {
   local command="\
     [[ -f control-nodes-remote.sh ]] && ./control-nodes-remote.sh stop; \
-    pkill beam; \
+    pkill beam
   "
-  ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "${command}" "-debug"
+  ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "${command}"
 }
 
 case "$1" in
