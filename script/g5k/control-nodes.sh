@@ -19,6 +19,8 @@ stopNodes () {
     [[ -f control-nodes-remote.sh ]] && ./control-nodes-remote.sh stop; \
     pkill beam; \
   "
+  echo "running $command at $(cat ${ANT_NODES})"
+
   ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "${command}" "-debug"
 }
 
