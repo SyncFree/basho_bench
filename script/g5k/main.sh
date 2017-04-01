@@ -220,6 +220,13 @@ provisionAntidote () {
 
 rebuildAntidote () {
   echo -e "\t[REBUILD_ANTIDOTE]: Starting..."
+
+    if [[ "${ANTIDOTE_PROTOCOL}" == "clocksi" ]]; then
+                  strict_stable="true"
+                else
+                  strict_stable="false"
+                fi
+
   local command="\
     cd antidote; \
     pkill beam; \
@@ -230,6 +237,7 @@ rebuildAntidote () {
     git pull; \
     ./rebar3 upgrade; \
     sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
+    sed -i.bak 's|{{stable_strict.*},|{stable_strict, $strict_stable},|g' src/antidote.app.src && \
     make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
@@ -240,6 +248,13 @@ rebuildAntidote () {
 }
 
 cleanAntidote () {
+
+  if [[ "${ANTIDOTE_PROTOCOL}" == "clocksi" ]]; then
+                  strict_stable="true"
+                else
+                  strict_stable="false"
+                fi
+
   echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
   local command="\
     cd antidote; \
@@ -249,6 +264,7 @@ cleanAntidote () {
     make relclean; \
     ./rebar3 upgrade; \
     sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
+    sed -i.bak 's|{{stable_strict.*},|{stable_strict, $strict_stable},|g' src/antidote.app.src && \
     make rel
   "
   doForNodesIn ${ALL_NODES} "${command}" \

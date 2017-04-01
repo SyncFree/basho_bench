@@ -25,7 +25,7 @@
          run/4]).
 
 -include("basho_bench.hrl").
--define(BUCKET, <<"antidote_bench_bucket">>).
+%%-define(BUCKET, <<"antidote_bench_bucket">>).
 
 -define(TIMEOUT, 1000000).
 -record(state, {worker_id,
@@ -147,7 +147,7 @@ run(txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
                             %%                    The following selects the latest reads for updating.
                             UpdateIntKeys=lists:sublist(IntKeys, NumReads-NumUpdates+1, NumUpdates)
                     end,
-                    BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, ValueGen(), undefined, SetSize),
+                    BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, Bucket, ValueGen(), undefined, SetSize),
                     case create_update_operations(Pid, BObjs, TxId, SeqWrites) of
                         ok->
                             case antidotec_pb:commit_transaction(Pid, TxId) of
@@ -173,6 +173,7 @@ run(txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
 %% the number of operations is defined by the {num_updates, x}
 %% parameter in the config file.
 run(update_only_txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
+    bucket=Bucket,
     pb_port=_Port, target_node=_Node,
     num_updates=NumUpdates,
     type_dict=TypeDict,
@@ -184,7 +185,7 @@ run(update_only_txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
     case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{static, true}]) of
         {ok, {static, {TimeStamp, TxnProperties}}}->
             UpdateIntKeys=generate_keys(NumUpdates, KeyGen),
-            BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, ValueGen(), undefined, SetSize),
+            BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, Bucket, ValueGen(), undefined, SetSize),
             case create_update_operations(Pid, BObjs, {static, {TimeStamp, TxnProperties}}, SeqWrites) of
                 ok->
                     case antidotec_pb:commit_transaction(Pid, {static, {TimeStamp, TxnProperties}}) of
@@ -293,12 +294,12 @@ create_update_operations(Pid, BoundObjects, TxId, IsSeq) ->
     lists:nth(RanNum+1, Keys).
 
 
-multi_get_random_param_new(KeyList, Dict, Value, Objects, SetSize) ->
-  multi_get_random_param_new(KeyList, Dict, Value, Objects, SetSize, []).
+multi_get_random_param_new(KeyList, Dict, Bucket, Value, Objects, SetSize) ->
+  multi_get_random_param_new(KeyList, Dict, Bucket, Value, Objects, SetSize, []).
 
-multi_get_random_param_new([], _Dict, _Value, _Objects, _SetSize, Acc)->
+multi_get_random_param_new([], _Dict, _Bucket, _Value, _Objects, _SetSize, Acc)->
   Acc;
-multi_get_random_param_new([Key|Rest], Dict, Value, Objects, SetSize, Acc)->
+multi_get_random_param_new([Key|Rest], Dict, Bucket, Value, Objects, SetSize, Acc)->
   Type = get_key_type(Key, Dict),
   case Objects of
     undefined ->
@@ -308,10 +309,10 @@ multi_get_random_param_new([Key|Rest], Dict, Value, Objects, SetSize, Acc)->
       Obj = H,
       ObjRest = T
   end,
-  [Param] = get_random_param_new(Key, Dict, Type, Value, Obj, SetSize),
-  multi_get_random_param_new(Rest, Dict, Value, ObjRest, SetSize, [Param|Acc]).
+  [Param] = get_random_param_new(Key, Dict, Bucket, Type, Value, Obj, SetSize),
+  multi_get_random_param_new(Rest, Dict, Bucket, Value, ObjRest, SetSize, [Param|Acc]).
 
-get_random_param_new(Key, Dict, Type, Value, Obj, SetSize)->
+get_random_param_new(Key, Dict, Bucket, Type, Value, Obj, SetSize)->
     Params=dict:fetch(Type, Dict),
     Num=rand_compat:uniform(length(Params)),
     BKey=list_to_binary(integer_to_list(Key)),
@@ -325,18 +326,18 @@ get_random_param_new(Key, Dict, Type, Value, Obj, SetSize)->
         antidote_crdt_counter->
             case lists:nth(Num, Params) of
                 {increment, Ammount}->
-                    [{{BKey, Type, ?BUCKET}, increment, Ammount}];
+                    [{{BKey, Type, Bucket}, increment, Ammount}];
                 {decrement, Ammount}->
-                    [{{BKey, Type, ?BUCKET}, decrement, Ammount}];
+                    [{{BKey, Type, Bucket}, decrement, Ammount}];
                 increment->
-                    [{{BKey, Type, ?BUCKET}, increment, 1}];
+                    [{{BKey, Type, Bucket}, increment, 1}];
                 decrement->
-                    [{{BKey, Type, ?BUCKET}, decrement, 1}]
+                    [{{BKey, Type, Bucket}, decrement, 1}]
             end;
-    
+
         RegisterType when ((RegisterType==antidote_crdt_mvreg) orelse (RegisterType==antidote_crdt_lwwreg))->
-            [{{BKey, Type, ?BUCKET}, assign, NewVal}];
-        
+            [{{BKey, Type, Bucket}, assign, NewVal}];
+
         SetType when ((SetType==antidote_crdt_orset) orelse (SetType==antidote_crdt_set_rw))->
             Set=
                 case Obj of
@@ -356,12 +357,12 @@ get_random_param_new(Key, Dict, Type, Value, Obj, SetSize)->
                 remove->
                     case Set of
                         []->
-                            [{{BKey, Type, ?BUCKET}, add_all, [NewVal]}];
+                            [{{BKey, Type, Bucket}, add_all, [NewVal]}];
                         Set->
-                            [{{BKey, Type, ?BUCKET}, remove_all, [lists:nth(rand_compat:uniform(length(Set)), Set)]}]
+                            [{{BKey, Type, Bucket}, remove_all, [lists:nth(rand_compat:uniform(length(Set)), Set)]}]
                     end;
                 _->
-                    [{{BKey, Type, ?BUCKET}, add_all, [NewVal]}]
+                    [{{BKey, Type, Bucket}, add_all, [NewVal]}]
             end
     end.
 %%
