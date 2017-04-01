@@ -710,6 +710,8 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
 
     run
 
+
+  # don't do the following for the next rounds.
     export DEPLOY_IMAGE="false"
     export DOWNLOAD_ANTIDOTE="false"
     export DOWNLOAD_BENCH="false"

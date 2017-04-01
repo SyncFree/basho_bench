@@ -7,19 +7,19 @@ set -eo pipefail
 #  exit 1
 #fi
 
-changeAntidoteCodePath () {
-  local config_file="$1"
-  # TODO: Change
-  local antidote_code_path="antidote/_build/default/lib/antidote/ebin"
-
-  sed -i.bak "s|^{code_paths.*|{code_paths, [\"${antidote_code_path}\"]}.|g" "${config_file}"
-}
+#changeAntidoteCodePath () {
+#  local config_file="$1"
+#  # TODO: Change
+#  local antidote_code_path="antidote/_build/default/lib/antidote/ebin"
+#
+#  sed -i.bak "s|^{code_paths.*|{code_paths, [\"${antidote_code_path}\"]}.|g" "${config_file}"
+#}
 
 changeBucket () {
   local config_file="$1"
   local bucket="<<\"$KEYSPACE-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE\">>"
 
-  sed -i.bak "s|^{bucket.*|{code_paths, [\"${bucket}\"]}.|g" "${config_file}"
+  sed -i.bak "s|^{bucket.*|{bucket, [\"${bucket}\"]}.|g" "${config_file}"
 }
 
 changeAntidotePBPort () {
