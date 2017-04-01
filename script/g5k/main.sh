@@ -549,7 +549,7 @@ run () {
 
 CopyStalenessLogs () {
   local total_dcs=$1
-
+  local nodes_str=""
     # Get only one antidote node per DC
   for i in $(seq 1 ${total_dcs}); do
     local clusterhead=$(head -1 .dc_nodes${i})
@@ -578,7 +578,6 @@ CopyStalenessLogs () {
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
     cp _build/default/rel/antidote/log/*.log $dirLog"
-  echo "[KILLING ANTIDOTE!]: ... "
   echo "[COPYING STALENESS LOGS]: moving logs to directory: $dirStale at all antidote nodes... "
   echo "[COPYING LOGS]: moving logs to directory: $dirLog at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
