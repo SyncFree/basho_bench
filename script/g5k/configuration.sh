@@ -11,18 +11,18 @@ K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 JUST_RUN=false
 
 # Reserve sites and nodes through oargridsub
-RESERVE_SITES=false
+RESERVE_SITES=true
 
 # Different g5k sites to run the benchmark
 SITES=( "nancy" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
-DOWNLOAD_ANTIDOTE=false
+DOWNLOAD_ANTIDOTE=true
 
-DOWNLOAD_BENCH=false
+DOWNLOAD_BENCH=true
 
 # Download and compile antidote and basho bench from scratch
 CLEAN_ANTIDOTE=false

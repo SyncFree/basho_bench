@@ -710,4 +710,8 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
 
     run
 
+    export DEPLOY_IMAGE="false"
+    export DOWNLOAD_ANTIDOTE="false"
+    export DOWNLOAD_BENCH="false"
+
 done
