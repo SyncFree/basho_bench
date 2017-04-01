@@ -228,11 +228,13 @@ rebuildAntidote () {
                 fi
 
   local command="\
+    cd; \
     cd antidote; \
     pkill beam; \
+    rm -rf benchLogs; \
     sed -i.bak 's/127.0.0.1/localhost/g' rel/vars/dev_vars.config.src rel/files/app.config; \
     sed -i.bak 's/127.0.0.1/localhost/g' config/vars.config; \
-    rm -rf ./_build; \
+    make relclean; \
     git checkout ${ANTIDOTE_BRANCH}; \
     git pull; \
     ./rebar3 upgrade; \
@@ -712,8 +714,8 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
 
 
   # don't do the following for the next rounds.
-    export DEPLOY_IMAGE="false"
-    export DOWNLOAD_ANTIDOTE="false"
-    export DOWNLOAD_BENCH="false"
+#    export DEPLOY_IMAGE="false"
+#    export DOWNLOAD_ANTIDOTE="false"
+#    export DOWNLOAD_BENCH="false"
 
 done
