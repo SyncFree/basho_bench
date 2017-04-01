@@ -11,7 +11,7 @@ K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 JUST_RUN=false
 
 # Reserve sites and nodes through oargridsub
-RESERVE_SITES=true
+RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
 SITES=( "nancy" )
