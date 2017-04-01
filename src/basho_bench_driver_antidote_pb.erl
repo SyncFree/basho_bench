@@ -74,7 +74,6 @@ new(Id) ->
             ?INFO("Usind pb_ports from filr ~p file\n", [PbPorts_File]),
             PbPorts_File
     end,
-    ?INFO("Usind pb_port ~p\n", [PbPorts]),
     Bucket= basho_bench_config:get(bucket),
     Types  = basho_bench_config:get(antidote_types),
     SetSize = basho_bench_config:get(set_size),

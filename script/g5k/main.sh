@@ -553,8 +553,8 @@ CopyStalenessLogs () {
   echo -e "\t[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: Done"
 
 
-  dirStale="_build/default/rel/antidote/benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
-  dirLog="_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
+  dirStale="benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
+  dirLog="benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
     cd ~/antidote && \
