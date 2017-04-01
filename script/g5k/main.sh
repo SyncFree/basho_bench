@@ -531,7 +531,7 @@ run () {
 }
 
 
-KillAntidoteAndCopyStalenessLogs () {
+CopyStalenessLogs () {
   local total_dcs=$1
 
     # Get only one antidote node per DC
@@ -545,13 +545,11 @@ KillAntidoteAndCopyStalenessLogs () {
 
 #  local head=$(head -1 .dc_nodes1)
 
-  echo "[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
-  echo "[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+  echo "[SYNCING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
+  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   ./execute-in-nodes.sh "$clusterhead" \
         "chmod +x /root/antidote/bin/sync_staleness_logs.erl && \
-        /root/antidote/bin/sync_staleness_logs.erl ${nodes_str} && \
-        chmod +x /root/antidote/bin/close_staleness_logs.erl && \
-        /root/antidote/bin/close_staleness_logs.erl ${nodes_str}"
+        /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   echo -e "\t[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: Done"
 
 
@@ -560,7 +558,6 @@ KillAntidoteAndCopyStalenessLogs () {
 
   command1="\
     cd ~/antidote && \
-    pkill beam && \
     mkdir -p $dirStale && \
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
@@ -575,11 +572,11 @@ KillAntidoteAndCopyStalenessLogs () {
 
 
 
-#  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
-#  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-#  ./execute-in-nodes.sh "$clusterhead" \
-#        "/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
-#  echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
+  echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  ./execute-in-nodes.sh "$clusterhead" \
+        "/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+  echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
 startBGprocesses() {
@@ -619,16 +616,8 @@ runRemoteBenchmark () {
         export READS=${reads}
         for clients_per_bench_instance in "${BENCH_THREAD_NUMBER[@]}"; do
             export BENCH_CLIENTS_PER_INSTANCE=${clients_per_bench_instance}
-            if [[ "${firstround}" == 1 ]]; then
-                firstround=0
-            else
-                  cleanAntidote
-                  local total_dcs=$(getTotalDCCount)
-                  prepareClusters ${total_dcs} "${antidote_ip_file}"
-
-            fi
             # Wait for the cluster to settle between runs
-            sleep 30
+
 #            no need to start bg processes as a restart does it itself
 #            echo "[STARTING BG PROCESSES]"
 #            startBGprocesses ${total_dcs} >> "${LOGDIR}"/start-bg-dc${GLOBAL_TIMESTART} 2>&1
@@ -640,12 +629,16 @@ runRemoteBenchmark () {
             echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
             ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
-
+            sleep 30
                         # yea, that.
-            KillAntidoteAndCopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
+            CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
             echo "[RunRemoteBenchmark] done."
         done
+        cleanAntidote
+        local total_dcs=$(getTotalDCCount)
+        prepareClusters ${total_dcs} "${antidote_ip_file}"
         re=$((re+1))
+        sleep 30
       done
     done
   done

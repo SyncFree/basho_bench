@@ -15,6 +15,13 @@ changeAntidoteCodePath () {
   sed -i.bak "s|^{code_paths.*|{code_paths, [\"${antidote_code_path}\"]}.|g" "${config_file}"
 }
 
+changeBucket () {
+  local config_file="$1"
+  local bucket="<<\"$KEYSPACE-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE\">>"
+
+  sed -i.bak "s|^{bucket.*|{code_paths, [\"${bucket}\"]}.|g" "${config_file}"
+}
+
 changeAntidotePBPort () {
   local config_file="$1"
   # TODO: Change
@@ -93,6 +100,7 @@ changeBashoBenchConfig () {
   local instance=$2
   local dc_to_bench=$(($instance % $TOTAL_DCS + 1))
   changeAntidoteIPs "${config_path}" "${dc_to_bench}"
+  changeBucket "${config_path}"
 #  changeAntidoteCodePath "${config_path}"
   changeAntidotePBPort "${config_path}"
   changeConcurrent "${config_path}"

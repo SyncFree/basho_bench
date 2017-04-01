@@ -44,6 +44,7 @@
                 measure_staleness,
                 temp_num_reads,
                 temp_num_updates,
+    bucket,
     sequential_reads,
     sequential_writes}).
 
@@ -74,6 +75,7 @@ new(Id) ->
             PbPorts_File
     end,
     ?INFO("Usind pb_port ~p\n", [PbPorts]),
+    Bucket= basho_bench_config:get(bucket),
     Types  = basho_bench_config:get(antidote_types),
     SetSize = basho_bench_config:get(set_size),
     NumUpdates  = basho_bench_config:get(num_updates),
@@ -103,6 +105,7 @@ new(Id) ->
         temp_num_reads = NumReads, temp_num_updates = NumUpdates,
         measure_staleness = MeasureStaleness,
         sequential_reads = SequentialReads,
+        bucket = Bucket,
         sequential_writes = SequentialWrites}}.
 %% @doc A general transaction.
 %% it first performs reads to a number of objects defined by the
@@ -111,6 +114,7 @@ new(Id) ->
 
 run(txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
     pb_port=_Port, target_node=_Node,
+    bucket = Bucket,
     num_read_rounds=NumReadRounds,
     num_reads=NumReads,
     num_updates=NumUpdates,
@@ -126,7 +130,7 @@ run(txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
             %% Perform reads, if this is not a write only transaction.
             {ReadResult, IntKeys}=case NumReads>0 of
                 true->
-                    run_reads(NumReads, NumReadRounds, KeyGen, TypeDict, Pid, TxId, SeqReads, Id, State, []);
+                    run_reads(NumReads, NumReadRounds, KeyGen, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, []);
                 false->
                     {no_reads, no_reads}
             end,
@@ -209,12 +213,13 @@ run(read_only_txn, KeyGen, _ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
     num_read_rounds = NumReadRounds,
     sequential_reads = SeqReads,
     type_dict=TypeDict,
+    bucket = Bucket,
     measure_staleness = MS,
     commit_time = OldCommitTime}) ->
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
     ReadResult = case NumReads > 0 of
         true ->
-            run_reads(NumReads, NumReadRounds, KeyGen, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
+            run_reads(NumReads, NumReadRounds, KeyGen, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
         false ->
             no_reads
     end,
@@ -243,16 +248,16 @@ run(read, KeyGen, ValueGen, State) ->
 
 
 %% @doc the following function calls itself recursivelly NumReadRounds times to read in rounds.
-run_reads(NumReads, NumReadRounds, KeyGen, TypeDict, Pid, TxId, SeqReads, Id, State, PrevRS) ->
+run_reads(NumReads, NumReadRounds, KeyGen, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, PrevRS) ->
     IntegerKeys = generate_keys(NumReads, KeyGen),
-    BoundObjects = [{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET} || K <- IntegerKeys],
+    BoundObjects = [{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), Bucket} || K <- IntegerKeys],
     case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
         {ok, RS} ->
             case NumReadRounds of
                 1 ->
                     {RS, IntegerKeys};
                 _ ->
-                    run_reads(NumReads, NumReadRounds-1, KeyGen, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
+                    run_reads(NumReads, NumReadRounds-1, KeyGen, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
             end;
         Error ->
             {{error, {Id, Error}, State}, IntegerKeys}
