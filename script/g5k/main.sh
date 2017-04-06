@@ -226,6 +226,11 @@ rebuildAntidote () {
                 else
                   strict_stable="false"
                 fi
+    if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
+                  period="10000"
+                else
+                  strict_stable="10"
+                fi
 
   local command="\
     cd; \
@@ -239,7 +244,10 @@ rebuildAntidote () {
     git pull; \
     ./rebar3 upgrade; \
     sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
-    sed -i.bak 's|{{stable_strict.*},|{stable_strict, $strict_stable},|g' src/antidote.app.src && \
+    sed -i.bak 's|{stable_strict.*},|{stable_strict, $strict_stable},|g' src/antidote.app.src && \
+    sed -i.bak 's|define(HEARTBEAT_PERIOD.*).|define(HEARTBEAT_PERIOD, ${period}).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(VECTORCLOCK_UPDATE_PERIOD.*).|define(VECTORCLOCK_UPDATE_PERIOD, ${period}).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(META_DATA_SLEEP.*).|define(META_DATA_SLEEP, ${period}).|g' include/antidote.hrl && \
     make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
@@ -256,6 +264,11 @@ cleanAntidote () {
                 else
                   strict_stable="false"
                 fi
+  if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
+                  period="10000"
+                else
+                  strict_stable="10"
+                fi
 
   echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
   local command="\
@@ -267,6 +280,9 @@ cleanAntidote () {
     ./rebar3 upgrade; \
     sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
     sed -i.bak 's|{{stable_strict.*},|{stable_strict, $strict_stable},|g' src/antidote.app.src && \
+    sed -i.bak 's|define(HEARTBEAT_PERIOD.*).|define(HEARTBEAT_PERIOD, $period).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(VECTORCLOCK_UPDATE_PERIOD.*).|define(VECTORCLOCK_UPDATE_PERIOD, $period).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(META_DATA_SLEEP.*).|define(META_DATA_SLEEP, $period).|g' include/antidote.hrl && \
     make rel
   "
   doForNodesIn ${ALL_NODES} "${command}" \
