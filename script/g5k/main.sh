@@ -229,7 +229,7 @@ rebuildAntidote () {
     if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
                   period="10000"
                 else
-                  strict_stable="10"
+                  period="10"
                 fi
 
   local command="\
@@ -267,7 +267,7 @@ cleanAntidote () {
   if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
                   period="10000"
                 else
-                  strict_stable="10"
+                  period="10"
                 fi
 
   echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
