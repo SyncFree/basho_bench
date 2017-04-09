@@ -665,8 +665,8 @@ runRemoteBenchmark () {
             echo "[RunRemoteBenchmark] done."
         done
 #        cleanAntidote
-#        local total_dcs=$(getTotalDCCount)
-#        prepareClusters ${total_dcs} "${antidote_ip_file}"
+        local total_dcs=$(getTotalDCCount)
+        prepareClusters ${total_dcs} "${antidote_ip_file}"
         re=$((re+1))
         sleep 30
       done
