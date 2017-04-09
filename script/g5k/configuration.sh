@@ -64,7 +64,7 @@ BENCH_BRANCH="ec_old"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=58110
+GRID_JOB_ID=57998
 
 # workloads
 KEY_SPACES=( 10000000 1000000 )
