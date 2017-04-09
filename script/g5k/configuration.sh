@@ -51,9 +51,9 @@ FORCE_NTP_SYNC=false
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="ec"
+ANTIDOTE_BRANCH="simplify_physics_metadata"
 
-ANTIDOTE_PROTOCOLS=( "ec" )
+ANTIDOTE_PROTOCOLS=( "physics" "clocksi" "ec" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -67,9 +67,15 @@ BENCH_FILE="antidote_pb.config"
 GRID_JOB_ID=57998
 
 # workloads
-KEY_SPACES=( 10000000 1000000 )
-ROUND_NUMBER=( 10 )
-READ_NUMBER=( 100 100 100 )
-UPDATE_NUMBER=( 2 10 100 )
-BENCH_THREAD_NUMBER=( 20 30 40 50 )
+#KEY_SPACES=( 10000000 1000000 )
+#ROUND_NUMBER=( 10 )
+#READ_NUMBER=( 100 100 100 )
+#UPDATE_NUMBER=( 2 10 100 )
+#BENCH_THREAD_NUMBER=( 20 30 40 50 )
 
+# workloads
+KEY_SPACES=( 1000000 )
+ROUND_NUMBER=( 1 )
+READ_NUMBER=( 99 90 75 50 )
+UPDATE_NUMBER=( 1 10 25 50 )
+BENCH_THREAD_NUMBER=( 40 50 60 70 )
