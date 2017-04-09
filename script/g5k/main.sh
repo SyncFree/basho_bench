@@ -460,7 +460,7 @@ tarEverything () {
   local tar_name="$(basename "${SCRATCHFOLDER}")-$GLOBAL_TIMESTART"
   command="tar -czf ../${tar_name}.tar ${SCRATCHFOLDER}"
   $command
-  rm -rf "${SCRATCHFOLDER}"
+#  rm -rf "${SCRATCHFOLDER}"
   popd > /dev/null 2>&1
 
 

@@ -58,7 +58,7 @@ ANTIDOTE_PROTOCOLS=( "ec" )
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
 # git branch of Basho Bench to use
-BENCH_BRANCH="ec1"
+BENCH_BRANCH="ec_old"
 
 # Name of the benchmark configuration file to use
 BENCH_FILE="antidote_pb.config"
@@ -71,5 +71,5 @@ KEY_SPACES=( 10000000 1000000 )
 ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 100 100 )
 UPDATE_NUMBER=( 2 10 100 )
-BENCH_THREAD_NUMBER=( 20 30 40 )
+BENCH_THREAD_NUMBER=( 20 30 40 50 )
 

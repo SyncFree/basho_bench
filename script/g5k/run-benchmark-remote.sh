@@ -127,7 +127,8 @@ runAll () {
 #      sleep 1
 #    done
 #  done
-  wait
+  sleep 150
+  pkill beam
   echo "[RUNALL] done!"
 
 }
