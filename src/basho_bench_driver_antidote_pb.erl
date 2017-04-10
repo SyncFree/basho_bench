@@ -27,7 +27,7 @@
 -include("basho_bench.hrl").
 %%-define(BUCKET, <<"antidote_bench_bucket">>).
 
--define(TIMEOUT, 1000000).
+-define(TIMEOUT, 10000000).
 -record(state, {worker_id,
     time,
     type_dict,
@@ -173,7 +173,9 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
                             end;
                         E1 ->
                             {error, {Id, E1}, State}
-                    end
+                    end;
+                ErrorRead ->
+                    {error, {Id, ErrorRead}, State}
             end;
         Error ->
             {error, {Id, Error}, State}
@@ -275,7 +277,7 @@ run_reads(TotalKeys, NumReads, NumReadRounds, Bucket, TypeDict, Pid, TxId, SeqRe
                     run_reads(RestKeys, NumReads, NumReadRounds-1, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
             end;
         Error ->
-            {{error, {Id, Error}, State}, IntegerKeys}
+            {error, {Id, Error}, State}
     end.
 
 
