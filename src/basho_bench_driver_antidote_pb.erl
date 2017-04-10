@@ -240,10 +240,7 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
             no_reads
     end,
     case ReadResult of
-        %% if reads failed, return immediately.
-        {error, {ID, ERROR}, STATE} ->
-            {error, {ID, ERROR}, STATE};
-        _ ->
+        {ok, _} ->
             case antidotec_pb_socket:get_last_commit_time(Pid) of
                 {ok, BCommitTime} ->
                     report_staleness(MS, BCommitTime, StartTime),
@@ -252,7 +249,10 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
                     {ok, State#state{commit_time = CommitTime}};
                 E ->
                     {error, {Id, E}, State}
-            end
+            end;
+        %% if reads failed, return immediately.
+        ReadError ->
+            {error, {Id, ReadError}, State}
     end;
 
 %% @doc the append command will run a transaction with a single update, and no reads.
@@ -277,7 +277,7 @@ run_reads(TotalKeys, NumReads, NumReadRounds, Bucket, TypeDict, Pid, TxId, SeqRe
                     run_reads(RestKeys, NumReads, NumReadRounds-1, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
             end;
         Error ->
-            {error, {Id, Error}, State}
+            Error
     end.
 
 
