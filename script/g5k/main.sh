@@ -227,7 +227,7 @@ rebuildAntidote () {
                   strict_stable="false"
                 fi
     if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  period="10000"
+                  period="10"
                 else
                   period="10"
                 fi
@@ -265,7 +265,7 @@ cleanAntidote () {
                   strict_stable="false"
                 fi
   if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  period="10000"
+                  period="10"
                 else
                   period="10"
                 fi
@@ -664,7 +664,7 @@ runRemoteBenchmark () {
             CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
             echo "[RunRemoteBenchmark] done."
         done
-#        cleanAntidote
+        cleanAntidote
         local total_dcs=$(getTotalDCCount)
         prepareClusters ${total_dcs} "${antidote_ip_file}"
         re=$((re+1))
