@@ -64,16 +64,9 @@ for keyspace in "${KEY_SPACES[@]}"; do
 #            summaryDir="staleness_summary-$KEYSPACE-$ROUNDS-$READS-$UPDATES"
 #            mkdir -p $summaryDir
 #            echo "---### MASTER: created summary directory : $summaryDir"
-
-
             echo "~/antidote/bin/physics_staleness/process_staleness.erl Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE ${StaleDirectories[@]}"
             ~/antidote/bin/physics_staleness/process_staleness.erl "Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE ${StaleDirectories[@]}"
-
-
         done
-
-
-
         re=$((re+1))
       done
     done
