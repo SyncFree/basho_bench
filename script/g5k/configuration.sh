@@ -36,7 +36,7 @@ CONNECT_CLUSTERS_AND_DCS=true
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
-DCS_PER_SITE=3
+DCS_PER_SITE=1
 
 # Number of nodes running Antidote PER DC!!!!!!
 ANTIDOTE_NODES=15
@@ -66,15 +66,19 @@ BENCH_FILE="antidote_pb.config"
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
 GRID_JOB_ID=58111
 
-
-
-
-# 4
+#5
 KEY_SPACES=( 10000000 1000000 )
 ROUND_NUMBER=( 1 )
 READ_NUMBER=( 99 90 75 50 )
 UPDATE_NUMBER=( 1 10 25 50 )
-BENCH_THREAD_NUMBER=( 1 3 5 7 10 )
+BENCH_THREAD_NUMBER=( 1 3 5 7 10 20 30 40)
+
+# 4
+#KEY_SPACES=( 10000000 1000000 )
+#ROUND_NUMBER=( 1 )
+#READ_NUMBER=( 99 90 75 50 )
+#UPDATE_NUMBER=( 1 10 25 50 )
+#BENCH_THREAD_NUMBER=( 1 3 5 7 10 )
 
 # 3
 #KEY_SPACES=( 1000000 )
