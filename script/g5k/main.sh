@@ -16,36 +16,26 @@ if [[ -z ${CONFIG} ]]; then
 fi
 source $CONFIG
 
-
-
-
-
-
 buildReservation () {
   local reservation
   local node_number=$((DCS_PER_SITE * (ANTIDOTE_NODES + BENCH_NODES)))
   for site in "${sites[@]}"; do
     reservation+="${site}:rdef=/nodes=${node_number},"
   done
-
   # Trim the last (,) in the string
   reservation=${reservation%?}
-
   echo "${reservation}"
 }
 
 reserveSites () {
   local reservation="$(buildReservation)"
-
   # Outputs something similar to:
   # ...
   # [OAR_GRIDSUB] Grid reservation id = 56670
   # ...
-
   local res_id=$(oargridsub -t deploy -w '2:00:00' "${reservation}" \
     | grep "Grid reservation id" \
     | cut -f2 -d=)
-
   # Trim any leading whitespace
   echo "${res_id## }"
 }
@@ -84,7 +74,6 @@ getIPs () {
   echo "[GATHER_MACHINES]: ANTIDOTE IPS: ${ANT_IPS}"
   echo "[GATHER_MACHINES]: BENCH IPS: ${BENCH_IPS}"
 }
-
 
 # Get all nodes in reservation, split them into
 # antidote and basho bench nodes.
@@ -222,7 +211,7 @@ rebuildAntidote () {
   echo -e "\t[REBUILD_ANTIDOTE]: Starting..."
 
     if [[ "${ANTIDOTE_PROTOCOL}" == "clocksi" ]]; then
-                  strict_stable="true"
+                  strict_stable="false"
                 else
                   strict_stable="false"
                 fi
