@@ -36,7 +36,7 @@ CONNECT_CLUSTERS_AND_DCS=true
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
-DCS_PER_SITE=1
+DCS_PER_SITE=3
 
 # Number of nodes running Antidote PER DC!!!!!!
 ANTIDOTE_NODES=15
