@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="simplify_physics_metadata"
 
-ANTIDOTE_PROTOCOLS=( "clocksi" )
+ANTIDOTE_PROTOCOLS=( "clocksi" "physics" "ec" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -66,12 +66,19 @@ BENCH_FILE="antidote_pb.config"
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
 GRID_JOB_ID=58111
 
-#5
+#6
 KEY_SPACES=( 10000000 1000000 )
-ROUND_NUMBER=( 1 )
-READ_NUMBER=( 99 90 75 50 )
-UPDATE_NUMBER=( 1 10 25 50 )
-BENCH_THREAD_NUMBER=( 1 3 5 7 10 20 30 40)
+ROUND_NUMBER=( 9 )
+READ_NUMBER=( 2 2 2 )
+UPDATE_NUMBER=( 2 10 100 )
+BENCH_THREAD_NUMBER=( 1 3 5 7 10 15 20 30 40)
+
+##5
+#KEY_SPACES=( 10000000 1000000 )
+#ROUND_NUMBER=( 1 )
+#READ_NUMBER=( 99 90 75 50 )
+#UPDATE_NUMBER=( 1 10 25 50 )
+#BENCH_THREAD_NUMBER=( 1 3 5 7 10 20 30 40)
 
 # 4
 #KEY_SPACES=( 10000000 1000000 )

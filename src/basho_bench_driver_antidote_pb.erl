@@ -39,6 +39,7 @@
     num_read_rounds,
     num_reads,
     num_updates,
+    exp_round,
     pb_port,
     target_node,
     measure_staleness,
@@ -78,6 +79,7 @@ new(Id) ->
     NumUpdates = basho_bench_config:get(num_updates),
     NumReads = basho_bench_config:get(num_reads),
     NumReadRounds = basho_bench_config:get(num_read_rounds),
+    ExpRound = basho_bench_config:get(exp_round),
     NumPartitions = basho_bench_config:get(num_vnodes),
     MeasureStaleness = basho_bench_config:get(staleness),
     SequentialReads = basho_bench_config:get(sequential_reads),
@@ -99,6 +101,7 @@ new(Id) ->
         target_node = TargetNode, commit_time = ignore,
         num_reads = NumReads, num_updates = NumUpdates,
         num_read_rounds = NumReadRounds,
+        exp_round = ExpRound,
         temp_num_reads = NumReads, temp_num_updates = NumUpdates,
         measure_staleness = MeasureStaleness,
         sequential_reads = SequentialReads,
@@ -129,6 +132,7 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     num_read_rounds = NumReadRounds,
     num_reads = NumReads,
     num_updates = NumUpdates,
+    exp_round = ExpRound,
     type_dict = TypeDict,
     set_size = SetSize,
     commit_time = OldCommitTime,
@@ -140,12 +144,18 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
         {ok, TxId} ->
             IntegerKeys = case NumReads > 0 of
                 true ->
-                    generate_keys(NumReads * NumReadRounds, KeyGen);
+                    TotalReads= case ExpRound of
+                        true ->
+                            list_to_integer(float_to_list(math:pow(NumReads,NumReadRounds+1), [{decimals,0}]));
+                        _->
+                            NumReads * NumReadRounds
+                    end,
+                    generate_keys(TotalReads, KeyGen);
                 false ->
                     no_reads
             end,
             %% Perform reads, if this is not a write only transaction.
-            case run_reads(IntegerKeys, NumReads, NumReadRounds, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, []) of
+            case run_reads(IntegerKeys, NumReads, 1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, []) of
                 %% if reads failed, return immediately.
                 {error, Reason} ->
                     {error, {Id, Reason}, State};
@@ -226,6 +236,7 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
     pb_port = _Port, target_node = _Node,
     num_reads = NumReads,
     num_read_rounds = NumReadRounds,
+    exp_round = ExpRound,
     sequential_reads = SeqReads,
     type_dict = TypeDict,
     bucket = Bucket,
@@ -235,7 +246,7 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
     ReadResult = case NumReads > 0 of
         true ->
             IntegerKeys = generate_keys(NumReads * NumReadRounds, KeyGen),
-            run_reads(IntegerKeys, NumReads, NumReadRounds, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
+            run_reads(IntegerKeys, NumReads, 1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
         false ->
             no_reads
     end,
@@ -264,17 +275,24 @@ run(read, KeyGen, ValueGen, State) ->
 
 
 %% @doc the following function calls itself recursivelly NumReadRounds times to read in rounds.
-run_reads(TotalKeys, NumReads, NumReadRounds, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, PrevRS) ->
-    IntegerKeys = lists:sublist(TotalKeys, NumReads),
+run_reads(TotalKeys, BaseRead, Round, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, PrevRS) ->
+    TheseReads= case ExpRound of
+        true ->
+            list_to_integer(float_to_list(math:pow(BaseRead,Round), [{decimals,0}]));
+        _->
+            BaseRead
+    end,
+%%    ?INFO("TotalKeys= ~p~n, TheseReads= ~p~n, Round= ~p~n, NumReadRounds= ~p~n, ExpRound= ~p~n, ", [TotalKeys, TheseReads, Round, NumReadRounds, ExpRound]),
+    IntegerKeys = lists:sublist(TotalKeys, TheseReads),
     BoundObjects = [{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), Bucket} || K <- IntegerKeys],
     case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
         {ok, RS} ->
-            case NumReadRounds of
-                1 ->
+            case Round of
+                NumReadRounds ->
                     {ok, RS};
                 _ ->
-                    RestKeys = lists:sublist(TotalKeys, NumReads+1, length(TotalKeys)+1),
-                    run_reads(RestKeys, NumReads, NumReadRounds-1, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
+                    RestKeys = lists:sublist(TotalKeys, TheseReads+1, length(TotalKeys)+1),
+                    run_reads(RestKeys, BaseRead, Round+1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
             end;
         Error ->
             Error
