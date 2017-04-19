@@ -11,8 +11,13 @@
 # This is only necessary when running on OS X, erlang 19
 # might be removed, but won't harm otherwise...
 
-source ~/basho_bench/script/g5k/configuration.sh
-
+#source ~/basho_bench/script/g5k/configuration.sh
+#2
+KEY_SPACES=( 10000000 )
+ROUND_NUMBER=( 1 )
+READ_NUMBER=( 99 90 75 50 )
+UPDATE_NUMBER=( 1 10 25 50 )
+BENCH_THREAD_NUMBER=( 5 10 20 30 40 )
 
 PATH="$PATH:/opt/local/lib/erlang/erts-8.1/bin/"
 chmod +x ~/basho_bench/script/g5k/*
