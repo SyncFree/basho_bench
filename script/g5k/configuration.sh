@@ -43,7 +43,7 @@ ANTIDOTE_NODES=15
 # Number of nodes running Basho Bench per DC
 BENCH_NODES=6
 # Number of instances of basho_bench to run per node
-BENCH_INSTANCES=6
+BENCH_INSTANCES=3
 
 #force time sync before running
 FORCE_NTP_SYNC=false
@@ -68,11 +68,11 @@ GRID_JOB_ID=58218
 
 
 #7 multiround
-KEY_SPACES=( 10000000 1000000 )
+KEY_SPACES=( 1000000 )
 ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 100 )
 UPDATE_NUMBER=( 10 100 )
-BENCH_THREAD_NUMBER=( 1 3 5 7 10 15 20 30 )
+BENCH_THREAD_NUMBER=( 1 3 5 7 10 15 20 25 30 )
 
 #6 exponential
 #KEY_SPACES=( 10000000 1000000 )
