@@ -211,7 +211,7 @@ rebuildAntidote () {
   echo -e "\t[REBUILD_ANTIDOTE]: Starting..."
 
     if [[ "${ANTIDOTE_PROTOCOL}" == "clocksi" ]]; then
-                  strict_stable="false"
+                  strict_stable="true"
                 else
                   strict_stable="false"
                 fi
