@@ -216,7 +216,7 @@ rebuildAntidote () {
                   strict_stable="false"
                 fi
     if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  period="100"
+                  period="10"
                 else
                   period="10"
                 fi
