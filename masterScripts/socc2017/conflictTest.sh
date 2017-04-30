@@ -47,8 +47,10 @@ MN=80
 SN=20
 CN=0
 
-sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+if [ 1 == 2 ];
+then
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 rm -rf ./config
 echo micro duration 70 >> config
@@ -63,8 +65,8 @@ do_specula=false
 len=0
 length="0"
 
-sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
+#sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
+#sudo ./script/restartAndConnect.sh
 
 folder="specula_tests/clocksirep"
 for t in $threads
@@ -117,48 +119,49 @@ do
     done
 done
 done
+fi
+
+seq="1"
+do_specula=true
+specula_read=true
+clock=new
+len=0
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+
+folder="specula_tests/external"
+rm -rf ./config
+echo micro duration 180 >> config
+echo micro auto_tune true >> config
+echo micro tune_period 2 >> config
+echo micro tune_sleep 2 >> config
+echo micro centralized true >> config
+echo micro max_len 9 >> config
+echo micro all_nodes replace >> config
+#sudo ./script/copy_to_all.sh ./config ./basho_bench/
+#sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
+
+
+sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
+sudo ./script/restartAndConnect.sh
+
+for t in $threads
+do
+    #sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
+    for cont in $contentions
+    do
+        if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
+        elif [ $cont == 2 ]; then MR=$MSML CR=$CBIG
+        elif [ $cont == 3 ]; then  MR=$MBIG CR=$CSML
+        elif [ $cont == 4 ]; then  MR=$MSML CR=$CSML
+        fi
+        runNTimes
+    done
+done
 exit
 
-seq="1"
-do_specula=true
-specula_read=true
-clock=new
-len=0
-sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
-folder="specula_tests/complementary"
-rm -rf ./config
-echo micro duration 180 >> config
-echo micro auto_tune true >> config
-echo micro tune_period 2 >> config
-echo micro tune_sleep 1 >> config
-echo micro centralized true >> config
-echo micro max_len 9 >> config
-echo micro all_nodes replace >> config
-sudo ./script/copy_to_all.sh ./config ./basho_bench/
-sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
-
-
-sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
-
-for t in $threads
-do
-    #sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
-    for cont in $contentions
-    do
-        if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
-        elif [ $cont == 2 ]; then MR=$MSML CR=$CBIG
-        elif [ $cont == 3 ]; then  MR=$MBIG CR=$CSML
-        elif [ $cont == 4 ]; then  MR=$MSML CR=$CSML
-        fi
-        runNTimes
-    done
-done
-
-
-### Normal specula
+### Internal specula
 seq="1"
 do_specula=true
 specula_read=true
@@ -174,86 +177,7 @@ echo micro auto_tune true >> config
 echo micro tune_period 2 >> config
 echo micro tune_sleep 1 >> config
 echo micro centralized true >> config
-echo micro max_len 9 >> config
-echo micro all_nodes replace >> config
-sudo ./script/copy_to_all.sh ./config ./basho_bench/
-sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
-
-
-sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
-
-for t in $threads
-do
-    #sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
-    for cont in $contentions
-    do
-        if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
-        elif [ $cont == 2 ]; then MR=$MSML CR=$CBIG
-        elif [ $cont == 3 ]; then  MR=$MBIG CR=$CSML
-        elif [ $cont == 4 ]; then  MR=$MSML CR=$CSML
-        fi
-        runNTimes
-    done
-done
-
-
-seq="1"
-do_specula=true
-specula_read=true
-clock=new
-len=0
-#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
-
-folder="specula_tests/complementary"
-rm -rf ./config
-echo micro duration 180 >> config
-echo micro auto_tune true >> config
-echo micro tune_period 2 >> config
-echo micro tune_sleep 1 >> config
-echo micro centralized true >> config
-echo micro max_len 9 >> config
-echo micro all_nodes replace >> config
-sudo ./script/copy_to_all.sh ./config ./basho_bench/
-sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
-
-
-sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
-
-for t in $threads
-do
-    #sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
-    for cont in $contentions
-    do
-        if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
-        elif [ $cont == 2 ]; then MR=$MSML CR=$CBIG
-        elif [ $cont == 3 ]; then  MR=$MBIG CR=$CSML
-        elif [ $cont == 4 ]; then  MR=$MSML CR=$CSML
-        fi
-        runNTimes
-    done
-done
-
-
-### Normal specula
-seq="1"
-do_specula=true
-specula_read=true
-clock=new
-len=0
-#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
-
-folder="specula_tests/complementary"
-rm -rf ./config
-echo micro duration 180 >> config
-echo micro auto_tune true >> config
-echo micro tune_period 2 >> config
-echo micro tune_sleep 1 >> config
-echo micro centralized true >> config
-echo micro max_len 9 >> config
+echo micro max_len 1 >> config
 echo micro all_nodes replace >> config
 sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
