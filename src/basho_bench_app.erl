@@ -149,7 +149,10 @@ write_cdf(Stat) ->
     %            file:write(PercvLatFile, io_lib:format("~w, ~w\n", [Sum, Count]))
     %            end, AbortStat),
     
-    file:write(PercvLatFile, io_lib:format("A hit counters ~w\n", [Stat])),
+    [NB|_] = Stat,
+    TB = lists:nth(2, Stat),
+    CacheHit = lists:nth(3, Stat),
+    file:write(PercvLatFile, io_lib:format("Num blocked is ~w, time blocked is ~w, cache hit is ~w \n", [NB, TB, CacheHit])),
     %file:write(PercvLatFile,  io_lib:format("EndTimeInt is ~w, EndTime is ~w \n", [EndTimeInt/1000000+15, to_integer(now())/1000000])),
     SortTune = lists:sort(TuneStat),
     lists:foreach(fun({{auto_tune, Round}, {Prev, PrevTh, Current, CurrentTh, Next}}) ->

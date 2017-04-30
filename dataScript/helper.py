@@ -86,6 +86,7 @@ def get_matching_series_delete(args, toremove, options):
                 break
         if skip == True:
             continue
+        print(rotate_field)
         if isinstance(value[int(rotate_field)], int) or value[int(rotate_field)].isdigit(): 
             rotate_field_set.add(int(value[int(rotate_field)]))
         else:

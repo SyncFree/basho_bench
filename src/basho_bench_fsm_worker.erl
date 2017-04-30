@@ -340,6 +340,7 @@ execute({'CLEANUP', Sender}, State=#state{store_cdf=StoreCdf, id=Id, name=Name, 
     case Id of 
         1 ->
             Value = (State#state.driver):get_stat(State#state.driver_state),
+            lager:info("Got value ~w", [Value]),
             Sender ! {Name, {stat, Value}};
         _ ->
             Sender ! {Name, cleaned_up}

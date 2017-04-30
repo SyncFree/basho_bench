@@ -13,7 +13,6 @@ import os
 import numpy as np
 import pandas as pd
 import re
-from plot_line_share import *
 from datetime import datetime
 
 def list_folders(path):
@@ -55,17 +54,17 @@ ax2 = plt.subplot2grid((1,2), (0,1))
 ax1.yaxis.labelpad = 22
 ax2.yaxis.labelpad = 11
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
-output_folder='./figures/vldb/' + time
+output_folder='./figures/vldb/tuning/' + time
 os.mkdir(output_folder)
-dict1={'y_labels':'Thousand txs/s', 'x_ticks':['No SR', 'SR', 'SR+SL1', 'SR+SL4', 'SR+SL8'], 'y_lim':4.9, 'legend_type':'warehouse', 'commit_legend':['10 clients static', '160 clients static', '10 clients tuning', '160 clients tuning'], 'x_labels':'Thousand txs/sec', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'latency_legend':['Latency', 'Baseline', 'STR: observed', 'STR: final'], 'has_legend':True, 'no_title':True, 'out_legend':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) Low local conflict, low remote conflict', 'bbox_loc':(1,1.13)}
+dict1={'y_labels':'Thousand txs/s', 'x_ticks':['No SR', 'SR', 'SR+SL1', 'SR+SL4', 'SR+SL8'], 'y_lim':4.9, 'legend_type':'warehouse', 'commit_legend':['10 clients static', '160 clients static', '10 clients ClockSI-Rep', '160 clients ClockSI-Rep', '10 clients tuning', '160 clients tuning'], 'x_labels':'Thousand txs/sec', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'latency_legend':['Latency', 'Baseline', 'STR: observed', 'STR: final'], 'has_legend':True, 'no_title':True, 'out_legend':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) Low local conflict, low remote conflict', 'bbox_loc':(1,1.13)}
 dict1['x_labels']=['300 cls', '600 cls', '900 cls', '1200 cls', '1500 cls']
-lgd=plot_multi_lines([[0.84, 0.88, 1.59, 2.77, 3.5], [4.54,4.51,4.02,1.47,0.76]], [3.28, 4.32], ax1, dict1)
+lgd=plot_multi_lines([[0.84, 0.88, 1.59, 2.77, 3.5], [4.54,4.51,4.02,1.47,0.76]], [0.785, 3.738], [3.6, 4.167], ax1, dict1)
 
 dict1['under_labels']='(b) High local conflict, high remote conflict'
 dict1['out_legend']=False
 dict1['y_labels']=False
 dict1['y_lim']=2.9
-plot_multi_lines([[0.62, 0.74, 1.19, 0.93, 0.59], [2.41, 2.43, 1.14, 0.94, 0.72]], [1.09, 2.43], ax2, dict1)
+plot_multi_lines([[0.62, 0.74, 1.19, 0.93, 0.59], [2.41, 2.43, 1.14, 0.94, 0.72]], [0.615, 1.876], [1.278, 2.021], ax2, dict1)
 
 fig.set_size_inches(16, 6.5)
 #fig.subplots_adjust(hspace = -1)

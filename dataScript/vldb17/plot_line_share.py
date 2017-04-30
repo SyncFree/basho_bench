@@ -13,7 +13,8 @@ def swap(l, i1, i2):
     l[i1] = l[i2]
     l[i2] = tmp
 
-def plot_multi_lines(throughput_list, lines, ax1, plot_dict):
+
+def plot_multi_lines(throughput_list, base1, base2, ax1, plot_dict):
     xticks_entry = dict() 
     
     fsize=18
@@ -40,20 +41,26 @@ def plot_multi_lines(throughput_list, lines, ax1, plot_dict):
     total_bars = len(throughput_list)
     offset = barwidth*total_bars/2
     for th_list in throughput_list:
-        location = [i-offset+line_index*barwidth for i in range(len(th_list))]
+        #location = [i-offset+line_index*barwidth for i in range(len(th_list))]
+        location = [i for i in range(len(th_list))]
         print(location)
-        h = ax1.bar(location, th_list, barwidth, color=colors[line_index], linewidth=line_width)
+        #h = ax1.bar(location, th_list, barwidth, color=colors[line_index], linewidth=line_width)
+        h = ax1.plot(location, th_list, color=colors[line_index], linewidth=line_width)
         line_index += 1
         handlers.append(h)
 
-    for i, line in enumerate(lines):
-        h, = ax1.plot([-0.5, 2, 4.5], [line, line, line], color=colors[i], marker=markers[i], linewidth=line_width,  markersize=marker_size)
+    for i, line in enumerate(base1):
+        h, = ax1.plot([0, 2, 4], [line, line, line], color=colors[i], marker=markers[i], linewidth=line_width, ls='--', markersize=marker_size)
+        handlers.append(h)
+
+    for i, line in enumerate(base2):
+        h, = ax1.plot([0, 2, 4], [line, line, line], color=colors[i], marker=markers[i], linewidth=line_width,  markersize=marker_size)
         handlers.append(h)
         
     if  'no_title' not in plot_dict:
         fig.suptitle(plot_dict['title'], fontsize=fsize)
 
-    ax1.set_xlim([0,5])
+    #ax1.set_xlim([0,4])
 
     if plot_dict['y_labels'] != False:
         ax1.set_ylabel(plot_dict['y_labels'], fontsize=ylabsize, labelpad=0) 
@@ -65,7 +72,7 @@ def plot_multi_lines(throughput_list, lines, ax1, plot_dict):
     ax1.set_xticks([0,1,2,3,4])
     ax1.set_xticklabels(plot_dict['x_ticks'], minor=False, fontsize=xlabsize)
     #ax1.set_xticks([0,1,2,3,4],plot_dict['x_ticks'])
-    ax1.set_xlim([-0.5,len(plot_dict['x_ticks'])-0.5])
+    ax1.set_xlim([0,len(plot_dict['x_ticks'])-1])
     ax1.yaxis.grid(True)
     #mpl.rcParams['ytick.labelsize'] = fsize
     ax1.tick_params(labelsize=fsize)
