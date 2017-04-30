@@ -60,9 +60,6 @@ MN=80
 SN=20
 CN=0
 
-
-if [ 1 == 2 ];
-then
 sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
@@ -134,7 +131,6 @@ do
     done
 done
 done
-fi
 
 ### Normal specula
 seq="1"

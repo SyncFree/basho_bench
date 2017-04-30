@@ -56,7 +56,7 @@ echo micro slave_range 2000000 >> config
 echo micro cache_range 1000000 >> config
 echo micro local_hot_range $local_hot_range >> config
 echo micro remote_hot_range $remote_hot_range >> config
-echo micro cache_hot_range $cache_hot_range >> config
+echo micro cache_hot_range $remote_hot_range >> config
 
 echo micro local_hot_rate $HotRate >> config
 echo micro remote_hot_rate $HotRate >> config
