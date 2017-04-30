@@ -86,8 +86,8 @@ sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_fil
 ./script/parallel_command.sh "cd basho_bench && sudo mkdir -p tests && sudo ./basho_bench examples/micro.config"
 
 #sudo kill 15 $pid
-./script/gatherThroughput.sh $Folder &
-./script/gatherLatency.sh $Folder &
+sudo ./script/gatherThroughput.sh $Folder &
+sudo ./script/gatherLatency.sh $Folder &
 cp ./tests/current/console.log $Folder
 #./script/copyFromAll.sh console.log ./basho_bench/tests/current/ $Folder & 
 wait

@@ -41,8 +41,8 @@ deter=false
 
 #Test remote read
 MN=80
-SN=0
-CN=20
+SN=20
+CN=0
 
 
 ### Normal specula
@@ -68,8 +68,8 @@ echo micro all_nodes replace >> config
 sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
 
-#sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-#sudo ./script/restartAndConnect.sh
+sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
+sudo ./script/restartAndConnect.sh
 
 for t in $threads
 do
@@ -84,6 +84,7 @@ do
         runNTimes
     done
 done
+exit
 
 MN=80
 SN=20
