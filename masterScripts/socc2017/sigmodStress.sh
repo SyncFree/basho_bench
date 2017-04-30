@@ -6,7 +6,7 @@ function runNTimes {
     do
         if [ $start_ind -gt $skip_len ]; then
         sudo ./script/preciseTime.sh
-        ./script/runMicroBench.sh $t $MN $SN $CN $MR $SR $CR $do_specula $len $specula_read $rep $prob_access $deter $folder $start_ind $clock 
+        ./script/runMicroBench.sh $t $MN $SN $CN $MR $SR $CR $do_specula $len $specula_read $rep $prob_access $deter $folder $start_ind $clock $HotRate
         skipped=1
         else
         echo "Skipped..."$start_ind
@@ -24,6 +24,7 @@ seq="1"
 #threads="32 64 96 128 160 192 224 256"
 #threads="128 64 32 16 8"
 #threads="160 80 40 20 10"
+HotRate=10
 threads="10 20 40 80"
 contentions="4 2"
 start_ind=1
