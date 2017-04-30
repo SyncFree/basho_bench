@@ -3,8 +3,11 @@ set -u
 set -e
 AllNodes=`cat script/allnodes`
 
-if [ $# -gt 11 ]
+if [ $# -lt 16 ]
 then
+    echo "Wrong usage: concurrent, master_num, slave_num, cache_num, master_range, slave_range, cache_range, do_specula, fast_reply, specula_length, pattern, repl_degree, folder"
+    exit
+else
     concurrent=$1
     master_num=$2
     slave_num=$3
@@ -21,14 +24,17 @@ then
     folder=${14}
     Seq=${15}
     Clock=${16}
-    if [ "$do_specula" == true ]; then
-	fast_reply=true
+    if [ $# -eq 17 ]
+    then
+        HotRate=${17}
     else
-	fast_reply=false
+        HotRate=90
     fi
-else
-    echo "Wrong usage: concurrent, master_num, slave_num, cache_num, master_range, slave_range, cache_range, do_specula, fast_reply, specula_length, pattern, repl_degree, folder"
-    exit
+    if [ "$do_specula" == true ]; then
+	    fast_reply=true
+    else
+	    fast_reply=false
+    fi
 fi
 
 
@@ -38,7 +44,7 @@ Folder=$folder/$Time
 echo "Folder to make is" $Folder
 mkdir $Folder
 touch $Folder/$Seq
-echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${16} > $Folder/config
+echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${16} $HotRate > $Folder/config
 sudo rm -f config
 echo ant concurrent $1 >> config 
 echo micro concurrent $1 >> config 
@@ -47,11 +53,15 @@ echo micro slave_num $slave_num >> config
 echo micro cache_num $cache_num >> config
 echo micro master_range 2000000 >> config
 echo micro slave_range 2000000 >> config
-echo micro local_hot_rate 90 >> config
-echo micro remote_hot_rate 90 >> config
 echo micro cache_range 1000000 >> config
 echo micro local_hot_range $local_hot_range >> config
 echo micro remote_hot_range $remote_hot_range >> config
+echo micro cache_hot_range $cache_hot_range >> config
+
+echo micro local_hot_rate $HotRate >> config
+echo micro remote_hot_rate $HotRate >> config
+echo micro remote_hot_rate $HotRate >> config
+
 echo micro prob_access $prob_access >> config
 echo micro pattern $pattern >> config
 #echo micro duration 60 >> config
