@@ -94,9 +94,9 @@ new(Id) ->
     TotalKey = basho_bench_config:get(total_key),
     Concurrent = basho_bench_config:get(concurrent),
    
-    MasterNum = basho_bench_config:get(master_num),
-    SlaveNum = basho_bench_config:get(slave_num),
-    CacheNum = basho_bench_config:get(cache_num),
+    MasterNum = basho_bench_config:get(master_num)*100,
+    SlaveNum = basho_bench_config:get(slave_num)*100,
+    CacheNum = basho_bench_config:get(cache_num)*100,
 
     MasterRange = basho_bench_config:get(master_range),
     SlaveRange = basho_bench_config:get(slave_range),
@@ -216,7 +216,7 @@ run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=Pa
             NoRepLen = length(NoRepIds),
             {_, WriteSet} 
                 = lists:foldl(fun(_, {Ind, WS}) ->
-                    Rand = random:uniform(100),
+                    Rand = random:uniform(10000),
                     case Rand =< MNum of
                         true -> 
                             Key = hot_or_not(1, LocalHotRange, MRange, LocalHotRate),
