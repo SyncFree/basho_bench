@@ -17,8 +17,8 @@ function runNTimes {
 
 seq="1"
 HotRate=90
-threads="40"
-contentions="1 2 4"
+threads="120"
+contentions="1 4"
 start_ind=1
 skipped=1
 skip_len=0
@@ -49,41 +49,36 @@ deter=false
 
 #Test remote read
 MN=80
-SN=0
+SN=20
 CN=0
-MNS="99.9 99 95 90 80"
 
-if [ 1 == 2 ]
+
+if [ 1 == 2 ];
 then
-#sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
-#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
-sudo ./masterScripts/initMachnines.sh 1 planet 
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
-
-rm -rf ./config
-echo micro duration 70 >> config
-echo micro auto_tune false >> config
-sudo ./script/copy_to_all.sh ./config ./basho_bench/
-sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
-
-# Baseline
+folder="specula_tests/planet"
+# PLANET
 clock="old"
 specula_read=false
 do_specula=true
 len=0
 length="0"
 
+sudo ./masterScripts/initMachnines.sh 1 planet 
+sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+rm -rf ./config
+echo micro duration 80 >> config
+echo micro auto_tune false >> config
+sudo ./script/copy_to_all.sh ./config ./basho_bench/
+sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
+
 sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-folder="specula_tests/remote/clocksirep"
-for MN in $MNS
-do
 for t in $threads
 do
 for len in $length
 do
-    sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
+    #sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
     for cont in $contentions
     do
         if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
@@ -95,22 +90,21 @@ do
     done
 done
 done
-done
 fi
-
 
 seq="1"
 do_specula=true
 specula_read=true
 clock=new
 len=0
+threads="120"
 #sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
 #sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
-folder="specula_tests/remote/external"
+folder="specula_tests/tune"
 rm -rf ./config
-echo micro duration 120 >> config
-echo micro auto_tune true >> config
+echo micro duration 90 >> config
+echo micro auto_tune false >> config
 echo micro tune_period 1 >> config
 echo micro tune_sleep 1 >> config
 echo micro centralized true >> config
@@ -120,11 +114,14 @@ sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
 
 
+if [ 1 == 2 ]
+then
 #sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
 #sudo ./script/restartAndConnect.sh
 
-for MN in $MNS
-do
+do_specula=false
+specula_read=false
+len=0
 for t in $threads
 do
     sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
@@ -138,35 +135,35 @@ do
         runNTimes
     done
 done
+
+
+do_specula=false
+specula_read=true
+len=0
+for t in $threads
+do
+    sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
+    for cont in $contentions
+    do
+        if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
+        elif [ $cont == 2 ]; then MR=$MSML CR=$CBIG
+        elif [ $cont == 3 ]; then  MR=$MBIG CR=$CSML
+        elif [ $cont == 4 ]; then  MR=$MSML CR=$CSML
+        fi
+        runNTimes
+    done
 done
+fi
 
 
-seq="1"
 do_specula=true
 specula_read=true
-clock=new
-len=0
-
-folder="specula_tests/remote/internal"
-rm -rf ./config
-echo micro duration 120 >> config
-echo micro auto_tune true >> config
-echo micro tune_period 1 >> config
-echo micro tune_sleep 1 >> config
-echo micro centralized true >> config
-echo micro max_len 1 >> config
-echo micro all_nodes replace >> config
-sudo ./script/copy_to_all.sh ./config ./basho_bench/
-sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
-
-sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
-
-for MN in $MNS
+lens="8"
+for len in $lens
 do
 for t in $threads
 do
-    sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
+    sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
     for cont in $contentions
     do
         if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
@@ -178,4 +175,5 @@ do
     done
 done
 done
+
 
