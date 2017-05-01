@@ -16,9 +16,9 @@ function runNTimes {
 } 
 
 seq="1"
-HotRate=10
-threads="10 20 40 80 120"
-contentions="1 2 4"
+HotRate=90
+threads="10 80"
+contentions="4"
 start_ind=1
 skipped=1
 skip_len=0
@@ -29,11 +29,16 @@ parts=28
 #rep=1
 #parts=4
 
-MBIG=500
-MSML=50
+#MBIG=500
+#MSML=50
 
-CBIG=200
-CSML=20
+#CBIG=200
+#CSML=20
+
+MBIG=30000
+MSML=1000
+CBIG=15000
+CSML=500
 
 MR=$MBIG 
 CR=$CBIG
@@ -158,7 +163,6 @@ do
         runNTimes
     done
 done
-fi
 
 
 ### Internal specula
@@ -166,18 +170,14 @@ seq="1"
 do_specula=true
 specula_read=true
 clock=new
-len=0
+lens="0 1 4 8"
 #sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
 #sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
-folder="specula_tests/internal"
+folder="specula_tests/tune"
 rm -rf ./config
 echo micro duration 100 >> config
-echo micro auto_tune true >> config
-echo micro tune_period 1 >> config
-echo micro tune_sleep 1 >> config
-echo micro centralized true >> config
-echo micro max_len 1 >> config
+echo micro auto_tune false >> config
 echo micro all_nodes replace >> config
 sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
@@ -186,6 +186,8 @@ sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_fil
 #sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
 #sudo ./script/restartAndConnect.sh
 
+for len in $lens
+do
 for t in $threads
 do
     sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
@@ -199,4 +201,28 @@ do
         runNTimes
     done
 done
+done
+fi
 
+lens="0"
+do_specula=true
+specula_read=false
+clock=new
+folder="specula_tests/tune"
+
+for len in $lens
+do
+for t in $threads
+do
+    sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
+    for cont in $contentions
+    do
+        if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
+        elif [ $cont == 2 ]; then MR=$MSML CR=$CBIG
+        elif [ $cont == 3 ]; then  MR=$MBIG CR=$CSML
+        elif [ $cont == 4 ]; then  MR=$MSML CR=$CSML
+        fi
+        runNTimes
+    done
+done
+done
