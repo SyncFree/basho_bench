@@ -16,7 +16,7 @@ function runNTimes {
 } 
 
 seq="1"
-HotRate=10
+HotRate=90
 threads="10 20 40 80"
 contentions="4 2"
 start_ind=1
