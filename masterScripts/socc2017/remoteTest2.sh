@@ -43,10 +43,8 @@ deter=false
 MN=80
 SN=0
 CN=0
-MNS="99.9 99 95 90 80"
+SNS="19.9 19 15 10"
 
-if [ 1 == 2 ];
-then
 sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 sudo ./masterScripts/initMachnines.sh 1 planet 
@@ -69,7 +67,7 @@ sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_
 sudo ./script/restartAndConnect.sh
 
 folder="specula_tests/remote/clocksirep"
-for MN in $MNS
+for SN in $SNS
 do
 for t in $threads
 do
@@ -88,9 +86,9 @@ do
 done
 done
 done
-fi
 
 
+SNS="19.9 19 15 10 0"
 seq="1"
 do_specula=true
 specula_read=true
@@ -115,7 +113,7 @@ sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_fil
 sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-for MN in $MNS
+for SN in $SNS
 do
 for t in $threads
 do
@@ -154,7 +152,7 @@ sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_fil
 sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-for MN in $MNS
+for SN in $SNS
 do
 for t in $threads
 do
