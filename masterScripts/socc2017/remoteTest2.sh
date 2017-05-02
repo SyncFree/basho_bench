@@ -15,7 +15,7 @@ function runNTimes {
     done
 } 
 
-seq="1 2"
+seq="1"
 HotRate=90
 threads="40"
 contentions="1 2 4"
@@ -45,6 +45,8 @@ SN=0
 CN=0
 SNS="19.9 19 15 10 0"
 
+if [ 1 == 2 ];
+then
 sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 sudo ./masterScripts/initMachnines.sh 1 planet 
@@ -66,7 +68,7 @@ length="0"
 sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-folder="specula_tests/remote/clocksirep"
+folder="specula_tests/remote2/clocksirep"
 for SN in $SNS
 do
 for t in $threads
@@ -86,6 +88,7 @@ do
 done
 done
 done
+fi
 
 
 SNS="19.9 19 15 10 0"
@@ -93,14 +96,14 @@ seq="1"
 do_specula=true
 specula_read=true
 clock=new
-len=0
+len=3
 sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
-folder="specula_tests/remote/external"
+folder="specula_tests/remote2/external"
 rm -rf ./config
-echo micro duration 150 >> config
-echo micro auto_tune true >> config
+echo micro duration 80 >> config
+echo micro auto_tune false >> config
 echo micro tune_period 1 >> config
 echo micro tune_sleep 1 >> config
 echo micro centralized true >> config
@@ -135,12 +138,12 @@ seq="1"
 do_specula=true
 specula_read=true
 clock=new
-len=0
+len=1
 
-folder="specula_tests/remote/internal"
+folder="specula_tests/remote2/internal"
 rm -rf ./config
-echo micro duration 100 >> config
-echo micro auto_tune true >> config
+echo micro duration 80 >> config
+echo micro auto_tune false >> config
 echo micro tune_period 1 >> config
 echo micro tune_sleep 1 >> config
 echo micro centralized true >> config
