@@ -96,14 +96,14 @@ seq="1"
 do_specula=true
 specula_read=true
 clock=new
-len=3
-sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+len=0
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 folder="specula_tests/remote2/external"
 rm -rf ./config
-echo micro duration 80 >> config
-echo micro auto_tune false >> config
+echo micro duration 100 >> config
+echo micro auto_tune true >> config
 echo micro tune_period 1 >> config
 echo micro tune_sleep 1 >> config
 echo micro centralized true >> config
@@ -114,7 +114,7 @@ sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_fil
 
 
 sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
+#sudo ./script/restartAndConnect.sh
 
 for SN in $SNS
 do
@@ -132,6 +132,7 @@ do
     done
 done
 done
+exit
 
 
 seq="1"
