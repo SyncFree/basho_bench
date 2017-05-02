@@ -15,7 +15,7 @@ function runNTimes {
     done
 } 
 
-seq="1"
+seq="1 2"
 HotRate=90
 threads="40"
 contentions="1 2 4"
@@ -43,7 +43,7 @@ deter=false
 MN=80
 SN=0
 CN=0
-SNS="19.9 19 15 10"
+SNS="19.9 19 15 10 0"
 
 sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
