@@ -30,6 +30,12 @@ else
     else
         HotRate=90
     fi
+    if [ $# -eq 18 ]
+    then
+        NumKeys=${18}
+    else
+        NumKeys=10
+    fi
     if [ "$do_specula" == true ]; then
 	    fast_reply=true
     else
@@ -44,7 +50,7 @@ Folder=$folder/$Time
 echo "Folder to make is" $Folder
 mkdir $Folder
 touch $Folder/$Seq
-echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${16} $HotRate > $Folder/config
+echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${16} $NumKeys $HotRate > $Folder/config
 sudo rm -f config
 echo ant concurrent $1 >> config 
 echo micro concurrent $1 >> config 
@@ -65,7 +71,7 @@ echo micro remote_hot_rate $HotRate >> config
 echo micro prob_access $prob_access >> config
 echo micro pattern $pattern >> config
 #echo micro duration 60 >> config
-echo micro total_key 10 >> config
+echo micro total_key $NumKeys >> config
 echo micro specula $do_specula >> config
 echo micro deter $deter >> config
 #ToSleep=$((40000 / ${1}))

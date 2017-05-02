@@ -488,7 +488,6 @@ worker_next_op(State) ->
             end;
         %% Committed! Means all previous update txns are committed. So just start a new txn
         {Res, MetaInfo, DriverState} when Res == ok orelse element(1, Res) == ok ->
-            %lager:warning("Op ~w finished, op type is ~w, speculaseq is ~w, specula txs are ~w, final committed are ~w", [OpTag, CurrentOpType, UpdateSeq, SpeculaTxs, FinalCommitUpdates]),
             CurrentOpType = update,
             {ReadTxs2, FinalCdf2, SpeculaCdf2, SpeculaTxs2} = case MetaInfo of 
                 {AbortedReads, FinalCommitUpdates, FinalCommitReads} ->
@@ -498,6 +497,7 @@ worker_next_op(State) ->
                     {FinalCdf1, SpeculaCdf1, SpeculaTxs1} = commit_updates(FinalCdf00, SpeculaCdf00, [{UpdateSeq, Now}], SpeculaTxs00, [], Now),
                     {ReadTxs1, FinalCdf1, SpeculaCdf1, SpeculaTxs1};
                 {AbortedReads, FinalCommitUpdates, FinalCommitReads, SpecCommitTime} ->
+                   %lager:warning("Op ~w finished, op type is ~w, speculaseq is ~w, specula txs are ~w, final committed are ~w", [OpTag, CurrentOpType, UpdateSeq, SpeculaTxs, FinalCommitUpdates]),
                     ReadTxs00 = finalize_reads(reverse_sort(FinalCommitReads), ReadTxs, [], ok),
                     ReadTxs1 = finalize_reads(reverse_sort(AbortedReads), ReadTxs00, [], {error, specula_abort}),
                     {FinalCdf00, SpeculaCdf00, SpeculaTxs00} = commit_updates(FinalCdf, SpeculaCdf, FinalCommitUpdates, SpeculaTxs, [], Now),
@@ -586,21 +586,33 @@ worker_next_op(State) ->
             {next_state, execute, State#state{driver_state=DriverState, todo_op={RetryOpSeq, NextOpName}, update_seq=RetryOpSeq, op_type=update, specula_txs=SpeculaTxs1, read_txs=ReadTxs2, specula_cdf=SpeculaCdf1, final_cdf=FinalCdf1, seed=StartTime, store_cdf=StoreCdf, i_abort=0}, 0};
         {aborted, {AbortedReads, FinalCommitUpdates, FinalCommitReads}, DriverState} ->
 	        %lager:warning("Op aborted! seq is ~w, list is ~w", [UpdateSeq, SpeculaTxs]),
-            %State#state.shutdown_on_error andalso
-            %    erlang:send_after(500, basho_bench,
-            %                      {shutdown, "Shutdown on errors requested", 1}),
             ReadTxs1 = finalize_reads(reverse_sort(FinalCommitReads), ReadTxs, [], ok),
             %case FinalCommitUpdates of [] -> ok; _ ->lager:warning("Commit updates before abort, FinalCommitUpdates are ~w", [FinalCommitUpdates]) end,
             ReadTxs2 = finalize_reads(reverse_sort(AbortedReads), ReadTxs1, [], {error, specula_abort}),
             {FinalCdf1, SpeculaCdf1, SpeculaTxs1} = commit_updates(FinalCdf, SpeculaCdf, FinalCommitUpdates, SpeculaTxs, [], Now),
-                      %% Add abort of this txn to stat, if no cascading abort was found 
             basho_bench_stats:op_complete({OpTag, OpTag}, {error, immediate_abort}),
-            %{Sum, Count} = AbortStat,
-            %AbortStat1 = {timer:now_diff(Now, Seed)+Sum, Count+1},
             %BackoffTime = case OpTag of store_bid -> round(random:uniform()*100)*(IAbort+1); _ -> 0 end,
             %random:seed(os:timestamp()),
             %BackoffTime = round(random:uniform()*100)*(IAbort+1),
-	    BackoffTime = 0,
+	        BackoffTime = 0,
+            {next_state, execute, State#state{driver_state=DriverState, update_seq=UpdateSeq, store_cdf=StoreCdf,  
+                    specula_txs=SpeculaTxs1, read_txs=ReadTxs2, specula_cdf=SpeculaCdf1, i_abort=IAbort+1, final_cdf=FinalCdf1}, BackoffTime};
+        {aborted, {IfAfterLocal, AbortedReads, FinalCommitUpdates, FinalCommitReads}, DriverState} ->
+	        %lager:warning("Op aborted! seq is ~w, list is ~w", [UpdateSeq, SpeculaTxs]),
+            ReadTxs1 = finalize_reads(reverse_sort(FinalCommitReads), ReadTxs, [], ok),
+            %case FinalCommitUpdates of [] -> ok; _ ->lager:warning("Commit updates before abort, FinalCommitUpdates are ~w", [FinalCommitUpdates]) end,
+            ReadTxs2 = finalize_reads(reverse_sort(AbortedReads), ReadTxs1, [], {error, specula_abort}),
+            {FinalCdf1, SpeculaCdf1, SpeculaTxs1} = commit_updates(FinalCdf, SpeculaCdf, FinalCommitUpdates, SpeculaTxs, [], Now),
+            case IfAfterLocal of
+                true ->
+                    basho_bench_stats:op_complete({OpTag, OpTag}, {error, specula_abort});
+                false ->
+                    basho_bench_stats:op_complete({OpTag, OpTag}, {error, immediate_abort})
+            end,
+            %BackoffTime = case OpTag of store_bid -> round(random:uniform()*100)*(IAbort+1); _ -> 0 end,
+            %random:seed(os:timestamp()),
+            %BackoffTime = round(random:uniform()*100)*(IAbort+1),
+	        BackoffTime = 0,
             {next_state, execute, State#state{driver_state=DriverState, update_seq=UpdateSeq, store_cdf=StoreCdf,  
                     specula_txs=SpeculaTxs1, read_txs=ReadTxs2, specula_cdf=SpeculaCdf1, i_abort=IAbort+1, final_cdf=FinalCdf1}, BackoffTime};
         {wrong_msg, DriverState} ->

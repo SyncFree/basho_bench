@@ -56,10 +56,11 @@ def parse_file(mydict, config, myfile):
             aborted += int(nums[4])+int(nums[5])
             duration += 10
     avg_throughput = committed / duration
+    avg_abort = aborted / duration
     if config not in mydict:
-        mydict[config] = [avg_throughput] 
+        mydict[config] = [(avg_throughput, avg_abort)] 
     else:
-        mydict[config].append(avg_throughput)
+        mydict[config].append((avg_throughput, avg_abort))
 
 folder = sys.argv[1]
 dict={}
@@ -78,5 +79,8 @@ for f in sub_folders:
 for key in key_list:
     print key
     #print str(np.average(dict[key])) +","+str(np.std(dict[key]))
-    print np.average(dict[key])
+    avg_th = np.average([v[0] for v in dict[key]])
+    avg_abort = np.average([v[1] for v in dict[key]])
     #print np.average(dict[key])
+    #print np.average(dict[key])
+    print str(avg_th) +", "+ str(avg_abort)+", rate is "+str(avg_abort/(avg_th+avg_abort))
