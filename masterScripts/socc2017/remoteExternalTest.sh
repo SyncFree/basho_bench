@@ -47,10 +47,8 @@ CN=0
 #SNS="19.9 19 15 10 0"
 SNS="45 40 30 0"
 
-if [ 1 == 2 ];
-then
-sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 sudo ./masterScripts/initMachnines.sh 1 planet 
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
@@ -70,7 +68,7 @@ length="0"
 sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-folder="specula_tests/remote2/clocksirep"
+folder="specula_tests/remote_tt"
 for SN in $SNS
 do
 for t in $threads
@@ -90,7 +88,7 @@ do
 done
 done
 done
-fi
+exit
 
 seq="1"
 do_specula=true

@@ -23,10 +23,10 @@ skipped=1
 skip_len=0
 prob_access=t
 
-#rep=5
-#parts=28
-rep=1
-parts=4
+rep=5
+parts=28
+#rep=3
+#parts=8
 
 MR=$MBIG 
 CR=$CBIG
@@ -46,8 +46,8 @@ specula_read=true
 clock=new
 len=0
 threads="40"
-#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 folder="specula_tests/precise_read"
 rm -rf ./config
@@ -62,8 +62,8 @@ sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
 
 
-#sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-#sudo ./script/restartAndConnect.sh
+sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
+sudo ./script/restartAndConnect.sh
 SR=1000000
 
 for t in $threads
