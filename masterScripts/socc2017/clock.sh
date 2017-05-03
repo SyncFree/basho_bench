@@ -25,6 +25,8 @@ prob_access=t
 
 rep=5
 parts=28
+#rep=3
+#parts=8
 
 MR=$MBIG 
 CR=$CBIG
@@ -62,6 +64,7 @@ sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_fil
 
 sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
+SR=1000000
 
 for t in $threads
 do

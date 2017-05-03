@@ -18,14 +18,14 @@ function runNTimes {
 seq="1"
 HotRate=90
 threads="40"
-contentions="1 2 4"
+contentions="1 4"
 start_ind=1
 skipped=1
 skip_len=0
 prob_access=t
 
-rep=5
-parts=28
+rep=1
+parts=4
 
 MBIG=30000
 MSML=1000
@@ -40,15 +40,15 @@ SR=$CBIG
 deter=false
 
 #Test remote read
-MN=80
+#MN=80
+MN=50
 SN=0
 CN=0
-SNS="19.9 19 15 10 0"
+#SNS="19.9 19 15 10 0"
+SNS="45 40 30 0"
 
-if [ 1 == 2 ];
-then
-sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 sudo ./masterScripts/initMachnines.sh 1 planet 
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
@@ -68,7 +68,7 @@ length="0"
 sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-folder="specula_tests/remote2/clocksirep"
+folder="specula_tests/remote_tt"
 for SN in $SNS
 do
 for t in $threads
@@ -88,21 +88,19 @@ do
 done
 done
 done
-fi
+exit
 
-
-SNS="19.9 19 15 10 0"
 seq="1"
 do_specula=true
-specula_read=true
+specula_read=false
 clock=new
 len=0
 #sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
 #sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
-folder="specula_tests/remote2/external"
+folder="specula_tests/remote_tt/"
 rm -rf ./config
-echo micro duration 100 >> config
+echo micro duration 130 >> config
 echo micro auto_tune true >> config
 echo micro tune_period 1 >> config
 echo micro tune_sleep 1 >> config
@@ -113,7 +111,7 @@ sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
 
 
-sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
+#sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
 #sudo ./script/restartAndConnect.sh
 
 for SN in $SNS
