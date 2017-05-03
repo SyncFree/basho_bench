@@ -150,13 +150,22 @@ write_cdf(Stat) ->
     %            end, AbortStat),
     
     case Stat of
-	nil ->
-	    ok;
-	_ ->
-	    [NB|_] = Stat,
-	    TB = lists:nth(2, Stat),
-	    CacheHit = lists:nth(3, Stat),
-	    file:write(PercvLatFile, io_lib:format("Num blocked is ~w, time blocked is ~w, cache hit is ~w \n", [NB, TB, CacheHit]))
+	    {nil, ReadStat} ->
+            {LMReadTime, LMRNum} = lists:nth(1, ReadStat),
+            {LRReadTime, LRRNum} = lists:nth(2, ReadStat),
+            {CacheReadTime, CRNum} = lists:nth(3, ReadStat),
+            {ReadTime, RNum} = lists:nth(4, ReadStat),
+            file:write(PercvLatFile, io_lib:format("Avg lm read is ~w, avg lr is ~w, avg cr is ~w, avg read is ~w\n", [LMReadTime div max(1,LMRNum), LRReadTime div max(1,LRRNum), CacheReadTime div max(1,CRNum), ReadTime div max(RNum, 1)]));
+	    {BlockStat, ReadStat} ->
+	        [NB|_] = BlockStat,
+	        TB = lists:nth(2, BlockStat),
+	        CacheHit = lists:nth(3, BlockStat),
+	        file:write(PercvLatFile, io_lib:format("Num blocked is ~w, time blocked is ~w, cache hit is ~w \n", [NB, TB, CacheHit])),
+            {LMReadTime, LMRNum} = lists:nth(1, ReadStat),
+            {LRReadTime, LRRNum} = lists:nth(2, ReadStat),
+            {CacheReadTime, CRNum} = lists:nth(3, ReadStat),
+            {ReadTime, RNum} = lists:nth(4, ReadStat),
+            file:write(PercvLatFile, io_lib:format("Avg lm read is ~w, avg lr is ~w, avg cr is ~w, avg read is ~w\n", [LMReadTime div max(1,LMRNum), LRReadTime div max(1,LRRNum), CacheReadTime div max(1,CRNum), ReadTime div max(RNum, 1)]))
     end,
     %file:write(PercvLatFile,  io_lib:format("EndTimeInt is ~w, EndTime is ~w \n", [EndTimeInt/1000000+15, to_integer(now())/1000000])),
     SortTune = lists:sort(TuneStat),

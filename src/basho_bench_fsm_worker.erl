@@ -98,22 +98,31 @@ cleanup(Children, Stat0) ->
                 ok -> F;
                 _ -> [C|F] 
 		    end end, [], Children),
-    {Stat, RecvNames} = lists:foldl(fun(_, {OldStat, RNames}) -> 
-                receive {Name, {stat, Value}} -> OldStat = nil, {Value, [Name|RNames]};
-                        {Name, cleaned_up} -> {OldStat, [Name|RNames]}
+    {Stat, RecvNames, ReadStat1} = lists:foldl(fun(_, {OldStat, RNames, OldRead}) -> 
+                receive {Name, cleaned_up, ReadStat} -> 
+                            {OldStat, [Name|RNames], add_up(ReadStat, OldRead)};
+                        {Name, Value, ReadStat} -> 
+                            OldStat = nil, 
+                            {Value, [Name|RNames], add_up(ReadStat, OldRead)}
 		        after
-			    100 ->
-			      {OldStat, RNames}
+			     500 ->
+                  lager:warning("Some one has failed!!!!"),
+			      {OldStat, RNames, OldRead}
                 end end, 
-                {Stat0, []}, Children),
+                {Stat0, [], [{0,0}, {0,0}, {0,0}, {0,0}]}, Children),
     RemainNames = Children -- RecvNames -- Failed,
     case RemainNames of
-	[] -> Stat;
+	[] -> {Stat, ReadStat1};
 	_ -> 
-    	     lager:info("~w has not finished!", [RemainNames]),
+        lager:info("~w has not finished!", [RemainNames]),
 	     %cleanup(RemainNames, Stat)
-	     Stat
+	     {Stat, ReadStat1}
     end.
+
+add_up([], []) ->
+    [];
+add_up([{K1, V1}|T1], [{K2, V2}|T2]) ->
+    [{K1+K2, V1+V2}|add_up(T1, T2)].
 
 suspend(Pids) ->
     [ok = gen_fsm:send_event(Pid, 'SUSPEND') || Pid <- Pids],
@@ -332,19 +341,13 @@ execute({'EXIT', Reason}, State) ->
             {stop, normal, State}
     end;
 
-execute({'CLEANUP', Sender}, State=#state{store_cdf=StoreCdf, id=Id, name=Name, final_cdf=FinalCdf, specula_cdf=SpeculaCdf}) ->
+execute({'CLEANUP', Sender}, State=#state{store_cdf=StoreCdf, name=Name, final_cdf=FinalCdf, specula_cdf=SpeculaCdf}) ->
     {Cnt, _Start, _Period} = StoreCdf,
     ets:insert(final_cdf, {{Cnt, State#state.id}, FinalCdf}), 
     ets:insert(percv_cdf, {{Cnt, State#state.id}, SpeculaCdf}),
     %ets:insert(stat, {{abort_stat, State#state.id}, AbortStat}),
-    case Id of 
-        1 ->
-            Value = (State#state.driver):get_stat(State#state.driver_state),
-            lager:info("Got value ~w", [Value]),
-            Sender ! {Name, {stat, Value}};
-        _ ->
-            Sender ! {Name, cleaned_up}
-    end,
+    {BlockStat, ReadStat} = (State#state.driver):get_stat(State#state.driver_state),
+    Sender ! {Name, BlockStat, ReadStat},
     (catch (State#state.driver):terminate(haha, State#state.driver_state)),
     {stop, normal, State};
 
