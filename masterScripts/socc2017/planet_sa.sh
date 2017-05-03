@@ -18,7 +18,7 @@ function runNTimes {
 seq="1"
 HotRate=90
 threads="10 20 40 80"
-contentions="1 2 4"
+contentions="3"
 start_ind=1
 skipped=1
 skip_len=0
@@ -52,8 +52,8 @@ MN=80
 SN=20
 CN=0
 
-#sudo ./masterScripts/initMachnines.sh 1 planet 
-#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+sudo ./masterScripts/initMachnines.sh 1 planet 
+sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 rm -rf ./config
 echo micro duration 70 >> config
@@ -68,8 +68,8 @@ do_specula=true
 len=0
 length="0"
 
-#sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
-#sudo ./script/restartAndConnect.sh
+sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
+sudo ./script/restartAndConnect.sh
 
 folder="specula_tests/planet_sa"
 for t in $threads
