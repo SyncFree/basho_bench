@@ -17,7 +17,7 @@ function runNTimes {
 
 seq="1"
 HotRate=90
-contentions="1 2 3 4 5"
+contentions="4 5"
 start_ind=1
 skipped=1
 skip_len=0
@@ -39,18 +39,18 @@ deter=false
 MN=80
 SN=20
 CN=0
-SR=640000
+SR=800000
 
 do_specula=true
 specula_read=true
 clock=new
 len=0
 threads="40"
-sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 folder="specula_tests/clock/precise_read"
 rm -rf ./config
-echo micro duration 80 >> config
+echo micro duration 70 >> config
 echo micro auto_tune false >> config
 echo micro tune_period 1 >> config
 echo micro tune_sleep 1 >> config
@@ -62,7 +62,7 @@ sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_fil
 
 
 sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
+#sudo ./script/restartAndConnect.sh
 
 for t in $threads
 do
@@ -70,9 +70,9 @@ do
     do
         if [ $cont == 1 ]; then MR=1000 CR=1000 NumKeys=10
         elif [ $cont == 2 ]; then MR=4000 CR=4000 NumKeys=20
-        elif [ $cont == 3 ]; then  MR=16000 CR=16000 NumKeys=40
-        elif [ $cont == 4 ]; then  MR=64000 CR=64000 NumKeys=100
-        elif [ $cont == 5 ]; then MR=256000 CR=256000 NumKeys=200
+        elif [ $cont == 3 ]; then  MR=18000 CR=18000 NumKeys=40
+        elif [ $cont == 4 ]; then  MR=80000 CR=80000 NumKeys=100
+        elif [ $cont == 5 ]; then MR=280000 CR=280000 NumKeys=200
         fi
         runNTimes
     done
@@ -91,9 +91,9 @@ do
     do
         if [ $cont == 1 ]; then MR=1000 CR=1000 NumKeys=10
         elif [ $cont == 2 ]; then MR=4000 CR=4000 NumKeys=20
-        elif [ $cont == 3 ]; then  MR=16000 CR=16000 NumKeys=40
-        elif [ $cont == 4 ]; then  MR=64000 CR=64000 NumKeys=100
-        elif [ $cont == 5 ]; then MR=256000 CR=256000 NumKeys=200
+        elif [ $cont == 3 ]; then  MR=18000 CR=18000 NumKeys=40
+        elif [ $cont == 4 ]; then  MR=80000 CR=80000 NumKeys=100
+        elif [ $cont == 5 ]; then MR=280000 CR=280000 NumKeys=200
         fi
         runNTimes
     done
@@ -118,7 +118,7 @@ length="0"
 sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-folder="specula_tests/physical_read"
+folder="specula_tests/clock/physical_read"
 for t in $threads
 do
 for len in $length
@@ -128,16 +128,16 @@ do
     do
         if [ $cont == 1 ]; then MR=1000 CR=1000 NumKeys=10
         elif [ $cont == 2 ]; then MR=4000 CR=4000 NumKeys=20
-        elif [ $cont == 3 ]; then  MR=16000 CR=16000 NumKeys=40
-        elif [ $cont == 4 ]; then  MR=64000 CR=64000 NumKeys=100
-        elif [ $cont == 5 ]; then MR=256000 CR=256000 NumKeys=200
+        elif [ $cont == 3 ]; then  MR=18000 CR=18000 NumKeys=40
+        elif [ $cont == 4 ]; then  MR=80000 CR=80000 NumKeys=100
+        elif [ $cont == 5 ]; then MR=280000 CR=280000 NumKeys=200
         fi
         runNTimes
     done
 done
 done
 
-folder="specula_tests/physical"
+folder="specula_tests/clock/physical"
 clock="old"
 specula_read=false
 do_specula=true
@@ -152,9 +152,9 @@ do
     do
         if [ $cont == 1 ]; then MR=1000 CR=1000 NumKeys=10
         elif [ $cont == 2 ]; then MR=4000 CR=4000 NumKeys=20
-        elif [ $cont == 3 ]; then  MR=16000 CR=16000 NumKeys=40
-        elif [ $cont == 4 ]; then  MR=64000 CR=64000 NumKeys=100
-        elif [ $cont == 5 ]; then MR=256000 CR=256000 NumKeys=200
+        elif [ $cont == 3 ]; then  MR=18000 CR=18000 NumKeys=40
+        elif [ $cont == 4 ]; then  MR=80000 CR=80000 NumKeys=100
+        elif [ $cont == 5 ]; then MR=280000 CR=280000 NumKeys=200
         fi
         runNTimes
     done
