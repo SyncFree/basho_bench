@@ -17,7 +17,7 @@ function runNTimes {
 
 seq="1"
 HotRate=90
-threads="40"
+threads="10"
 contentions="1 4"
 start_ind=1
 skipped=1
@@ -44,12 +44,15 @@ MN=50
 SN=0
 CN=0
 #SNS="19.9 19 15 10 0"
-SNS="45 40 30 0"
+SNS="49 45 40 30"
 
+
+if [ 1 == 2 ];
+then
 #sudo ./masterScripts/initMachnines.sh 1 benchmark_no_specula_remove_stat
 #sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
-#sudo ./masterScripts/initMachnines.sh 1 planet 
-#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+sudo ./masterScripts/initMachnines.sh 1 planet 
+sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 rm -rf ./config
 echo micro duration 70 >> config
@@ -64,8 +67,8 @@ do_specula=true
 len=0
 length="0"
 
-#sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
-#sudo ./script/restartAndConnect.sh
+sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
+sudo ./script/restartAndConnect.sh
 
 folder="specula_tests/new_remote/clocksirep"
 for SN in $SNS
@@ -88,14 +91,16 @@ done
 done
 done
 
+fi
 
 seq="1"
 do_specula=true
 specula_read=true
 clock=new
-len=4
-sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+len=6
+contentions="1"
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 folder="specula_tests/new_remote/external"
 rm -rf ./config
@@ -134,7 +139,7 @@ contentions="4"
 do_specula=true
 specula_read=true
 clock=new
-len=1
+len=2
 for SN in $SNS
 do
 for t in $threads
@@ -160,7 +165,7 @@ specula_read=true
 clock=new
 len=1
 
-folder="specula_tests/remote2/internal"
+folder="specula_tests/new_remote/internal"
 rm -rf ./config
 echo micro duration 80 >> config
 echo micro auto_tune false >> config
