@@ -60,7 +60,7 @@
   0},
  {<<"riak_pb">>,
   {git,"git://github.com/syncfree/riak_pb",
-       {ref,"322309b2bb69b38191a51b21247a71b5e412e656"}},
+       {ref,"e691219439f89c3ad5dd5e1f8a567e4bcf609651"}},
   0},
  {<<"snappy">>,
   {git,"https://github.com/rpt/snappy.git",
