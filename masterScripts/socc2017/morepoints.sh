@@ -18,7 +18,7 @@ function runNTimes {
 seq="1"
 HotRate=90
 threads="30 60"
-contentions="1 2 3 4"
+contentions="1 2 4"
 start_ind=1
 skipped=1
 skip_len=0
@@ -52,8 +52,10 @@ MN=80
 SN=20
 CN=0
 
-sudo ./masterScripts/initMachnines.sh 1 planet 
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+if [ 1 == 2 ];
+then
+#sudo ./masterScripts/initMachnines.sh 1 planet 
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 
 folder="specula_tests/morepoints/planet"
@@ -89,14 +91,15 @@ do
     done
 done
 done
+fi
 
 seq="1"
 do_specula=true
-specula_read=false
+specula_read=true
 clock=new
 len=0
-sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+#sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 folder="specula_tests/morepoints/external"
 rm -rf ./config
@@ -111,8 +114,8 @@ sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
 
 
-sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-sudo ./script/restartAndConnect.sh
+#sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
+#sudo ./script/restartAndConnect.sh
 
 for t in $threads
 do
