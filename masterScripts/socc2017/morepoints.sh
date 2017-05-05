@@ -92,7 +92,7 @@ done
 
 seq="1"
 do_specula=true
-specula_read=true
+specula_read=false
 clock=new
 len=0
 sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
