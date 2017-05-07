@@ -64,7 +64,7 @@ ax33 = plt.subplot2grid((3,3), (2,2))
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
 output_folder='./figures/vldb/tpcc/' + time
 os.mkdir(output_folder)
-dict1={'y_lim':2.5, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR-Internal', 'STR-External'], 'y1_label':'Thousand txs/sec', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) 5% new order, 83% payment', 'bbox_loc':(1.5,1.42)}
+dict1={'y_lim':2.5, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR-Internal', 'STR-External'], 'y1_label':'K txs/sec', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) 5% new order, 83% payment', 'bbox_loc':(1.5,1.42)}
 dict1['x_ticks']=[10, 100, 200, 400, 600, 800, 1000, 1200]
 dict1['sc']={1,3}
 

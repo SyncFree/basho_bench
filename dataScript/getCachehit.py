@@ -113,7 +113,7 @@ for key in key_list:
     tdur = sum([v[0] for v in param_dict[key]])
     tcom = sum([v[2] for v in param_dict[key]])
     cache_hit_rate = ch / (remote_rate * 10 * tcom) 
-    blocked_duration = tb / (tdur * 40 * 27) 
+    blocked_duration = tb / (tdur * 40 * len(param_dict[key])) 
     output += ": "+str(remote_rate)+", latency is "+str(avg_lat)+", nb is "+str(nb)+", tb is "+str(tb)+", cache hit is "+str(ch)+", total duration "+str(tdur)+", total committed "+str(tcom)+", cache hit is "+str(cache_hit_rate)+", blocked perct is "+str(blocked_duration)
     print output
     output = ""

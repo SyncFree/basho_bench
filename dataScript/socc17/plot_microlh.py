@@ -50,18 +50,18 @@ int_folder='processed_data/micro/internal'
 ext_folder='processed_data/micro/external'
 
 fig = plt.figure()
-ax11 = plt.subplot2grid((3,4), (0,0))
-ax12 = plt.subplot2grid((3,4), (1,0))
-ax13 = plt.subplot2grid((3,4), (2,0))
-ax21 = plt.subplot2grid((3,4), (0,1))
-ax22 = plt.subplot2grid((3,4), (1,1))
-ax23 = plt.subplot2grid((3,4), (2,1))
-ax31 = plt.subplot2grid((3,4), (0,2))
-ax32 = plt.subplot2grid((3,4), (1,2))
-ax33 = plt.subplot2grid((3,4), (2,2))
-ax41 = plt.subplot2grid((3,4), (0,3))
-ax42 = plt.subplot2grid((3,4), (1,3))
-ax43 = plt.subplot2grid((3,4), (2,3))
+ax11 = plt.subplot2grid((3,3), (0,0))
+ax12 = plt.subplot2grid((3,3), (1,0))
+ax13 = plt.subplot2grid((3,3), (2,0))
+ax21 = plt.subplot2grid((3,3), (0,1))
+ax22 = plt.subplot2grid((3,3), (1,1))
+ax23 = plt.subplot2grid((3,3), (2,1))
+ax31 = plt.subplot2grid((3,3), (0,2))
+ax32 = plt.subplot2grid((3,3), (1,2))
+ax33 = plt.subplot2grid((3,3), (2,2))
+#ax41 = plt.subplot2grid((3,3), (0,3))
+#ax42 = plt.subplot2grid((3,3), (1,3))
+#ax43 = plt.subplot2grid((3,3), (2,3))
 
 
 #ax1.yaxis.labelpad = 22
@@ -69,7 +69,7 @@ ax43 = plt.subplot2grid((3,4), (2,3))
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
 output_folder='./figures/vldb/micro/' + time
 os.mkdir(output_folder)
-dict1={'y_lim':4.9, 'legend_type':'warehouse', 'x_ticks':[10,20,40,80], 'legends':['ClockSI-Rep', 'PLANET', 'STR-Internal', 'STR-External'], 'y1_label':'Thousand txs/sec', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) Low local, low remote', 'bbox_loc':(1.48,1.42)}
+dict1={'y_lim':4.9, 'legend_type':'warehouse', 'x_ticks':[10,20,40,80], 'legends':['ClockSI-Rep', 'PLANET', 'STR-Internal', 'STR-External'], 'y1_label':'K txs/sec', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) Low local, low remote', 'bbox_loc':(1.48,1.42)}
 dict1['x_labels']=['300 cls', '600 cls', '900 cls', '1200 cls', '1500 cls']
 dict1['sc']= {1,3}
 
@@ -118,7 +118,6 @@ baselineLL=sort_by_num(baselineLL)
 baselineLL=baselineLL[:-1]
 [planetLL]=get_matching_series_delete([planet_folder, 'micro', 4, 6, 30000, 500, 1], [], {'order':'ascend'})
 planetLL=sort_by_num(planetLL)
-#planetLL=planetLL[:-1]
 [internalLL]=get_matching_series_delete([int_folder, 'micro', 4, 6, 30000, 500, 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
 [externalLL]=get_matching_series_delete([ext_folder, 'micro', 4, 6, 30000, 500, 1], [], {'order':'ascend'})
@@ -130,35 +129,35 @@ th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, i
 plot_lines(th, abort, spec_abort, lat, ax31, ax32, ax33, dict1)
 #plot_lines(th1, abort1, lat1, ax31, ax32, ax33, dict1)
 
-dict1['under_labels']='(d) High local, high remote'
-[baselineLL]=get_matching_series_delete([baseline_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
-baselineLL=sort_by_num(baselineLL)
-baselineLL=baselineLL[:-1]
-[planetLL]=get_matching_series_delete([planet_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
-planetLL=sort_by_num(planetLL)
-#planetLL=planetLL[:-1]
-[internalLL]=get_matching_series_delete([int_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
-internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
+#dict1['under_labels']='(c) High local, high remote'
+#[baselineLL]=get_matching_series_delete([baseline_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
+#baselineLL=sort_by_num(baselineLL)
+#baselineLL=baselineLL[:-1]
+#[planetLL]=get_matching_series_delete([planet_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
+#planetLL=sort_by_num(planetLL)
+##planetLL=planetLL[:-1]
+#[internalLL]=get_matching_series_delete([int_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
+#internalLL=sort_by_num(internalLL)
+#[externalLL]=get_matching_series_delete([ext_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
+#externalLL=sort_by_num(externalLL)
+#th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
 #print("Planet: "+" ".join(planetLL))
 #print("Internal: "+" ".join(internalLL))
 #print("External: "+" ".join(externalLL))
 #plot_lines([[0.62, 0.74, 1.19, 0.93, 0.59], [2.41, 2.43, 1.14, 0.94, 0.72]], [], [[],[]], ax41, ax42, ax43, dict1)
 #plot_lines([[0]], [[0]], [[[0],[0]]], ax41, ax42, ax43, dict1)
 #th, abort, lat = get_compare_data([baseline_folder, planet_folder], [baselineLL, planetLL])
-plot_lines(th, abort, spec_abort, lat, ax41, ax42, ax43, dict1)
+#plot_lines(th, abort, spec_abort, lat, ax31, ax32, ax33, dict1)
 
-plt.figtext(0.42, 0.11, "Number of clients per server", fontsize=18)
+plt.figtext(0.42, 0.08, "Number of clients per server", fontsize=18)
 
 fig.set_size_inches(20, 7)
 
-plt.tight_layout(pad=2, w_pad=0, h_pad=-1)
+plt.tight_layout(pad=1, w_pad=0, h_pad=-1)
 plt.subplots_adjust(top=0.9)
 
 #plt.tight_layout()
 #fig.savefig(output_folder+'/micro.pdf', format='pdf', bbox_extra_artists=(lgd,), bbox_inches='tight')
-fig.savefig(output_folder+'/micro_full.pdf', format='pdf', bbox_extra_artists=(lgd,))
-#fig.savefig(output_folder+'/micro_full.png', bbox_extra_artists=(lgd,))
+fig.savefig(output_folder+'/micro.pdf', format='pdf', bbox_extra_artists=(lgd,))
+#fig.savefig(output_folder+'/micro.png', bbox_extra_artists=(lgd,))
 

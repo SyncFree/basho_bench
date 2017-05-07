@@ -58,7 +58,7 @@ ax13 = plt.subplot2grid((3,1), (2,0))
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
 output_folder='./figures/vldb/rubis/' + time
 os.mkdir(output_folder)
-dict1={'y_lim':20, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR-Internal', 'STR-External'], 'y1_label':'Thousand txs/sec', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'bbox_loc':(2.1,1.42), 'under_labels':False}
+dict1={'y_lim':20, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR-Internal', 'STR-External'], 'y1_label':'K txs/sec', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'bbox_loc':(0.16,1.06), 'under_labels':False}
 dict1['x_ticks']=[50, 500, 1000, 2000, 3000, 4000]
 dict1['sc']={1,3}
 
@@ -77,7 +77,7 @@ externalLL=sort_by_num(externalLL)
 th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
 lgd=plot_lines(th, abort, spec_abort, lat, ax11, ax12, ax13, dict1)
 
-plt.figtext(0.42, 0.11, "Number of clients per server", fontsize=18)
+plt.figtext(0.35, 0.01, "Number of clients per server", fontsize=18)
 
 fig.set_size_inches(10, 7)
 

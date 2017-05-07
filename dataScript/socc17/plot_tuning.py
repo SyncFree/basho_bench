@@ -61,11 +61,16 @@ dict1['x_labels']=['300 cls', '600 cls', '900 cls', '1200 cls', '1500 cls']
 #lgd=plot_multi_lines([[0.84, 0.88, 1.59, 2.77, 3.5], [4.54,4.51,4.02,1.47,0.76]], [0.785, 3.738], [3.6, 4.167], ax1, dict1)
 lgd=plot_multi_lines([[0.84, 0.88, 1.59, 2.77, 3.5], [4.01,4.11,3.78,2.3,1.3]], [0.785, 3.738], [3.6, 4.167], ax1, dict1)
 
-dict1['under_labels']='(b) High local conflict, high remote conflict'
+#dict1['under_labels']='(b) High local conflict, high remote conflict'
+#dict1['out_legend']=False
+#dict1['y_labels']=False
+#dict1['y_lim']=2.5
+#plot_multi_lines([[0.62, 0.74, 1.19, 0.93, 0.59], [2.03, 2.08, 1.24, 0.87, 0.63]], [0.615, 1.876], [1.278, 2.021], ax2, dict1)
+dict1['under_labels']='(b) Low local conflict, high remote conflict'
 dict1['out_legend']=False
 dict1['y_labels']=False
-dict1['y_lim']=2.5
-plot_multi_lines([[0.62, 0.74, 1.19, 0.93, 0.59], [2.03, 2.08, 1.24, 0.87, 0.63]], [0.615, 1.876], [1.278, 2.021], ax2, dict1)
+dict1['y_lim']=3.5
+plot_multi_lines([[0.733, 0.81, 1.45, 1.93, 1.71], [2.39, 3.07, 2.45, 1.07, 0.89]], [0.732, 2.483], [1.857, 2.967], ax2, dict1)
 
 fig.set_size_inches(16, 7)
 #fig.subplots_adjust(hspace = -1)

@@ -33,6 +33,7 @@ def get_data(root_folder, list_names):
     for name in list_names:
         folder = os.path.join(root_folder, name)
         file = os.path.join(folder, 'total_throughput')
+        print file
         data = np.loadtxt(file, skiprows=1, usecols=range(1,7))
         throughput=data[0,0]/1000
         abort_rate=data[0,4]

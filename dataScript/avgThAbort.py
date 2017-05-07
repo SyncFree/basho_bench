@@ -32,8 +32,10 @@ def parse_file(mydict, config, myfile):
     line_num = i + 1
     if line_num > 18:
         SKIP_FIRST=13
-    elif line_num > 14:
-        SKIP_FIRST=6
+    elif line_num >= 14:
+        SKIP_FIRST=7
+    elif line_num >= 11:
+        SKIP_FIRST=5
     elif line_num > 9:
         SKIP_FIRST=4
     else:

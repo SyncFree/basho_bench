@@ -17,6 +17,7 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
     xticks_entry = dict() 
     
     fsize=18
+    yticksize=16
     xlabsize=22
     underlabsize=18
     markersize=10
@@ -34,7 +35,7 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
     barwidth = 0.3
     olsize=20
     marker_size=14
-    line_width=4
+    line_width=3.5
     num_xticks = 0
     start_pos = 0
 
@@ -77,17 +78,17 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
 
     ax2.set_ylim([0,0.99])
     if 'y3_lim' in plot_dict:
-        ax3.set_ylim([5, plot_dict['y3_lim']])
+        ax3.set_ylim([0, plot_dict['y3_lim']])
     else:
-        ax3.set_ylim([5,4000])
-    ax3.set_yscale('log')
+        ax3.set_ylim([0,1380])
+    #ax3.set_yscale('log')
     #if plot_dict['y_lim'] != 0:
     ax1.set_ylim([0,plot_dict['y_lim']])
 
     if plot_dict['y1_label'] != False:
-        ax1.set_ylabel(plot_dict['y1_label'], fontsize=ylabsize, labelpad=16) 
-        ax2.set_ylabel(plot_dict['y2_label'], fontsize=ylabsize, labelpad=14) 
-        ax3.set_ylabel(plot_dict['y3_label'], fontsize=ylabsize, labelpad=15) 
+        ax1.set_ylabel(plot_dict['y1_label'], fontsize=ylabsize, labelpad=22) 
+        ax2.set_ylabel(plot_dict['y2_label'], fontsize=ylabsize, labelpad=13) 
+        ax3.set_ylabel(plot_dict['y3_label'], fontsize=ylabsize, labelpad=4) 
     else:
         ax1.yaxis.set_major_formatter(NullFormatter())
         ax2.yaxis.set_major_formatter(NullFormatter())
@@ -103,7 +104,9 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
     ax2.yaxis.grid(True)
     ax3.yaxis.grid(True)
     #mpl.rcParams['ytick.labelsize'] = fsize
-    ax1.tick_params(labelsize=fsize)
+    ax1.tick_params(labelsize=yticksize)
+    ax2.tick_params(labelsize=yticksize)
+    ax3.tick_params(labelsize=yticksize)
     if 'y_ticks' in plot_dict and plot_dict['y_ticks'] == False:
         ax1.yaxis.set_major_formatter(NullFormatter())
         
@@ -111,5 +114,6 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
 
     if 'legends' in plot_dict and plot_dict['legends']:
         lgd = ax1.legend(handlers, plot_dict['legends'], fontsize=olsize, loc=9, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, bbox_to_anchor=plot_dict['bbox_loc'], ncol=len(handlers))
+        #lgd = ax1.legend(handlers, plot_dict['legends'], fontsize=olsize, loc=9, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, bbox_to_anchor=plot_dict['bbox_loc'], ncol=1)
 
     return lgd
