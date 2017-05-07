@@ -25,7 +25,7 @@
 
 %% 0 means no spec read + SL0, 1 means spec read +SL1...
 -define(SML, 0).
--define(DAMP_FACTOR, 1).
+-define(DAMP_FACTOR, 0.98).
 %% API
 -export([start_link/0]).
 

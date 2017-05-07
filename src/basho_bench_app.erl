@@ -165,7 +165,8 @@ write_cdf(Stat) ->
             {LRReadTime, LRRNum} = lists:nth(2, ReadStat),
             {CacheReadTime, CRNum} = lists:nth(3, ReadStat),
             {ReadTime, RNum} = lists:nth(4, ReadStat),
-            file:write(PercvLatFile, io_lib:format("Avg lm read is ~w, avg lr is ~w, avg cr is ~w, avg read is ~w\n", [LMReadTime div max(1,LMRNum), LRReadTime div max(1,LRRNum), CacheReadTime div max(1,CRNum), ReadTime div max(RNum, 1)]))
+            file:write(PercvLatFile, io_lib:format("Avg lm read is ~w, avg lr is ~w, avg cr is ~w, avg read is ~w\n", [LMReadTime div max(1,LMRNum), LRReadTime div max(1,LRRNum), CacheReadTime div max(1,CRNum), ReadTime div max(RNum, 1)])),
+            file:write(PercvLatFile, io_lib:format("Org data is ~w, ~w, ~w, ~w, ~w, ~w, ~w, ~w\n", [LMReadTime,LMRNum, LRReadTime, LRRNum, CacheReadTime, CRNum, ReadTime, RNum]))
     end,
     %file:write(PercvLatFile,  io_lib:format("EndTimeInt is ~w, EndTime is ~w \n", [EndTimeInt/1000000+15, to_integer(now())/1000000])),
     SortTune = lists:sort(TuneStat),

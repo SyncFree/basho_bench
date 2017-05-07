@@ -6,7 +6,7 @@ function runNTimes {
     do
         if [ $start_ind -gt $skip_len ]; then
         sudo ./script/preciseTime.sh
-        ./script/runMicroBench.sh $t $MN $SN $CN $MR $SR $CR $do_specula $len $specula_read $rep $prob_access $deter $folder $start_ind $clock $HotRate 10
+        ./script/runMicroBench.sh $t $MN $SN $CN $MR $SR $CR $do_specula $len $specula_read $rep $prob_access $deter $folder $start_ind $clock $HotRate
         skipped=1
         else
         echo "Skipped..."$start_ind
@@ -17,7 +17,7 @@ function runNTimes {
 
 seq="1"
 HotRate=90
-threads="10 20 40 80"
+threads="10 80"
 contentions="3"
 start_ind=1
 skipped=1
@@ -28,12 +28,6 @@ rep=5
 parts=28
 #rep=1
 #parts=4
-
-#MBIG=500
-#MSML=50
-
-#CBIG=200
-#CSML=20
 
 MBIG=30000
 MSML=1000
@@ -52,29 +46,33 @@ MN=80
 SN=20
 CN=0
 
-sudo ./masterScripts/initMachnines.sh 1 planet 
+seq="1"
+do_specula=true
+specula_read=true
+clock=new
+len=0
+lengths="0 1 4 8"
+sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
 sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
+folder="specula_tests/lowhigh_tune"
 rm -rf ./config
-echo micro duration 70 >> config
+echo micro duration 80 >> config
 echo micro auto_tune false >> config
+echo micro tune_period 1 >> config
+echo micro tune_sleep 1 >> config
+echo micro centralized true >> config
+echo micro max_len 9 >> config
+echo micro all_nodes replace >> config
 sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
 
-# Baseline
-clock="old"
-specula_read=false
-do_specula=true
-len=0
-length="0"
-
-sudo ./script/configBeforeRestart.sh 1000 $do_specula $len $rep $parts $specula_read
+sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
 sudo ./script/restartAndConnect.sh
 
-folder="specula_tests/planet_sa"
-for t in $threads
+for len in $lengths
 do
-for len in $length
+for t in $threads
 do
     sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
     for cont in $contentions
@@ -88,4 +86,4 @@ do
     done
 done
 done
-exit
+
