@@ -90,7 +90,6 @@ run(create_prescription, _GeneratedKey, _GeneratedValue, State) ->
     NumPharmacies = State#state.numpharmacies,
     NumStaff = State#state.numstaff,
     NumPatients = State#state.numpatients,
-    NumFacilities = State#state.numfacilities,
 
     %% to avoid conflicting prescription ids
     %%TODO store created prescriptions in a list inside client state.
@@ -99,7 +98,6 @@ run(create_prescription, _GeneratedKey, _GeneratedValue, State) ->
     PatientId = rand:uniform(NumPatients),
     PrescriberId = rand:uniform(NumStaff),
     PharmacyId = rand:uniform(NumPharmacies),
-    FacilityId = rand:uniform(NumFacilities),
     DatePrescribed = "1/1/2016",
     Drugs = gen_prescription_drugs(),
 
@@ -113,7 +111,6 @@ run(create_prescription, _GeneratedKey, _GeneratedValue, State) ->
 
     Payload = jsx:encode([
         {id,PrescriptionId},
-        {facility_id,FacilityId},
         {patient_id,PatientId},
         {pharmacy_id,PharmacyId},
         {prescriber_id,PrescriberId},
