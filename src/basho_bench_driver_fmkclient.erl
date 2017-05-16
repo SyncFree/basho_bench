@@ -278,7 +278,20 @@ run(update_prescription_medication, _GeneratedKey, _GeneratedValue, State) ->
     Payload = jsx:encode([{drugs,Drugs}]),
     Req = {Method, URL, Headers, Payload},
 
-    fmk_request(HttpConn, Req, State);
+    Res = fmk_request(HttpConn, Req, State,
+        fun(Json, State) ->
+            case proplists:get_value(<<"success">>, Json) of
+                true ->
+                    {ok,
+                        State#state {
+                            created_prescriptions = NewCreatedPrescriptions
+                        }};
+                _ ->
+                    Reason = proplists:get_value(<<"result">>, Json),
+                    {error, Reason, State}
+            end
+        end),
+    Res;
 
 run(get_prescription, _GeneratedKey, _GeneratedValue, State) ->
     NumPrescriptions = State#state.numprescriptions,
