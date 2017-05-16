@@ -284,7 +284,7 @@ run(update_prescription_medication, _GeneratedKey, _GeneratedValue, State) ->
                 true ->
                     {ok,
                         State#state {
-                            created_prescriptions = NewCreatedPrescriptions
+                            created_prescriptions = State#state.created_prescriptions
                         }};
                 _ ->
                     Reason = proplists:get_value(<<"result">>, Json),
