@@ -46,14 +46,47 @@ MN=80
 SN=20
 CN=0
 
-seq="1"
-do_specula=true
-specula_read=true
-clock=new
+do_specula=false
+specula_read=false
+clock=old
 len=0
-lengths="0 1"
-#sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+#sudo ./masterScripts/initMachnines.sh 1 planet 
 #sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
+folder="specula_tests/lowhigh_tune"
+rm -rf ./config
+echo micro duration 70 >> config
+echo micro auto_tune false >> config
+echo micro tune_period 1 >> config
+echo micro tune_sleep 1 >> config
+echo micro centralized true >> config
+echo micro max_len 9 >> config
+echo micro all_nodes replace >> config
+sudo ./script/copy_to_all.sh ./config ./basho_bench/
+sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
+
+#sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
+#sudo ./script/restartAndConnect.sh
+
+for t in $threads
+do
+    sudo ./script/configBeforeRestart.sh $t $do_specula $len $rep $parts $specula_read
+    for cont in $contentions
+    do
+        if [ $cont == 1 ]; then MR=$MBIG CR=$CBIG
+        elif [ $cont == 2 ]; then MR=$MSML CR=$CBIG
+        elif [ $cont == 3 ]; then  MR=$MBIG CR=$CSML
+        elif [ $cont == 4 ]; then  MR=$MSML CR=$CSML
+        fi
+        runNTimes
+    done
+done
+exit
+
+
+
+
+sudo ./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+sudo ./script/parallel_command.sh "cd antidote && sudo make rel"
 
 folder="specula_tests/lowhigh_tune"
 rm -rf ./config
@@ -67,8 +100,8 @@ echo micro all_nodes replace >> config
 sudo ./script/copy_to_all.sh ./config ./basho_bench/
 sudo ./script/parallel_command.sh "cd basho_bench && sudo ./script/config_by_file.sh"
 
-#sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
-#sudo ./script/restartAndConnect.sh
+sudo ./script/configBeforeRestart.sh 4000 $do_specula $len $rep $parts $specula_read
+sudo ./script/restartAndConnect.sh
 
 for len in $lengths
 do
