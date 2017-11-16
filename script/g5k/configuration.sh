@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="simplify_physics_metadata"
 
-ANTIDOTE_PROTOCOLS=( "physics" )
+ANTIDOTE_PROTOCOLS=( "clocksi" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -72,7 +72,7 @@ KEY_SPACES=( 100000 )
 ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 )
 UPDATE_NUMBER=( 100 )
-BENCH_THREAD_NUMBER=( 15 20 25 )
+BENCH_THREAD_NUMBER=( 25 )
 
 #6 exponential
 #KEY_SPACES=( 10000000 1000000 )
