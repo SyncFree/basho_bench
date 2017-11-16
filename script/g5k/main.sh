@@ -210,10 +210,10 @@ provisionAntidote () {
 rebuildAntidote () {
   echo -e "\t[REBUILD_ANTIDOTE]: Starting..."
 
-    if [[ "${ANTIDOTE_PROTOCOL}" == "clocksi" ]]; then
-                  strict_stable="true"
-                else
+    if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
                   strict_stable="false"
+                else
+                  strict_stable="true"
                 fi
     if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
                   period="10"
