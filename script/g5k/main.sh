@@ -653,11 +653,11 @@ runRemoteBenchmark () {
             CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
             echo "[RunRemoteBenchmark] done."
         done
-        cleanAntidote
-        local total_dcs=$(getTotalDCCount)
-        prepareClusters ${total_dcs} "${antidote_ip_file}"
+        #cleanAntidote
+        #local total_dcs=$(getTotalDCCount)
+        #prepareClusters ${total_dcs} "${antidote_ip_file}"
         re=$((re+1))
-        sleep 30
+        sleep 10
       done
     done
   done
