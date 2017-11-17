@@ -219,7 +219,10 @@ run () {
   echo "done collecting staleness results"
 }
 
-
+## get, from each antidote instance, staleness logs:
+## 1. sync the logs (as they are written asynchronously)
+## 2. copy them to a safe plce
+## 3. truncate them, to start new experiments.
 CopyStalenessLogs () {
   local total_dcs=$1
 
@@ -251,7 +254,6 @@ CopyStalenessLogs () {
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
     cp _build/default/rel/antidote/log/*.log $dirLog"
-  echo "[KILLING ANTIDOTE!]: ... "
   echo "[COPYING STALENESS LOGS]: moving logs to directory: $dirStale at all antidote nodes... "
   echo "[COPYING LOGS]: moving logs to directory: $dirLog at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
