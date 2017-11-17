@@ -208,19 +208,9 @@ provisionAntidote () {
 
 
 rebuildAntidote () {
+
+  setProtocolAndHeartbeatPeriod
   echo -e "\t[REBUILD_ANTIDOTE]: Starting..."
-
-    if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  strict_stable="false"
-                else
-                  strict_stable="true"
-                fi
-    if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  period="10"
-                else
-                  period="10"
-                fi
-
   local command="\
     cd; \
     cd antidote; \
@@ -233,10 +223,10 @@ rebuildAntidote () {
     git pull; \
     ./rebar3 upgrade; \
     sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
-    sed -i.bak 's|{stable_strict.*},|{stable_strict, $strict_stable},|g' src/antidote.app.src && \
-    sed -i.bak 's|define(HEARTBEAT_PERIOD.*).|define(HEARTBEAT_PERIOD, ${period}).|g' include/antidote.hrl && \
-    sed -i.bak 's|define(VECTORCLOCK_UPDATE_PERIOD.*).|define(VECTORCLOCK_UPDATE_PERIOD, ${period}).|g' include/antidote.hrl && \
-    sed -i.bak 's|define(META_DATA_SLEEP.*).|define(META_DATA_SLEEP, ${period}).|g' include/antidote.hrl && \
+    sed -i.bak 's|{stable_strict.*},|{stable_strict, $STRICT_STABLE},|g' src/antidote.app.src && \
+    sed -i.bak 's|define(HEARTBEAT_PERIOD.*).|define(HEARTBEAT_PERIOD, ${HBPERIOD}).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(VECTORCLOCK_UPDATE_PERIOD.*).|define(VECTORCLOCK_UPDATE_PERIOD, ${HBPERIOD}).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(META_DATA_SLEEP.*).|define(META_DATA_SLEEP, ${HBPERIOD}).|g' include/antidote.hrl && \
     make rel
   "
   # We use the IPs here so that we can change the default (127.0.0.1)
@@ -246,19 +236,10 @@ rebuildAntidote () {
   echo -e "\t[REBUILD_ANTIDOTE]: Done"
 }
 
+
+# Git pull changes, make relclean and make rel antidote
 cleanAntidote () {
-
-  if [[ "${ANTIDOTE_PROTOCOL}" == "clocksi" ]]; then
-                  strict_stable="true"
-                else
-                  strict_stable="false"
-                fi
-  if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  period="10"
-                else
-                  period="10"
-                fi
-
+  setProtocolAndHeartbeatPeriod
   echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
   local command="\
     cd antidote; \
@@ -268,16 +249,29 @@ cleanAntidote () {
     make relclean; \
     ./rebar3 upgrade; \
     sed -i.bak 's|{txn_prot.*},|{txn_prot, $ANTIDOTE_PROTOCOL},|g' src/antidote.app.src && \
-    sed -i.bak 's|{{stable_strict.*},|{stable_strict, $strict_stable},|g' src/antidote.app.src && \
-    sed -i.bak 's|define(HEARTBEAT_PERIOD.*).|define(HEARTBEAT_PERIOD, $period).|g' include/antidote.hrl && \
-    sed -i.bak 's|define(VECTORCLOCK_UPDATE_PERIOD.*).|define(VECTORCLOCK_UPDATE_PERIOD, $period).|g' include/antidote.hrl && \
-    sed -i.bak 's|define(META_DATA_SLEEP.*).|define(META_DATA_SLEEP, $period).|g' include/antidote.hrl && \
+    sed -i.bak 's|{{stable_strict.*},|{stable_strict, $STRICT_STABLE},|g' src/antidote.app.src && \
+    sed -i.bak 's|define(HEARTBEAT_PERIOD.*).|define(HEARTBEAT_PERIOD, $HBPERIOD).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(VECTORCLOCK_UPDATE_PERIOD.*).|define(VECTORCLOCK_UPDATE_PERIOD, $HBPERIOD).|g' include/antidote.hrl && \
+    sed -i.bak 's|define(META_DATA_SLEEP.*).|define(META_DATA_SLEEP, $HBPERIOD).|g' include/antidote.hrl && \
     make rel
   "
   doForNodesIn ${ALL_NODES} "${command}" \
     >> ${LOGDIR}/clean-antidote-${GLOBAL_TIMESTART} 2>&1
 
   echo -e "\t[CLEAN_ANTIDOTE]: Done"
+}
+
+setProtocolAndHeartbeatPeriod () {
+    if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
+                  STRICT_STABLE="false"
+                else
+                  STRICT_STABLE="true"
+                fi
+#  if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
+                  HBPERIOD="10"
+#                else
+#                  HBPERIOD="10"
+#                fi
 }
 
 # Provision all the nodes with Antidote and Basho Bench
@@ -289,12 +283,11 @@ if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
                 rebuildAntidote
                 echo "[DOWNLOAD_ANTIDOTE]: Done"
               else
+                changeRingSize
                 if [[ "${CLEAN_ANTIDOTE}" == "true" ]]; then
                   echo "[BUILD_ANTIDOTE]: Starting..."
-                  changeRingSize
                   rebuildAntidote
                 else
-                  changeRingSize
                   cleanAntidote
                 fi
                 echo "[DOWNLOAD_ANTIDOTE]: Skipping, just building"
@@ -381,12 +374,12 @@ transferIPs () {
 }
 
 changeRingSize () {
-  echo "[SETUP_TESTS]: Starting..."
+  echo "[CHANGE_RING_SIZE]: Starting..."
 
   local dc_size=${ANTIDOTE_NODES}
   ./change-partition-size.sh ${dc_size}
 
-  echo "[SETUP_TESTS]: Done"
+  echo "[CHANGE_RING_SIZE]: Done"
 }
 
 prepareClusters () {
