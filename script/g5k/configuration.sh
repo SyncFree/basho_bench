@@ -14,7 +14,7 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "rennes" )
+SITES=( "nancy" )
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="simplify_physics_metadata"
 
-ANTIDOTE_PROTOCOLS=( "clocksi" )
+ANTIDOTE_PROTOCOLS=( "physics" "clocksi" "ec")
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -64,15 +64,15 @@ BENCH_BRANCH="ec1"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=59991
+GRID_JOB_ID=59999
 
 
 #7 multiround
-KEY_SPACES=( 100000 )
+KEY_SPACES=( 100000 1000000 )
 ROUND_NUMBER=( 10 )
 READ_NUMBER=( 100 )
 UPDATE_NUMBER=( 100 )
-BENCH_THREAD_NUMBER=( 25 )
+BENCH_THREAD_NUMBER=( 20 )
 
 #6 exponential
 #KEY_SPACES=( 10000000 1000000 )
