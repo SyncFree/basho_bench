@@ -261,17 +261,18 @@ cleanAntidote () {
   echo -e "\t[CLEAN_ANTIDOTE]: Done"
 }
 
+#possible protocols: cure, av, oc, ec, gr
 setProtocolAndHeartbeatPeriod () {
-    if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  STRICT_STABLE="false"
-                else
-                  STRICT_STABLE="true"
-                fi
-#  if [[ "${ANTIDOTE_PROTOCOL}" == "ec" ]]; then
-                  HBPERIOD="10"
-#                else
-#                  HBPERIOD="10"
-#                fi
+    case "${CONFIG_PROTOCOL}" in
+        ("cure") STRICT_STABLE="false" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
+        ("av") STRICT_STABLE="true" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
+        ("oc") STRICT_STABLE="true" ANTIDOTE_PROTOCOL="physics" HBPERIOD="10" ;;
+        ("ec") STRICT_STABLE="false" ANTIDOTE_PROTOCOL="ec" HBPERIOD="10" ;;
+        ("gr") STRICT_STABLE="false" ANTIDOTE_PROTOCOL="gr" HBPERIOD="10" ;;
+    esac
+
+
+
 }
 
 # Provision all the nodes with Antidote and Basho Bench
@@ -657,7 +658,7 @@ runRemoteBenchmark () {
 }
 
 for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
-    export ANTIDOTE_PROTOCOL=${protocol}
+    export CONFIG_PROTOCOL=${protocol}
 
 
 

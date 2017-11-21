@@ -53,7 +53,8 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="simplify_physics_metadata"
 
-ANTIDOTE_PROTOCOLS=( "gr" )
+#possible protocols: cure, av, oc, ec, gr
+ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "gr" "ec" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -69,10 +70,10 @@ GRID_JOB_ID=60005
 
 #7 multiround
 KEY_SPACES=( 100000 1000000 )
-ROUND_NUMBER=( 10 )
+ROUND_NUMBER=( 1 )
 READ_NUMBER=( 100 )
-UPDATE_NUMBER=( 100 )
-BENCH_THREAD_NUMBER=( 20 )
+UPDATE_NUMBER=( 1 10 25 50 75 100 )
+BENCH_THREAD_NUMBER=( 20 25 30 )
 
 #6 exponential
 #KEY_SPACES=( 10000000 1000000 )
