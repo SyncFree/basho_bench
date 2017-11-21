@@ -533,7 +533,10 @@ run () {
 
           #get machines and define which are antidote and bench,
           # and deploy images
-          deployImages
+          if [[ "${IMAGES_LOADED}" == "false" ]]; then
+            deployImages
+            IMAGES_LOADED="true"
+          fi
           provisionNodes
           local total_dcs=$(getTotalDCCount)
           prepareClusters ${total_dcs} "${antidote_ip_file}"
@@ -656,6 +659,9 @@ runRemoteBenchmark () {
     done
   done
 }
+
+# this flag ensures we download images only once.
+IMAGES_LOADED="false"
 
 for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
     export CONFIG_PROTOCOL=${protocol}
