@@ -264,11 +264,11 @@ cleanAntidote () {
 #possible protocols: cure, av, oc, ec, gr
 setProtocolAndHeartbeatPeriod () {
     case "${CONFIG_PROTOCOL}" in
-        ("cure") STRICT_STABLE="false" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
-        ("av") STRICT_STABLE="true" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
-        ("oc") STRICT_STABLE="true" ANTIDOTE_PROTOCOL="physics" HBPERIOD="10" ;;
-        ("ec") STRICT_STABLE="false" ANTIDOTE_PROTOCOL="ec" HBPERIOD="10" ;;
-        ("gr") STRICT_STABLE="false" ANTIDOTE_PROTOCOL="gr" HBPERIOD="10" ;;
+        ("cure") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
+        ("av") export STRICT_STABLE="true" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
+        ("oc") export STRICT_STABLE="true" ANTIDOTE_PROTOCOL="physics" HBPERIOD="10" ;;
+        ("ec") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="ec" HBPERIOD="10" ;;
+        ("gr") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="gr" HBPERIOD="10" ;;
     esac
 
 
@@ -469,7 +469,7 @@ echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes
   doForNodesIn ${ANT_NODES} \
   "cd ~/antidote; \
   chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
-  ./bin/physics_staleness/tar-staleness-results-g5k.sh -${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}"
+  ./bin/physics_staleness/tar-staleness-results-g5k.sh -${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}-${STRICT_STABLE}"
 
   echo "[COLLECTING_RESULTS]: Done TARING"
 
@@ -697,8 +697,8 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
 
     SCRATCHFOLDER="/home/$(whoami)/grid-benchmark-${GRID_JOB_ID}"
     export LOGDIR=${SCRATCHFOLDER}/logs/${GLOBAL_TIMESTART}
-    RESULTSDIR=${SCRATCHFOLDER}/results/bench-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
-    RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness/staleness-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}
+    RESULTSDIR=${SCRATCHFOLDER}/results/bench-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}-${STRICT_STABLE}
+    RESULTSSTALEDIR=${SCRATCHFOLDER}/results-staleness/staleness-${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}-${STRICT_STABLE}
 
     export EXPERIMENT_PRIVATE_KEY=${SCRATCHFOLDER}/key
     EXPERIMENT_PUBLIC_KEY=${SCRATCHFOLDER}/exp_key.pub
