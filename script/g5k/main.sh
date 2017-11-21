@@ -261,20 +261,6 @@ cleanAntidote () {
   echo -e "\t[CLEAN_ANTIDOTE]: Done"
 }
 
-#possible protocols: cure, av, oc, ec, gr
-setProtocolAndHeartbeatPeriod () {
-    case "${CONFIG_PROTOCOL}" in
-        ("cure") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
-        ("av") export STRICT_STABLE="true" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
-        ("oc") export STRICT_STABLE="true" ANTIDOTE_PROTOCOL="physics" HBPERIOD="10" ;;
-        ("ec") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="ec" HBPERIOD="10" ;;
-        ("gr") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="gr" HBPERIOD="10" ;;
-    esac
-
-
-
-}
-
 # Provision all the nodes with Antidote and Basho Bench
 provisionNodes () {
 if [[ "${DOWNLOAD_ANTIDOTE}" == "true" ]]; then
@@ -665,6 +651,14 @@ IMAGES_LOADED="false"
 
 for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
     export CONFIG_PROTOCOL=${protocol}
+
+    case "${CONFIG_PROTOCOL}" in
+        ("cure") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
+        ("av") export STRICT_STABLE="true" ANTIDOTE_PROTOCOL="clocksi" HBPERIOD="10" ;;
+        ("oc") export STRICT_STABLE="true" ANTIDOTE_PROTOCOL="physics" HBPERIOD="10" ;;
+        ("ec") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="ec" HBPERIOD="10" ;;
+        ("gr") export STRICT_STABLE="false" ANTIDOTE_PROTOCOL="gr" HBPERIOD="10" ;;
+    esac
 
 
 

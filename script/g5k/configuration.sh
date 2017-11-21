@@ -17,7 +17,7 @@ RESERVE_SITES=false
 SITES=( "rennes" )
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -68,12 +68,20 @@ BENCH_FILE="antidote_pb.config"
 GRID_JOB_ID=60005
 
 
+##7 multiround
+#KEY_SPACES=( 100000 1000000 )
+#ROUND_NUMBER=( 1 )
+#READ_NUMBER=( 100 100 100 100 100 100)
+#UPDATE_NUMBER=( 1 10 25 50 75 100 )
+#BENCH_THREAD_NUMBER=( 20 25 30 )
+
+
 #7 multiround
-KEY_SPACES=( 100000 1000000 )
+KEY_SPACES=( 100000 )
 ROUND_NUMBER=( 1 )
-READ_NUMBER=( 100 100 100 100 100 100)
-UPDATE_NUMBER=( 1 10 25 50 75 100 )
-BENCH_THREAD_NUMBER=( 20 25 30 )
+READ_NUMBER=( 100 )
+UPDATE_NUMBER=( 50 )
+BENCH_THREAD_NUMBER=( 25 )
 
 #6 exponential
 #KEY_SPACES=( 10000000 1000000 )
