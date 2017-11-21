@@ -53,7 +53,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
 ANTIDOTE_BRANCH="simplify_physics_metadata"
 
-ANTIDOTE_PROTOCOLS=( "physics" "clocksi" "ec")
+ANTIDOTE_PROTOCOLS=( "gr" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -64,7 +64,7 @@ BENCH_BRANCH="ec1"
 BENCH_FILE="antidote_pb.config"
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=59999
+GRID_JOB_ID=60005
 
 
 #7 multiround
