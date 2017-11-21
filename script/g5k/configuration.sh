@@ -14,7 +14,7 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "nancy" )
+SITES=( "rennes" )
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
