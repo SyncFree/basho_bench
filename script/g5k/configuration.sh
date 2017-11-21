@@ -14,10 +14,13 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "rennes" )
+SITES=( "nancy" )
+
+# Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
+GRID_JOB_ID=60009
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -63,9 +66,6 @@ BENCH_BRANCH="ec1"
 
 # Name of the benchmark configuration file to use
 BENCH_FILE="antidote_pb.config"
-
-# Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60005
 
 
 ##7 multiround
