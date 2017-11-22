@@ -56,8 +56,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 ANTIDOTE_BRANCH="simplify_physics_metadata"
 
 #possible protocols: cure, av, oc, ec, gr
-#ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "gr" "ec" )
-ANTIDOTE_PROTOCOLS=( "cure" )
+ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "gr" "ec" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -81,7 +80,7 @@ KEY_SPACES=( 100000 )
 ROUND_NUMBER=( 1 )
 READ_NUMBER=( 100 )
 UPDATE_NUMBER=( 50 )
-BENCH_THREAD_NUMBER=( 5 10 15 20 25 )
+BENCH_THREAD_NUMBER=( 20 25 30 35 )
 
 #6 exponential
 #KEY_SPACES=( 10000000 1000000 )
