@@ -5,8 +5,7 @@ PRKFILE=~/.ssh/id_rsa
 PBKFILE=~/.ssh/id_rsa.pub
 
 # The url of the k3 env to deploy on the nodes
-K3_IMAGE=/home/itoumlilt/public/antidote.env
-
+K3_IMAGE=/home/bderegil/public/antidote-images/latest/antidote.env
 # JUST RUN, NO CONFIG
 JUST_RUN=false
 
