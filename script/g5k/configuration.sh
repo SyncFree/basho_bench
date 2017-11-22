@@ -14,10 +14,10 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "lyon" )
+SITES=( "nantes" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60011
+GRID_JOB_ID=60012
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -28,10 +28,10 @@ DOWNLOAD_ANTIDOTE=true
 DOWNLOAD_BENCH=true
 
 # Download and compile antidote and basho bench from scratch
-CLEAN_ANTIDOTE=false
+CLEAN_ANTIDOTE=true
 
 # Make a basho_bench git pull and make at bench nodes
-CLEAN_BENCH=false
+CLEAN_BENCH=true
 
 # Connect servers in clusters and DCs
 CONNECT_CLUSTERS_AND_DCS=true
