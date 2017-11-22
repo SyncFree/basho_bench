@@ -14,10 +14,10 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "nancy" )
+SITES=( "grenoble" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60009
+GRID_JOB_ID=60010
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
