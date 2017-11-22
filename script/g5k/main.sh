@@ -647,7 +647,7 @@ runRemoteBenchmark () {
 }
 
 # this flag ensures we download images only once.
-IMAGES_LOADED="false"
+export IMAGES_LOADED="false"
 
 for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
     export CONFIG_PROTOCOL=${protocol}
