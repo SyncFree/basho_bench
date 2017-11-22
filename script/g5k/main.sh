@@ -208,8 +208,6 @@ provisionAntidote () {
 
 
 rebuildAntidote () {
-
-  setProtocolAndHeartbeatPeriod
   echo -e "\t[REBUILD_ANTIDOTE]: Starting..."
   local command="\
     cd; \
@@ -239,7 +237,6 @@ rebuildAntidote () {
 
 # Git pull changes, make relclean and make rel antidote
 cleanAntidote () {
-  setProtocolAndHeartbeatPeriod
   echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
   local command="\
     cd antidote; \
