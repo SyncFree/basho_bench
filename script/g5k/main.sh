@@ -521,7 +521,7 @@ run () {
           # and deploy images
           if [[ "${IMAGES_LOADED}" == "false" ]]; then
             deployImages
-            IMAGES_LOADED="true"
+            export IMAGES_LOADED="true"
           fi
           provisionNodes
           local total_dcs=$(getTotalDCCount)
