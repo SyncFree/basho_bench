@@ -198,7 +198,7 @@ run(update_only_txn, KeyGen, ValueGen, State) ->
 run(txn, KeyGen, ValueGen, State#state{num_reads = 0});
 
 run(read_only_txn, KeyGen, ValueGen, State) ->
-    run(txn, KeyGen, ValueGen, State#state{num_reads = 0});
+    run(txn, KeyGen, ValueGen, State#state{num_updates = 0});
 
 
 %% @doc the append command will run a transaction with a single update, and no reads.
@@ -211,27 +211,33 @@ run(read, KeyGen, ValueGen, State) ->
 
 %% @doc the following function calls itself recursivelly NumReadRounds times to read in rounds.
 run_reads(TotalKeys, BaseRead, Round, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, PrevRS) ->
-    TheseReads= case ExpRound of
-        true ->
-            list_to_integer(float_to_list(math:pow(BaseRead,Round), [{decimals,0}]));
-        _->
-            BaseRead
-    end,
-%%    ?INFO("TotalKeys= ~p~n, TheseReads= ~p~n, Round= ~p~n, NumReadRounds= ~p~n, ExpRound= ~p~n, ", [TotalKeys, TheseReads, Round, NumReadRounds, ExpRound]),
-    IntegerKeys = lists:sublist(TotalKeys, TheseReads),
-    BoundObjects = [{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), Bucket} || K <- IntegerKeys],
-    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
-        {ok, RS} ->
-            case Round of
-                NumReadRounds ->
-                    {ok, RS};
+    case TotalKeys of
+        no_reads ->
+            {ok, no_reads};
+        _ ->
+            TheseReads = case ExpRound of
+                true ->
+                    list_to_integer(float_to_list(math:pow(BaseRead, Round), [{decimals, 0}]));
                 _ ->
-                    RestKeys = lists:sublist(TotalKeys, TheseReads+1, length(TotalKeys)+1),
-                    run_reads(RestKeys, BaseRead, Round+1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
-            end;
-        Error ->
-            Error
+                    BaseRead
+            end,
+            %%    ?INFO("TotalKeys= ~p~n, TheseReads= ~p~n, Round= ~p~n, NumReadRounds= ~p~n, ExpRound= ~p~n, ", [TotalKeys, TheseReads, Round, NumReadRounds, ExpRound]),
+            IntegerKeys = lists:sublist(TotalKeys, TheseReads),
+            BoundObjects = [{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), Bucket} || K <- IntegerKeys],
+            case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
+                {ok, RS} ->
+                    case Round of
+                        NumReadRounds ->
+                            {ok, RS};
+                        _ ->
+                            RestKeys = lists:sublist(TotalKeys, TheseReads+1, length(TotalKeys)+1),
+                            run_reads(RestKeys, BaseRead, Round+1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
+                    end;
+                Error ->
+                    Error
+            end
     end.
+
 
 
 create_read_operations(Pid, BoundObjects, TxId, IsSeq) ->
