@@ -87,7 +87,7 @@ new(Id) ->
     %% Choose the node using our ID as a modulus
     TargetNode = lists:nth((Id rem length(IPs)+1), IPs),
     ?INFO("Using target node ~p for worker ~p\n", [TargetNode, Id]),
-%%        TargetPort = lists:nth((Id rem length(IPs)+1), PbPorts),
+    %%        TargetPort = lists:nth((Id rem length(IPs)+1), PbPorts),
     TargetPort = 8087,
     ?INFO("Using target port ~p for worker ~p\n", [TargetPort, Id]),
     {ok, Pid} = antidotec_pb_socket:start_link(TargetNode, TargetPort),
@@ -193,13 +193,78 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
 
 
 
-
-run(update_only_txn, KeyGen, ValueGen, State) ->
-run(txn, KeyGen, ValueGen, State#state{num_reads = 0});
-
-run(read_only_txn, KeyGen, ValueGen, State) ->
-    run(txn, KeyGen, ValueGen, State#state{num_updates = 0});
-
+%% @doc This transaction will only perform update operations,
+%% by calling the static update_objects interface of antidote.
+%% the number of operations is defined by the {num_updates, x}
+%% parameter in the config file.
+run(update_only_txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
+    bucket = Bucket,
+    pb_port = _Port, target_node = _Node,
+    num_updates = NumUpdates,
+    type_dict = TypeDict,
+    set_size = SetSize,
+    commit_time = OldCommitTime,
+    measure_staleness = MS,
+    sequential_writes = SeqWrites}) ->
+    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{static, true}]) of
+        {ok, {static, {TimeStamp, TxnProperties}}} ->
+            UpdateIntKeys = generate_keys(NumUpdates, KeyGen),
+            BObjs = multi_get_random_param_new(UpdateIntKeys, TypeDict, Bucket, ValueGen(), undefined, SetSize),
+            case create_update_operations(Pid, BObjs, {static, {TimeStamp, TxnProperties}}, SeqWrites) of
+                ok ->
+                    case antidotec_pb:commit_transaction(Pid, {static, {TimeStamp, TxnProperties}}) of
+                        {ok, BCommitTime} ->
+                            report_staleness(MS, BCommitTime, StartTime),
+                            CommitTime =
+                                binary_to_term(BCommitTime),
+                            {ok, State#state{commit_time = CommitTime}};
+                        E ->
+                            {error, {Id, E}, State}
+                    end;
+                E1 ->
+                    {error, {Id, E1}, State}
+            end;
+        Error ->
+            {error, {Id, Error}, State}
+    end;
+%% @doc This transaction will only perform read operations in
+%% an antidote's read/only transaction.
+%% the number of operations is defined by the {num_reads, x}
+%% parameter in the config file.
+run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
+    pb_port = _Port, target_node = _Node,
+    num_reads = NumReads,
+    num_read_rounds = NumReadRounds,
+    exp_round = ExpRound,
+    sequential_reads = SeqReads,
+    type_dict = TypeDict,
+    bucket = Bucket,
+    measure_staleness = MS,
+    commit_time = OldCommitTime}) ->
+    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+    ReadResult = case NumReads > 0 of
+        true ->
+            IntegerKeys = generate_keys(NumReads * NumReadRounds, KeyGen),
+            run_reads(IntegerKeys, NumReads, 1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
+        false ->
+            no_reads
+    end,
+    case ReadResult of
+        {ok, _} ->
+            case antidotec_pb_socket:get_last_commit_time(Pid) of
+                {ok, BCommitTime} ->
+                    report_staleness(MS, BCommitTime, StartTime),
+                    CommitTime =
+                        binary_to_term(BCommitTime),
+                    {ok, State#state{commit_time = CommitTime}};
+                E ->
+                    {error, {Id, E}, State}
+            end;
+        %% if reads failed, return immediately.
+        ReadError ->
+            {error, {Id, ReadError}, State}
+    end;
 
 %% @doc the append command will run a transaction with a single update, and no reads.
 run(append, KeyGen, ValueGen, State) ->
@@ -211,33 +276,27 @@ run(read, KeyGen, ValueGen, State) ->
 
 %% @doc the following function calls itself recursivelly NumReadRounds times to read in rounds.
 run_reads(TotalKeys, BaseRead, Round, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, PrevRS) ->
-    case TotalKeys of
-        no_reads ->
-            {ok, no_reads};
-        _ ->
-            TheseReads = case ExpRound of
-                true ->
-                    list_to_integer(float_to_list(math:pow(BaseRead, Round), [{decimals, 0}]));
+    TheseReads= case ExpRound of
+        true ->
+            list_to_integer(float_to_list(math:pow(BaseRead,Round), [{decimals,0}]));
+        _->
+            BaseRead
+    end,
+    %%    ?INFO("TotalKeys= ~p~n, TheseReads= ~p~n, Round= ~p~n, NumReadRounds= ~p~n, ExpRound= ~p~n, ", [TotalKeys, TheseReads, Round, NumReadRounds, ExpRound]),
+    IntegerKeys = lists:sublist(TotalKeys, TheseReads),
+    BoundObjects = [{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), Bucket} || K <- IntegerKeys],
+    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
+        {ok, RS} ->
+            case Round of
+                NumReadRounds ->
+                    {ok, RS};
                 _ ->
-                    BaseRead
-            end,
-            %%    ?INFO("TotalKeys= ~p~n, TheseReads= ~p~n, Round= ~p~n, NumReadRounds= ~p~n, ExpRound= ~p~n, ", [TotalKeys, TheseReads, Round, NumReadRounds, ExpRound]),
-            IntegerKeys = lists:sublist(TotalKeys, TheseReads),
-            BoundObjects = [{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), Bucket} || K <- IntegerKeys],
-            case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
-                {ok, RS} ->
-                    case Round of
-                        NumReadRounds ->
-                            {ok, RS};
-                        _ ->
-                            RestKeys = lists:sublist(TotalKeys, TheseReads+1, length(TotalKeys)+1),
-                            run_reads(RestKeys, BaseRead, Round+1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
-                    end;
-                Error ->
-                    Error
-            end
+                    RestKeys = lists:sublist(TotalKeys, TheseReads+1, length(TotalKeys)+1),
+                    run_reads(RestKeys, BaseRead, Round+1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, RS++PrevRS)
+            end;
+        Error ->
+            Error
     end.
-
 
 
 create_read_operations(Pid, BoundObjects, TxId, IsSeq) ->
