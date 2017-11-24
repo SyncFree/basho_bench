@@ -629,7 +629,7 @@ runRemoteBenchmark () {
             #NOW RUN A BENCH
             local benchfilename=$(basename $BENCH_FILE)
             echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs} ${BENCH_THE_LOCAL_NODE}"
-            ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
+            ./execute-in-nodes-for-bench.sh "$(< ${BENCH_NODEF})" \
             "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs} ${BENCH_THE_LOCAL_NODE}"
             sleep 10
                         # yea, that.

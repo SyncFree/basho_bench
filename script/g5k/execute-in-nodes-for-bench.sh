@@ -5,11 +5,11 @@ set -eo pipefail
 # Execute a command on a set of nodes or ips
 doForNodes () {
   local nodes="$1"
-  local command="$2"
 
   if [[ $# -ge 3 && "$3" == "-debug" ]]; then
     for node in ${nodes}; do
       # If the command contains the word 'localhost', replace it with the current node or ip
+      local command="$2 ${node}"
       ssh -i ${EXPERIMENT_PRIVATE_KEY} -T \
           -o ConnectTimeout=3 \
           -o StrictHostKeyChecking=no \
@@ -22,6 +22,7 @@ doForNodes () {
   else
     local pids=()
     for node in ${nodes}; do
+      local command="$2 ${node}"
       ssh  -i ${EXPERIMENT_PRIVATE_KEY} -T \
           -o ConnectTimeout=3 \
           -o StrictHostKeyChecking=no \
