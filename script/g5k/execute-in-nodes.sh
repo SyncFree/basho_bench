@@ -27,7 +27,7 @@ doForNodes () {
           -o StrictHostKeyChecking=no \
           root@"${node}" "${command//localhost/${node}}" &
 
-          command = "$command $node"
+          local command = "$command $node"
 
           echo "ssh -i ${EXPERIMENT_PRIVATE_KEY} -T \
           -o ConnectTimeout=3 \
