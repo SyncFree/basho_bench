@@ -709,6 +709,8 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
     else
         export BENCH_NODEF=${SCRATCHFOLDER}/.antidote_nodes
         export BENCH_IPS=${SCRATCHFOLDER}/.antidote_ips
+        export ALL_NODES=${SCRATCHFOLDER}/.antidote_nodes
+        export ALL_IPS=${SCRATCHFOLDER}/.antidote_ips
     fi
 
 
