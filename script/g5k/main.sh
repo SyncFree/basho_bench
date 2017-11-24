@@ -101,7 +101,11 @@ gatherMachines () {
   done
 
   # Override the full node list, in case we didn't pick all the nodes
-  cat ${BENCH_NODEF} ${ANT_NODES} > ${ALL_NODES}
+  if [[ "${BENCH_THE_LOCAL_NODE}" == "false" ]]; then
+    cat ${BENCH_NODEF} ${ANT_NODES} > ${ALL_NODES}
+  else
+    cat ${ANT_NODES} > ${ALL_NODES}
+  fi
 
   getIPs
 
@@ -709,8 +713,6 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
     else
         export BENCH_NODEF=${SCRATCHFOLDER}/.antidote_nodes
         export BENCH_IPS=${SCRATCHFOLDER}/.antidote_ips
-        export ALL_NODES=${SCRATCHFOLDER}/.antidote_nodes
-        export ALL_IPS=${SCRATCHFOLDER}/.antidote_ips
     fi
 
 
