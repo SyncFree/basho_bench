@@ -19,7 +19,7 @@ SITES=( "grenoble" )
 GRID_JOB_ID=60020
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true

@@ -80,7 +80,7 @@ if [[ "${BENCH_THE_LOCAL_NODE}" == "false" ]]; then
   sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${config_path}"
 else
   echo "Changing antidote ipsAntidote IPS: 127.0.0.1"
-  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, ['127.0.0.1']}.|g" "${config_path}"
+  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, ['${MY_IP}']}.|g" "${config_path}"
 fi
 }
 
@@ -166,8 +166,10 @@ run () {
   READS=$6
   UPDATES=$7
   ANTIDOTE_NODES=$8
-  BENCH_CLIENTS_PER_INSTANCE=$9"
+  BENCH_CLIENTS_PER_INSTANCE=$9
   TOTAL_DCS=${10}
+  BENCH_THE_LOCAL_NODE=${11}
+  MY_IP=${12}"
 
   export ANTIDOTE_IPS="$1"
   export N_INSTANCES="$2"
@@ -180,6 +182,7 @@ run () {
   export BENCH_CLIENTS_PER_INSTANCE="$9"
   export TOTAL_DCS="${10}"
   export BENCH_THE_LOCAL_NODE="${11}"
+  export MY_IP="${12}"
 
         changeAllConfigs
         runAll
