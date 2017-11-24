@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-i=5
+i=3
 while [ $i -lt 4 ]
 do
 set -eo pipefail
