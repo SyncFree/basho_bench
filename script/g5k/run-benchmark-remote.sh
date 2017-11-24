@@ -75,9 +75,13 @@ changeAntidoteIPs () {
   done
   ips_string=${ips_string%?}
 
+if [[ "${BENCH_THE_LOCAL_NODE}" == "false" ]]; then
   echo "Changing antidote ipsAntidote IPS: ${ips_string}"
-
   sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, [${ips_string}]}.|g" "${config_path}"
+else
+  echo "Changing antidote ipsAntidote IPS: 127.0.0.1"
+  sed -i.bak "s|^{antidote_pb_ips.*|{antidote_pb_ips, ['127.0.0.1']}.|g" "${config_path}"
+fi
 }
 
 changeKeyGen () {
@@ -175,6 +179,7 @@ run () {
   export ANTIDOTE_NODES="$8"
   export BENCH_CLIENTS_PER_INSTANCE="$9"
   export TOTAL_DCS="${10}"
+  export BENCH_THE_LOCAL_NODE="${11}"
 
         changeAllConfigs
         runAll

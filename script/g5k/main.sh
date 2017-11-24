@@ -442,7 +442,10 @@ tarEverything () {
   local tar_name="$(basename "${SCRATCHFOLDER}")-$GLOBAL_TIMESTART"
   command="tar -czf ../${tar_name}.tar ${SCRATCHFOLDER}"
   $command
-#  rm -rf "${SCRATCHFOLDER}"
+  echo "[TAR EVERYTHING] removing the contents of ${SCRATCHFOLDER}: results, results-staleness and logs."
+  rm -rf "${SCRATCHFOLDER}/results/*"
+  rm -rf "${SCRATCHFOLDER}/results-staleness/*"
+  rm -rf "${SCRATCHFOLDER}/logs/*"
   popd > /dev/null 2>&1
 
 
@@ -625,9 +628,9 @@ runRemoteBenchmark () {
 
             #NOW RUN A BENCH
             local benchfilename=$(basename $BENCH_FILE)
-            echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
+            echo "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs} ${BENCH_THE_LOCAL_NODE}"
             ./execute-in-nodes.sh "$(< ${BENCH_NODEF})" \
-            "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs}"
+            "./run-benchmark-remote.sh ${antidote_ip_file} ${BENCH_INSTANCES} ${benchfilename} ${KEYSPACE} ${ROUNDS} ${READS} ${UPDATES} ${ANTIDOTE_NODES} ${BENCH_CLIENTS_PER_INSTANCE} ${total_dcs} ${BENCH_THE_LOCAL_NODE}"
             sleep 10
                         # yea, that.
             CopyStalenessLogs "${total_dcs}" >> "${LOGDIR}"/copy-staleness-logs-${GLOBAL_TIMESTART} 2>&1
@@ -695,12 +698,19 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
     EXPERIMENT_PUBLIC_KEY=${SCRATCHFOLDER}/exp_key.pub
 
     export ALL_NODES=${SCRATCHFOLDER}/.all_nodes
-    export BENCH_NODEF=${SCRATCHFOLDER}/.bench_nodes
     export ANT_NODES=${SCRATCHFOLDER}/.antidote_nodes
 
     export ALL_IPS=${SCRATCHFOLDER}/.all_ips
-    BENCH_IPS=${SCRATCHFOLDER}/.bench_ips
     export ANT_IPS=${SCRATCHFOLDER}/.antidote_ips
+
+    if [[ "${BENCH_THE_LOCAL_NODE}" == "false" ]]; then
+        export BENCH_NODEF=${SCRATCHFOLDER}/.bench_nodes
+        export BENCH_IPS=${SCRATCHFOLDER}/.bench_ips
+    else
+        export BENCH_NODEF=${SCRATCHFOLDER}/.antidote_nodes
+        export BENCH_IPS=${SCRATCHFOLDER}/.antidote_ips
+    fi
+
 
     export ALL_COOKIES=${SCRATCHFOLDER}/.all_cookies
     ANT_COOKIES=${SCRATCHFOLDER}/.antidote_cookies
