@@ -16,10 +16,10 @@ RESERVE_SITES=false
 SITES=( "rennes" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60002
+GRID_JOB_ID=60021
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -43,9 +43,9 @@ DCS_PER_SITE=2
 # Run a bench_node per antidote node (and dismiss the BENCH_NODES param)
 BENCH_THE_LOCAL_NODE=true
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=8 #PER DC!
+ANTIDOTE_NODES=4 #PER DC!
 # Number of nodes running Basho Bench per DC
-GRID_JOB_ID=60021
+BENCH_NODES=4 #PER DC!
 # Number of instances of basho_bench to run per node
 BENCH_INSTANCES=2 #PER BENCH_NODE!
 
