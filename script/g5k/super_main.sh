@@ -11,15 +11,15 @@ set -eo pipefail
 #cp -f ~/basho_bench/script/g5k/configuration-3-dc-single-round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
 ###### facebook
-cp -f ~/basho_bench/script/g5k/configuration-single-dc-facebook-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
-~/basho_bench/script/g5k/main.sh
-#cp -f ~/basho_bench/script/g5k/configuration-2-dc-facebook-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
+#cp -f ~/basho_bench/script/g5k/configuration-single-dc-facebook-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
+cp -f ~/basho_bench/script/g5k/configuration-2-dc-facebook-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
+~/basho_bench/script/g5k/main.sh
 #cp -f ~/basho_bench/script/g5k/configuration-3-dc-facebook-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
 ###### 5round
-cp -f ~/basho_bench/script/g5k/configuration-single-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
-~/basho_bench/script/g5k/main.sh
+#cp -f ~/basho_bench/script/g5k/configuration-single-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
+#~/basho_bench/script/g5k/main.sh
 #cp -f ~/basho_bench/script/g5k/configuration-2-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
 #cp -f ~/basho_bench/script/g5k/configuration-3-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
