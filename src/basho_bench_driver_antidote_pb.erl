@@ -193,6 +193,59 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
 
 
 
+%% used for multiround read only transactions.
+run(read_only_txn_dynamic, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
+    pb_port = _Port, target_node = _Node,
+    bucket = Bucket,
+    num_read_rounds = NumReadRounds,
+    num_reads = NumReads,
+    num_updates = NumUpdates,
+    exp_round = ExpRound,
+    type_dict = TypeDict,
+    set_size = SetSize,
+    commit_time = OldCommitTime,
+    measure_staleness = MS,
+    sequential_writes = SeqWrites,
+    sequential_reads = SeqReads}) ->
+    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{static, false}]) of
+        {ok, TxId} ->
+            IntegerKeys = case NumReads > 0 of
+                true ->
+                    TotalReads= case ExpRound of
+                        true ->
+                            list_to_integer(float_to_list(math:pow(NumReads,NumReadRounds+1), [{decimals,0}]));
+                        _->
+                            NumReads * NumReadRounds
+                    end,
+                    generate_keys(TotalReads, KeyGen);
+                false ->
+                    no_reads
+            end,
+            %% Perform reads, if this is not a write only transaction.
+            case run_reads(IntegerKeys, NumReads, 1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, []) of
+                %% if reads failed, return immediately.
+                {error, Reason} ->
+                    {error, {Id, Reason}, State};
+                {ok, _ReadResults} ->
+                            case antidotec_pb:commit_transaction(Pid, TxId) of
+                                {ok, BCommitTime} ->
+                                    report_staleness(MS, BCommitTime, StartTime),
+                                    CommitTime =
+                                        binary_to_term(BCommitTime),
+                                    {ok, State#state{commit_time = CommitTime}};
+                                E ->
+                                    {error, {Id, E}, State}
+                            end;
+                ErrorRead ->
+                    {error, {Id, ErrorRead}, State}
+            end;
+        Error ->
+            {error, {Id, Error}, State}
+    end;
+
+
+
 %% @doc This transaction will only perform update operations,
 %% by calling the static update_objects interface of antidote.
 %% the number of operations is defined by the {num_updates, x}
