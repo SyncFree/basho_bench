@@ -73,7 +73,7 @@ for keyspace in "${KEY_SPACES[@]}"; do
 #            get all directories that contain results for a given workload $KEYSPACE-$ROUNDS-$READS-$UPDATES
             SummaryFile=summary.csv
             UOLatencyFile=update-only-txn_latencies.csv
-            ROLatencyFile=read-only-txn_latencies.csv
+            ROLatencyFile=read-only-txn-dynamic_latencies.csv
             SummaryFiles=""
             ROTxnLatencyFiles=""
             UOTxnLatencyFiles=""
