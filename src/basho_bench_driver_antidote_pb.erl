@@ -285,10 +285,14 @@ run(update_only_txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = 
 %% an antidote's read/only transaction.
 %% the number of operations is defined by the {num_reads, x}
 %% parameter in the config file.
+%% used for running single shot transactions. a multishot transaction resorts to the dynamic version.
+
+
+
 run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     pb_port = _Port, target_node = _Node,
     num_reads = NumReads,
-    num_read_rounds = NumReadRounds,
+    num_read_rounds = 1,
     exp_round = ExpRound,
     sequential_reads = SeqReads,
     type_dict = TypeDict,
@@ -298,8 +302,8 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
     ReadResult = case NumReads > 0 of
         true ->
-            IntegerKeys = generate_keys(NumReads * NumReadRounds, KeyGen),
-            run_reads(IntegerKeys, NumReads, 1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
+            IntegerKeys = generate_keys(NumReads, KeyGen),
+            run_reads(IntegerKeys, NumReads, 1, 1, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
         false ->
             no_reads
     end,
@@ -318,6 +322,11 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
         ReadError ->
             {error, {Id, ReadError}, State}
     end;
+
+%% @doc this case runs the dynamic version of read_only transactions when readrounds>1
+run(read_only_txn, KeyGen, ValueGen, State) ->
+    lager:info("goind dyamic"),
+    run(read_only_txn_dynamic, KeyGen, ValueGen, State);
 
 %% @doc the append command will run a transaction with a single update, and no reads.
 run(append, KeyGen, ValueGen, State) ->
