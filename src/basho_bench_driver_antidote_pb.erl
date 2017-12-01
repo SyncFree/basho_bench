@@ -325,7 +325,6 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
 
 %% @doc this case runs the dynamic version of read_only transactions when readrounds>1
 run(read_only_txn, KeyGen, ValueGen, State) ->
-    lager:info("goind dyamic"),
     run(read_only_txn_dynamic, KeyGen, ValueGen, State);
 
 %% @doc the append command will run a transaction with a single update, and no reads.
