@@ -10,13 +10,13 @@ fi
 setRingSize () {
   local nodes_per_dc=$1
   if [[ ${nodes_per_dc} -lt 2 ]]; then
-    echo 64
+    echo 32
   elif [[ ${nodes_per_dc} -lt 3 ]]; then
-    echo 256
+    echo 64
   elif [[ ${nodes_per_dc} -lt 14 ]]; then
-    echo 512
+    echo 128
   elif [[ ${nodes_per_dc} -lt 33 ]]; then
-    echo 512
+    echo 256
   elif [[ ${nodes_per_dc} -lt 65 ]]; then
     echo 1024
   else
@@ -31,7 +31,7 @@ changePartition () {
     cd ~/antidote && \
     sed -i.bak \
       's|.*ring_creation_size.*|{ring_creation_size, $1}.|g' \
-      config/vars.config rel/vars/dev_vars.config.src
+      config/sys.config rel/vars/dev_vars.config.src
   "
 
   ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "${command}" "-debug"
