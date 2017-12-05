@@ -31,6 +31,9 @@ if [ -z "$BenchResultsDirectory" ]
     BenchResultsDirectory=$(pwd)
 fi
 echo "---### MASTER: STARTING to merge Results in ${BenchResultsDirectory}"
+source ${BenchResultsDirectory}/configuration*.sh
+
+
 
 # Define the number of bench nodes from the number of files in the directory
 # NOTE: this assumes that the master-runBenchmarkStarter.sh script has already verified
