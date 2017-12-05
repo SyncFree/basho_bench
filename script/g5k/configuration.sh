@@ -19,7 +19,7 @@ SITES=( "rennes" )
 GRID_JOB_ID=60088
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -55,10 +55,10 @@ FORCE_NTP_SYNC=false
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="simplify_physics_metadata2"
+ANTIDOTE_BRANCH="physics-rotxn"
 
 #possible protocols: cure, av, oc, ec, gr
-ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" "gr" )
+ANTIDOTE_PROTOCOLS=( "oc" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
