@@ -13,10 +13,10 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "rennes" )
+SITES=( "nancy" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60070
+GRID_JOB_ID=60097
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -55,7 +55,7 @@ FORCE_NTP_SYNC=false
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="simplify_physics_metadata2"
+ANTIDOTE_BRANCH="physics-rotxn"
 
 #possible protocols: cure, av, oc, ec, gr
 ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" )
