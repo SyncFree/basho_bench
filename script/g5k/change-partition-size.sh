@@ -30,9 +30,16 @@ changePartition () {
   local command="
     cd ~/antidote && \
     sed -i.bak \
-      's|.*ring_creation_size.*|{ring_creation_size, $1}.|g' \
-      config/sys.config rel/vars/dev_vars.config.src
+      's|.*ring_creation_size.*|{ring_creation_size, $1},|g' \
+      config/sys.config
   "
+
+#    local command="
+#    cd ~/antidote && \
+#    sed -i.bak \
+#      's|.*ring_creation_size.*|{ring_creation_size, $1}.|g' \
+#      config/sys.config  rel/vars/dev_vars.config.src
+#  "
 
   ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "${command}" "-debug"
 }
