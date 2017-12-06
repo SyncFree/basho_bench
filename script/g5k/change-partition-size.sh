@@ -14,9 +14,9 @@ setRingSize () {
   elif [[ ${nodes_per_dc} -lt 3 ]]; then
     echo 64
   elif [[ ${nodes_per_dc} -lt 14 ]]; then
-    echo 128
-  elif [[ ${nodes_per_dc} -lt 33 ]]; then
     echo 256
+  elif [[ ${nodes_per_dc} -lt 33 ]]; then
+    echo 512
   elif [[ ${nodes_per_dc} -lt 65 ]]; then
     echo 1024
   else
