@@ -55,12 +55,19 @@ changeAllConfigs () {
 changeReadWriteRatio () {
   echo "[changeReadWriteRatio] Changing config files to send to nodes..."
   local config_path="$1"
+  # for transaction
   echo "Rounds = ${ROUNDS}"
   echo "READS = ${READS}"
   echo "UPDATES = ${UPDATES}"
-  sed -i.bak "s|^{num_read_rounds.*|{num_read_rounds, ${ROUNDS}}.|g" "${config_path}"
-  sed -i.bak "s|^{num_reads.*|{num_reads, ${READS}}.|g" "${config_path}"
-  sed -i.bak "s|^{num_updates.*|{num_updates, ${UPDATES}}.|g" "${config_path}"
+  sed -i.bak "s|^{txn_num_read_rounds.*|{txn_num_read_rounds, ${ROUNDS}}.|g" "${config_path}"
+  sed -i.bak "s|^{txn_num_reads.*|{txn_num_reads, ${READS}}.|g" "${config_path}"
+  sed -i.bak "s|^{txn_num_updates.*|{txn_num_updates, ${UPDATES}}.|g" "${config_path}"
+  # for read-only transaction
+  echo "Rounds = ${ROUNDS}"
+  echo "READS = ${READS}"
+  echo "UPDATES = ${UPDATES}"
+  sed -i.bak "s|^{read_only_rounds.*|{read_only_rounds, ${ROUNDS}}.|g" "${config_path}"
+  sed -i.bak "s|^{read_only_reads.*|{read_only_reads, ${READS}}.|g" "${config_path}"
 }
 
 changeAntidoteIPs () {

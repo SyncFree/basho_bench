@@ -36,9 +36,11 @@
     num_partitions,
     set_size,
     commit_time,
-    num_read_rounds,
-    num_reads,
-    num_updates,
+    txn_num_read_rounds,
+    txn_num_reads,
+    txn_num_updates,
+    read_only_reads,
+    read_only_rounds,
     exp_round,
     pb_port,
     target_node,
@@ -76,9 +78,11 @@ new(Id) ->
     Bucket = basho_bench_config:get(bucket),
     Types = basho_bench_config:get(antidote_types),
     SetSize = basho_bench_config:get(set_size),
-    NumUpdates = basho_bench_config:get(num_updates),
-    NumReads = basho_bench_config:get(num_reads),
-    NumReadRounds = basho_bench_config:get(num_read_rounds),
+    NumUpdates = basho_bench_config:get(txn_num_updates),
+    NumReads = basho_bench_config:get(txn_num_reads),
+    NumReadRounds = basho_bench_config:get(txn_num_read_rounds),
+    RoReads = basho_bench_config:get(read_only_reads),
+    RoReadRounds = basho_bench_config:get(read_only_rounds),
     ExpRound = basho_bench_config:get(exp_round),
     NumPartitions = basho_bench_config:get(num_vnodes),
     MeasureStaleness = basho_bench_config:get(staleness),
@@ -99,8 +103,10 @@ new(Id) ->
         num_partitions = NumPartitions,
         type_dict = TypeDict, pb_port = TargetPort,
         target_node = TargetNode, commit_time = ignore,
-        num_reads = NumReads, num_updates = NumUpdates,
-        num_read_rounds = NumReadRounds,
+        txn_num_reads = NumReads, txn_num_updates = NumUpdates,
+        txn_num_read_rounds = NumReadRounds,
+        read_only_reads = RoReads,
+        read_only_rounds = RoReadRounds,
         exp_round = ExpRound,
         temp_num_reads = NumReads, temp_num_updates = NumUpdates,
         measure_staleness = MeasureStaleness,
@@ -123,15 +129,15 @@ get_random_keys_from_list(NumUpdates, IntegerKeys, Acc) ->
 
 %% @doc A general transaction.
 %% it first performs reads to a number of objects defined by the
-%% {num_reads, X} parameter in the config file.
-%% Then, it updates {num_updates, X}.
+%% {txn_num_reads, X} parameter in the config file.
+%% Then, it updates {txn_num_updates, X}.
 
 run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     pb_port = _Port, target_node = _Node,
     bucket = Bucket,
-    num_read_rounds = NumReadRounds,
-    num_reads = NumReads,
-    num_updates = NumUpdates,
+    txn_num_read_rounds = NumReadRounds,
+    txn_num_reads = NumReads,
+    txn_num_updates = NumUpdates,
     exp_round = ExpRound,
     type_dict = TypeDict,
     set_size = SetSize,
@@ -197,33 +203,30 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
 run(read_only_txn_dynamic, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     pb_port = _Port, target_node = _Node,
     bucket = Bucket,
-    num_read_rounds = NumReadRounds,
-    num_reads = NumReads,
-    num_updates = NumUpdates,
+    read_only_rounds = RoReadRounds,
+    read_only_reads = RoNumReads,
     exp_round = ExpRound,
     type_dict = TypeDict,
-    set_size = SetSize,
     commit_time = OldCommitTime,
     measure_staleness = MS,
-    sequential_writes = SeqWrites,
     sequential_reads = SeqReads}) ->
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
     case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{static, false}]) of
         {ok, TxId} ->
-            IntegerKeys = case NumReads > 0 of
+            IntegerKeys = case RoNumReads > 0 of
                 true ->
                     TotalReads= case ExpRound of
                         true ->
-                            list_to_integer(float_to_list(math:pow(NumReads,NumReadRounds+1), [{decimals,0}]));
+                            list_to_integer(float_to_list(math:pow(RoNumReads, RoReadRounds+1), [{decimals,0}]));
                         _->
-                            NumReads * NumReadRounds
+                            RoNumReads * RoReadRounds
                     end,
                     generate_keys(TotalReads, KeyGen);
                 false ->
                     no_reads
             end,
             %% Perform reads, if this is not a write only transaction.
-            case run_reads(IntegerKeys, NumReads, 1, NumReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, []) of
+            case run_reads(IntegerKeys, RoNumReads, 1, RoReadRounds, ExpRound, Bucket, TypeDict, Pid, TxId, SeqReads, Id, State, []) of
                 %% if reads failed, return immediately.
                 {error, Reason} ->
                     {error, {Id, Reason}, State};
@@ -248,12 +251,12 @@ run(read_only_txn_dynamic, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worke
 
 %% @doc This transaction will only perform update operations,
 %% by calling the static update_objects interface of antidote.
-%% the number of operations is defined by the {num_updates, x}
+%% the number of operations is defined by the {txn_num_updates, x}
 %% parameter in the config file.
 run(update_only_txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     bucket = Bucket,
     pb_port = _Port, target_node = _Node,
-    num_updates = NumUpdates,
+    txn_num_updates = NumUpdates,
     type_dict = TypeDict,
     set_size = SetSize,
     commit_time = OldCommitTime,
@@ -283,7 +286,7 @@ run(update_only_txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = 
     end;
 %% @doc This transaction will only perform read operations in
 %% an antidote's read/only transaction.
-%% the number of operations is defined by the {num_reads, x}
+%% the number of operations is defined by the {txn_num_reads, x}
 %% parameter in the config file.
 %% used for running single shot transactions. a multishot transaction resorts to the dynamic version.
 
@@ -291,8 +294,8 @@ run(update_only_txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = 
 
 run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     pb_port = _Port, target_node = _Node,
-    num_reads = NumReads,
-    num_read_rounds = 1,
+    read_only_reads = RoNumReads,
+    read_only_rounds = 1,
     exp_round = ExpRound,
     sequential_reads = SeqReads,
     type_dict = TypeDict,
@@ -300,10 +303,10 @@ run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = I
     measure_staleness = MS,
     commit_time = OldCommitTime}) ->
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    ReadResult = case NumReads > 0 of
+    ReadResult = case RoNumReads > 0 of
         true ->
-            IntegerKeys = generate_keys(NumReads, KeyGen),
-            run_reads(IntegerKeys, NumReads, 1, 1, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
+            IntegerKeys = generate_keys(RoNumReads, KeyGen),
+            run_reads(IntegerKeys, RoNumReads, 1, 1, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
         false ->
             no_reads
     end,
@@ -329,10 +332,10 @@ run(read_only_txn, KeyGen, ValueGen, State) ->
 
 %% @doc the append command will run a transaction with a single update, and no reads.
 run(append, KeyGen, ValueGen, State) ->
-    run(txn, KeyGen, ValueGen, State#state{num_reads = 0, num_updates = 1});
+    run(txn, KeyGen, ValueGen, State#state{txn_num_reads = 0, txn_num_updates = 1});
 %% @doc the read command will run a transaction with a single read, and no updates.
 run(read, KeyGen, ValueGen, State) ->
-    run(txn, KeyGen, ValueGen, State#state{num_reads = 1, num_updates = 0}).
+    run(txn, KeyGen, ValueGen, State#state{txn_num_reads = 1, txn_num_updates = 0}).
 
 
 %% @doc the following function calls itself recursivelly NumReadRounds times to read in rounds.

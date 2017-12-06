@@ -26,11 +26,11 @@ sed -i '/antidote_pb_ips/d' $File
 sed -i '/concurrent/d' $File
 ## {operations, [{append, 1}, {read, 100}]}.
 sed -i '/operations/d' $File
-sed -i '/num_reads/d' $File
-sed -i '/num_updates/d' $File
+sed -i '/txn_num_reads/d' $File
+sed -i '/txn_num_updates/d' $File
 
-#{num_reads, 10}.
-#{num_updates, 10}.
+#{txn_num_reads, 10}.
+#{txn_num_updates, 10}.
 
 #PerNodeNum=5
 #Thread=20
@@ -85,8 +85,8 @@ else
     WriteTxn=1
 fi
 
-sed -i "7i {num_reads, $ReadTxn}." $File
-sed -i "7i {num_updates, $WriteTxn}." $File
+sed -i "7i {txn_num_reads, $ReadTxn}." $File
+sed -i "7i {txn_num_updates, $WriteTxn}." $File
 
 
 sed -i '/key_generator/d' $File

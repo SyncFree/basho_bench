@@ -34,8 +34,8 @@
 		        num_partitions,
 		        set_size,
                 deps :: dict:dict(),
-                num_reads :: non_neg_integer(),
-                num_updates :: non_neg_integer(),
+                txn_num_reads :: non_neg_integer(),
+                txn_num_updates :: non_neg_integer(),
                 pb_port,
                 target_node}).
 
@@ -57,8 +57,8 @@ new(Id) ->
     PbPorts = basho_bench_config:get(antidote_pb_port),
     Types  = basho_bench_config:get(antidote_types),
     SetSize = basho_bench_config:get(set_size),
-    NumReads  = basho_bench_config:get(num_reads),
-    NumUpdates = basho_bench_config:get(num_updates),
+    NumReads  = basho_bench_config:get(txn_num_reads),
+    NumUpdates = basho_bench_config:get(txn_num_updates),
     NumPartitions = length(IPs),
 
     %% Choose the node using our ID as a modulus
@@ -75,7 +75,7 @@ new(Id) ->
         deps=dict:new(),
 		num_partitions = NumPartitions,
 		type_dict = TypeDict, pb_port=TargetPort,
-        num_reads = NumReads, num_updates= NumUpdates,
+        txn_num_reads = NumReads, txn_num_updates= NumUpdates,
 		target_node=TargetNode}}.
 
 %% @doc Read a key
@@ -107,7 +107,7 @@ run(read, KeyGen, _ValueGen, State=#state{pb_pid = Pid, worker_id = Id, pb_port=
     end;
 
 %% @doc Read a key
-run(read_txn, _KeyGen, _ValueGen, State=#state{pb_pid = Pid, worker_id = Id, pb_port=_Port, target_node=_Node, num_reads=NumReads,
+run(read_txn, _KeyGen, _ValueGen, State=#state{pb_pid = Pid, worker_id = Id, pb_port=_Port, target_node=_Node, txn_num_reads=NumReads,
         deps=OldDeps}) ->
     IntKeys = k_unique_numes(NumReads, 1000),
     BoundObjects = [{list_to_binary(integer_to_list(K)), riak_dt_lwwreg, <<"bucket">>} || K <- IntKeys ],
@@ -255,7 +255,7 @@ run(append_txn, _KeyGen, _ValueGen,
                  worker_id = Id,
                  pb_port=_Port,
                  deps=Deps,
-                 num_updates=NumUpdates,
+                 txn_num_updates=NumUpdates,
                  target_node=_Node}) ->
     IntKeys = k_unique_numes(NumUpdates, 1000),
     BKeys = [list_to_binary(integer_to_list(K)) || K <- IntKeys],

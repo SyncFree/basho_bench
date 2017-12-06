@@ -34,8 +34,8 @@
 		        num_partitions,
 		        set_size,
                 commit_time,
-                num_reads,
-                num_updates,
+                txn_num_reads,
+                txn_num_updates,
                 pb_port,
                 target_node,
                 measure_staleness}).
@@ -58,8 +58,8 @@ new(Id) ->
     PbPort = basho_bench_config:get(antidote_pb_port),
     Types  = basho_bench_config:get(antidote_types),
     SetSize = basho_bench_config:get(set_size),
-    NumUpdates  = basho_bench_config:get(num_updates),
-    NumReads = basho_bench_config:get(num_reads),
+    NumUpdates  = basho_bench_config:get(txn_num_updates),
+    NumReads = basho_bench_config:get(txn_num_reads),
     NumPartitions = length(IPs),
     MeasureStaleness = basho_bench_config:get(staleness),
 
@@ -75,7 +75,7 @@ new(Id) ->
 		num_partitions = NumPartitions,
 		type_dict = TypeDict, pb_port=PbPort,
 		target_node=TargetNode, commit_time=ignore,
-        num_reads=NumReads, num_updates=NumUpdates,
+        txn_num_reads=NumReads, txn_num_updates=NumUpdates,
         measure_staleness=MeasureStaleness}}.
 
 %% @doc Read a key
@@ -112,7 +112,7 @@ run(read, KeyGen, _ValueGen, State=#state{pb_pid = Pid, worker_id = Id,
     end;
 
 %% @doc Read a key
-run(read_txn, _KeyGen, _ValueGen, State=#state{pb_pid = Pid, worker_id = Id, pb_port=_Port, target_node=_Node, num_reads=NumReads,
+run(read_txn, _KeyGen, _ValueGen, State=#state{pb_pid = Pid, worker_id = Id, pb_port=_Port, target_node=_Node, txn_num_reads=NumReads,
         commit_time=_OldCommitTime}) ->
     IntKeys = k_unique_numes(NumReads, 1000),
     BoundObjects = [{list_to_binary(integer_to_list(K)), riak_dt_lwwreg, <<"bucket">>} || K <- IntKeys ],
@@ -247,7 +247,7 @@ run(append_txn, _KeyGen, _ValueGen,
                  pb_pid = Pid,
                  worker_id = Id,
                  pb_port=_Port,
-                 num_updates=NumUpdates,
+                 txn_num_updates=NumUpdates,
                  commit_time=_OldCommitTime,
                  target_node=_Node}) ->
     IntKeys = k_unique_numes(NumUpdates, 1000),

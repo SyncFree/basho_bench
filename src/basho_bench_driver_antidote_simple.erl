@@ -29,8 +29,8 @@
 -define(TIMEOUT, 20000).
 -record(state, {worker_id,
                 time,
-                num_updates,
-                num_reads,
+                txn_num_updates,
+                txn_num_reads,
                 clock,
                 pb_port,
                 target_node}).
@@ -52,8 +52,8 @@ new(Id) ->
     Nodes   = basho_bench_config:get(antidote_nodes),
     Cookie  = basho_bench_config:get(antidote_cookie),
     MyNode  = basho_bench_config:get(antidote_mynode, [basho_bench, longnames]),
-    NumReads  = basho_bench_config:get(num_reads),
-    NumUpdates  = basho_bench_config:get(num_updates),
+    NumReads  = basho_bench_config:get(txn_num_reads),
+    NumUpdates  = basho_bench_config:get(txn_num_updates),
 
     %% Try to spin up net_kernel
     case net_kernel:start(MyNode) of
@@ -76,10 +76,10 @@ new(Id) ->
     ?INFO("Using target node ~p for worker ~p\n", [TargetNode, Id]),
     %KeyDict= dict:new(),
     {ok, #state{target_node=TargetNode, worker_id=Id, 
-               num_updates = NumUpdates, num_reads=NumReads}}.
+               txn_num_updates = NumUpdates, txn_num_reads=NumReads}}.
 
 %% @doc Read a key
-run(read_txn, _KeyGen, _ValueGen, State=#state{worker_id = Id, target_node=Node, num_reads=NumReads, clock=Clock}) ->
+run(read_txn, _KeyGen, _ValueGen, State=#state{worker_id = Id, target_node=Node, txn_num_reads=NumReads, clock=Clock}) ->
     Keys = k_unique_numes(NumReads, 1000),
     ReadKeys = [{read, {K, riak_dt_lwwreg}}   || K <- Keys],
     Response = rpc:call(Node, antidote, read_objects, [Clock, ignore, ReadKeys]), %antidotec_pb_socket:get_crdt(Key, Type, Pid),
@@ -96,7 +96,7 @@ run(read_txn, _KeyGen, _ValueGen, State=#state{worker_id = Id, target_node=Node,
             {error, Reason, State}
     end;
 
-run(update_txn, _KeyGen, _ValueGen, State=#state{worker_id = Id, target_node=Node, num_updates=NumUpdates,
+run(update_txn, _KeyGen, _ValueGen, State=#state{worker_id = Id, target_node=Node, txn_num_updates=NumUpdates,
         clock=Clock}) ->
     Keys = k_unique_numes(NumUpdates, 1000),
     %lager:info("Keys are ~w", [Keys]),

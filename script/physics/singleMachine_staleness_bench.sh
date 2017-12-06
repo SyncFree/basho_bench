@@ -119,7 +119,7 @@ do
         mv ${TMP_CONFIG_FILE}.bak ${TMP_CONFIG_FILE}
         for NUM_UPDATES_NR in ${NUM_UPDATES_CONFIG}
         do
-            sed "s/^{num_updates\, .*/{num_updates\, $NUM_UPDATES_NR}\./" ${TMP_CONFIG_FILE} > ${TMP_CONFIG_FILE}.bak
+            sed "s/^{txn_num_updates\, .*/{txn_num_updates\, $NUM_UPDATES_NR}\./" ${TMP_CONFIG_FILE} > ${TMP_CONFIG_FILE}.bak
             mv ${TMP_CONFIG_FILE}.bak ${TMP_CONFIG_FILE}
 
             BENCH_LOG_TARGET="${STALENESS_RESULTS_PATH}/bench_concurrent_${CONCURRENT_NR}_keys_${KEYS_NR}_num_updates_${NUM_UPDATES_NR}"
