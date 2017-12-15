@@ -292,39 +292,39 @@ run(update_only_txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = 
 
 
 
-run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
-    pb_port = _Port, target_node = _Node,
-    read_only_reads = RoNumReads,
-    read_only_rounds = 1,
-    exp_round = ExpRound,
-    sequential_reads = SeqReads,
-    type_dict = TypeDict,
-    bucket = Bucket,
-    measure_staleness = MS,
-    commit_time = OldCommitTime}) ->
-    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    ReadResult = case RoNumReads > 0 of
-        true ->
-            IntegerKeys = generate_keys(RoNumReads, KeyGen),
-            run_reads(IntegerKeys, RoNumReads, 1, 1, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
-        false ->
-            no_reads
-    end,
-    case ReadResult of
-        {ok, _} ->
-            case antidotec_pb_socket:get_last_commit_time(Pid) of
-                {ok, BCommitTime} ->
-                    report_staleness(MS, BCommitTime, StartTime),
-                    CommitTime =
-                        binary_to_term(BCommitTime),
-                    {ok, State#state{commit_time = CommitTime}};
-                E ->
-                    {error, {Id, E}, State}
-            end;
-        %% if reads failed, return immediately.
-        ReadError ->
-            {error, {Id, ReadError}, State}
-    end;
+%%run(read_only_txn, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
+%%    pb_port = _Port, target_node = _Node,
+%%    read_only_reads = RoNumReads,
+%%    read_only_rounds = 1,
+%%    exp_round = ExpRound,
+%%    sequential_reads = SeqReads,
+%%    type_dict = TypeDict,
+%%    bucket = Bucket,
+%%    measure_staleness = MS,
+%%    commit_time = OldCommitTime}) ->
+%%    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+%%    ReadResult = case RoNumReads > 0 of
+%%        true ->
+%%            IntegerKeys = generate_keys(RoNumReads, KeyGen),
+%%            run_reads(IntegerKeys, RoNumReads, 1, 1, ExpRound, Bucket, TypeDict, Pid, {static, {term_to_binary(OldCommitTime), [{static, true}]}}, SeqReads, Id, State, []);
+%%        false ->
+%%            no_reads
+%%    end,
+%%    case ReadResult of
+%%        {ok, _} ->
+%%            case antidotec_pb_socket:get_last_commit_time(Pid) of
+%%                {ok, BCommitTime} ->
+%%                    report_staleness(MS, BCommitTime, StartTime),
+%%                    CommitTime =
+%%                        binary_to_term(BCommitTime),
+%%                    {ok, State#state{commit_time = CommitTime}};
+%%                E ->
+%%                    {error, {Id, E}, State}
+%%            end;
+%%        %% if reads failed, return immediately.
+%%        ReadError ->
+%%            {error, {Id, ReadError}, State}
+%%    end;
 
 %% @doc this case runs the dynamic version of read_only transactions when readrounds>1
 run(read_only_txn, KeyGen, ValueGen, State) ->

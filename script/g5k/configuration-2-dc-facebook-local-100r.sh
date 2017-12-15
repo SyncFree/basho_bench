@@ -16,7 +16,7 @@ RESERVE_SITES=false
 SITES=( "rennes" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60071
+GRID_JOB_ID=60078
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -55,7 +55,7 @@ FORCE_NTP_SYNC=false
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="simplify_physics_metadata2"
+ANTIDOTE_BRANCH="physics-rotxn"
 
 #possible protocols: cure, av, oc, ec, gr
 ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" "gr" )
@@ -74,6 +74,6 @@ BENCH_FILE="antidote_pb.config"
 #5 facebook
 KEY_SPACES=( 10000000 1000000 100000 )
 ROUND_NUMBER=( 10 )
-READ_NUMBER=( 100 100 100 100 100 100 )
-UPDATE_NUMBER=( 2 10 100 250 500 1000 )
-BENCH_THREAD_NUMBER=( 1 5 10 20 30 40 50 )
+READ_NUMBER=( 100 100 100 100 100 )
+UPDATE_NUMBER=( 2 10 100 500 1000 )
+BENCH_THREAD_NUMBER=( 1 5 10 20 30 40 50 65 80)
