@@ -11,7 +11,7 @@
 # This is only necessary when running on OS X, erlang 19
 # might be removed, but won't harm otherwise...
 
-source ~/basho_bench/script/g5k/configuration.sh
+#source ~/basho_bench/script/g5k/configuration.sh
 #2
 #KEY_SPACES=( 10000000 )
 #ROUND_NUMBER=( 1 )

@@ -11,7 +11,7 @@
 # This is only necessary when running on OS X, erlang 19
 # might be removed, but won't harm otherwise...
 
-source ~/basho_bench/script/g5k/configuration.sh
+#source ~/basho_bench/script/g5k/configuration.sh
 
 
 PATH="$PATH:/opt/local/lib/erlang/erts-8.1/bin/"
@@ -26,6 +26,8 @@ if [ -z "$BenchResultsDirectory" ]
     BenchResultsDirectory=$(pwd)
 fi
 echo "---### MASTER: STARTING to merge Results in ${BenchResultsDirectory}"
+source ${BenchResultsDirectory}/configuration*.sh
+
 
 # Define the number of bench nodes from the number of files in the directory
 # NOTE: this assumes that the master-runBenchmarkStarter.sh script has already verified
