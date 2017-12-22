@@ -16,7 +16,7 @@ RESERVE_SITES=false
 SITES=( "rennes" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60078
+GRID_JOB_ID=60207
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
