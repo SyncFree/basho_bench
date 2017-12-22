@@ -20,8 +20,8 @@ cp -f ~/basho_bench/script/g5k/configuration-2-dc-facebook-local-100r.sh ~/basho
 ###### 5round
 #cp -f ~/basho_bench/script/g5k/configuration-single-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
-#cp -f ~/basho_bench/script/g5k/configuration-2-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
-#~/basho_bench/script/g5k/main.sh
+cp -f ~/basho_bench/script/g5k/configuration-2-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
+~/basho_bench/script/g5k/main.sh
 #cp -f ~/basho_bench/script/g5k/configuration-3-dc-5round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
 #done
