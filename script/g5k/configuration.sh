@@ -19,7 +19,7 @@ SITES=( "nancy" )
 GRID_JOB_ID=60205
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -38,14 +38,14 @@ CONNECT_CLUSTERS_AND_DCS=true
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
-DCS_PER_SITE=1
+DCS_PER_SITE=3
 
 # Run a bench_node per antidote node (and dismiss the BENCH_NODES param)
 BENCH_THE_LOCAL_NODE=true
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=8 #PER DC!
+ANTIDOTE_NODES=2 #PER DC!
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=8 #PER DC!
+BENCH_NODES=2 #PER DC!
 # Number of instances of basho_bench to run per node
 BENCH_INSTANCES=2 #PER BENCH_NODE!
 
@@ -58,7 +58,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 ANTIDOTE_BRANCH="physics-rotxn"
 
 #possible protocols: cure, av, oc, ec, gr
-ANTIDOTE_PROTOCOLS=( "av" "oc" "cure" "ec" )
+ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" "gr" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -71,9 +71,9 @@ BENCH_FILE="antidote_pb.config"
 
 
 
-#5 single round
-KEY_SPACES=( 10000 )
-ROUND_NUMBER=( 1 )
-READ_NUMBER=( 100 )
-UPDATE_NUMBER=( 10 )
-BENCH_THREAD_NUMBER=( 80 20 30 40 50 65 )
+#5 facebook
+KEY_SPACES=( 100000 )
+ROUND_NUMBER=( 10 )
+READ_NUMBER=( 100 100 )
+UPDATE_NUMBER=( 1000 2 )
+BENCH_THREAD_NUMBER=( 81 30 40 50 65 80)
