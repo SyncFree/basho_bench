@@ -91,8 +91,8 @@ new(Id) ->
     %% Choose the node using our ID as a modulus
     TargetNode = lists:nth((Id rem length(IPs)+1), IPs),
     ?INFO("Using target node ~p for worker ~p\n", [TargetNode, Id]),
-            TargetPort = lists:nth((Id rem length(IPs)+1), PbPorts),
-%%    TargetPort = 8087,
+%%            TargetPort = lists:nth((Id rem length(IPs)+1), PbPorts),
+    TargetPort = 8087,
     ?INFO("Using target port ~p for worker ~p\n", [TargetPort, Id]),
     {ok, Pid} = antidotec_pb_socket:start_link(TargetNode, TargetPort),
     TypeDict = dict:from_list(Types),
