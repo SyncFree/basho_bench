@@ -16,7 +16,7 @@ RESERVE_SITES=false
 SITES=( "rennes" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60078
+GRID_JOB_ID=60414
 
 # Boot the machines and load the os image.
 DEPLOY_IMAGE=true
@@ -38,7 +38,7 @@ CONNECT_CLUSTERS_AND_DCS=true
 # Number of "data centers" per g5k site
 # For example, saying DCS_PER_SITE=2 and ANTIDOTE_NODES=1
 # will create 2 antidote nodes in total, one on each data center
-DCS_PER_SITE=3
+DCS_PER_SITE=2
 
 # Run a bench_node per antidote node (and dismiss the BENCH_NODES param)
 BENCH_THE_LOCAL_NODE=true
@@ -55,10 +55,10 @@ FORCE_NTP_SYNC=false
 # git repository of the antidote code (useful to test forks)
 ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 # git branch of antidote to run the experiment on
-ANTIDOTE_BRANCH="physics-rotxn"
+ANTIDOTE_BRANCH="17-dec"
 
 #possible protocols: cure, av, oc, ec, gr
-ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" "gr" )
+ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -76,4 +76,4 @@ KEY_SPACES=( 100000 10000 )
 ROUND_NUMBER=( 1 )
 READ_NUMBER=( 100 100 100 100 )
 UPDATE_NUMBER=( 100 50 10 2 )
-BENCH_THREAD_NUMBER=( 81 1 5 10 20 30 40 50 65 80)
+BENCH_THREAD_NUMBER=( 45 1 5 10 20 30 40 50 65 80)

@@ -6,8 +6,8 @@ set -eo pipefail
 ###### first run single round
 #cp -f ~/basho_bench/script/g5k/configuration-single-dc-single-round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
-#cp -f ~/basho_bench/script/g5k/configuration-2-dc-single-round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
-#~/basho_bench/script/g5k/main.sh
+cp -f ~/basho_bench/script/g5k/configuration-2-dc-single-round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
+~/basho_bench/script/g5k/main.sh
 #cp -f ~/basho_bench/script/g5k/configuration-3-dc-single-round-local-100r.sh ~/basho_bench/script/g5k/configuration.sh
 #~/basho_bench/script/g5k/main.sh
 ###### facebook

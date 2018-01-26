@@ -13,13 +13,13 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "nancy" )
+SITES=( "rennes" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60412
+GRID_JOB_ID=60414
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -43,9 +43,9 @@ DCS_PER_SITE=2
 # Run a bench_node per antidote node (and dismiss the BENCH_NODES param)
 BENCH_THE_LOCAL_NODE=true
 # Number of nodes running Antidote PER DC!!!!!!
-ANTIDOTE_NODES=8 #PER DC!
+ANTIDOTE_NODES=16 #PER DC!
 # Number of nodes running Basho Bench per DC
-BENCH_NODES=8 #PER DC!
+BENCH_NODES=16 #PER DC!
 # Number of instances of basho_bench to run per node
 BENCH_INSTANCES=2 #PER BENCH_NODE!
 
@@ -72,8 +72,8 @@ BENCH_FILE="antidote_pb.config"
 
 
 #5 facebook
-KEY_SPACES=( 10000 )
+KEY_SPACES=( 100000 10000 )
 ROUND_NUMBER=( 10 )
-READ_NUMBER=( 100 100 )
-UPDATE_NUMBER=( 1000 100 )
-BENCH_THREAD_NUMBER=( 55 1 5 10 20 30 40 50 65 80)
+READ_NUMBER=( 100 100 100 100 )
+UPDATE_NUMBER=( 1000 500 100 2 )
+BENCH_THREAD_NUMBER=( 45 1 5 10 20 30 40 50 65 80)
