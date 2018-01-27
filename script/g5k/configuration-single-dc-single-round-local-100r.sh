@@ -58,7 +58,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 ANTIDOTE_BRANCH="17-dec"
 
 #possible protocols: cure, av, oc, ec, gr
-ANTIDOTE_PROTOCOLS=( "av" "oc" "ec" )
+ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -72,7 +72,7 @@ BENCH_FILE="antidote_pb.config"
 
 
 #5 single round
-KEY_SPACES=( 100000 10000 )
+KEY_SPACES=( 100000 )
 ROUND_NUMBER=( 1 )
 READ_NUMBER=( 100 100 100 100 )
 UPDATE_NUMBER=( 100 50 10 2 )
