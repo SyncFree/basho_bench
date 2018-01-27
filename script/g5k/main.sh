@@ -200,7 +200,7 @@ provisionAntidote () {
   echo -e "\t[PROVISION_ANTIDOTE_NODES]: Starting... (This may take a while)"
 
   local command="\
-    rm -rf antidote/* && \
+    rm -rf antidote && \
     cd /tmp/
     git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote && \
     ln -s /tmp/antidote ~/antidote"
