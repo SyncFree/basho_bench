@@ -200,10 +200,11 @@ provisionAntidote () {
   echo -e "\t[PROVISION_ANTIDOTE_NODES]: Starting... (This may take a while)"
 
   local command="\
-    mkdir -p /tmp/antidote && \
-    ln -s /tmp/antidote ~/antidote && \
     rm -rf antidote/* && \
-    git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote"
+    cd /tmp/
+    git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote && \
+    ln -s /tmp/antidote ~/antidote"
+
   # We need antidote in all nodes even if we don't use it
   # basho_bench will need the sources to start
   doForNodesIn ${ALL_NODES} "${command}" \
