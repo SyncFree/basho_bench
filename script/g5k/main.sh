@@ -447,7 +447,7 @@ collectResults () {
 tarEverything () {
   pushd "${SCRATCHFOLDER}" > /dev/null 2>&1
   local tar_name="$(basename "${SCRATCHFOLDER}")-$GLOBAL_TIMESTART"
-  command="tar -czf ../${tar_name}.tar ${SCRATCHFOLDER}"
+  command="tar -czf ~/${tar_name}.tar ${SCRATCHFOLDER}"
   $command
   echo "[TAR EVERYTHING] removing the contents of ${SCRATCHFOLDER}: results, results-staleness and logs."
   rm -rf "${SCRATCHFOLDER}/results/*"
