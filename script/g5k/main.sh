@@ -200,7 +200,6 @@ provisionAntidote () {
   echo -e "\t[PROVISION_ANTIDOTE_NODES]: Starting... (This may take a while)"
 
   local command="\
-    rm -rf antidote && \
     mkdir -p /tmp/antidote && \
     ln -s /tmp/antidote ~/antidote && \
     rm -rf antidote/* && \
