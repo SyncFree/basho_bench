@@ -5,7 +5,7 @@ run () {
   local command="$1"
   ip=${ip%?}
 
-  INSTANCE_NAME=antidote PB_IP=${ip} IP=${ip} ./antidote/_build/default/rel/antidote/bin/env "${command}"
+  INSTANCE_NAME=antidote PB_IP=${ip} IP=${ip} /tmp/antidote/_build/default/rel/antidote/bin/env "${command}"
 }
 
 run "$@"

@@ -29,10 +29,10 @@ CopyStalenessLogs () {
 #  local head=$(head -1 .dc_nodes1)
 
   echo "[SYNCING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
-  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /tmp/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   ./execute-in-nodes.sh "$clusterhead" \
-        "chmod +x /root/antidote/bin/sync_staleness_logs.erl && \
-        /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+        "chmod +x /tmp/antidote/bin/sync_staleness_logs.erl && \
+        /tmp/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   echo -e "\t[SYNCING ANTIDOTE STALENESS LOGS]: Done"
 
 
@@ -40,7 +40,7 @@ CopyStalenessLogs () {
   dirLog="_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
-    cd ~/antidote && \
+    cd /tmp/antidote && \
     mkdir -p $dirStale && \
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
@@ -72,7 +72,7 @@ startBGprocesses() {
   nodes_str=${nodes_str%?}
 #  local head=$(head -1 .dc_nodes1)
   local join_cluster="\
-    ./antidote/bin/start_bg_processes.erl ${nodes_str}
+    /tmp/antidote/bin/start_bg_processes.erl ${nodes_str}
   "
   ./execute-in-nodes.sh "${nodes_str}" "${join_cluster}" "-debug"
 }

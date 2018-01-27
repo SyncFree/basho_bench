@@ -200,6 +200,7 @@ provisionAntidote () {
   echo -e "\t[PROVISION_ANTIDOTE_NODES]: Starting... (This may take a while)"
 
   local command="\
+    cd /tmp && \
     rm -rf antidote && \
     git clone ${ANTIDOTE_URL} --branch ${ANTIDOTE_BRANCH} --single-branch antidote"
   # We need antidote in all nodes even if we don't use it
@@ -215,7 +216,7 @@ rebuildAntidote () {
   echo -e "\t[REBUILD_ANTIDOTE]: Starting..."
   local command="\
     cd; \
-    cd antidote; \
+    cd /tmp/antidote; \
     pkill beam; \
     rm -rf benchLogs; \
     sed -i.bak 's/127.0.0.1/localhost/g' rel/vars/dev_vars.config.src rel/files/app.config; \
@@ -243,7 +244,7 @@ rebuildAntidote () {
 cleanAntidote () {
   echo -e "\t[CLEAN_ANTIDOTE]: Starting..."
   local command="\
-    cd antidote; \
+    cd /tmp/antidote; \
     pkill beam; \
     git checkout ${ANTIDOTE_BRANCH}; \
     git pull; \
@@ -331,8 +332,8 @@ distributeCookies () {
   echo -e "\t[DISTRIBUTE_COOKIES]: Starting..."
 
   local cookie_array=($(cat ${ALL_COOKIES}))
-  local cookie_dev_config="antidote/rel/vars/dev_vars.config.src"
-  local cookie_config="antidote/config/vars.config"
+  local cookie_dev_config="/tmp/antidote/rel/vars/dev_vars.config.src"
+  local cookie_config="/tmp/antidote/config/vars.config"
 
   local c=0
   while read node; do
@@ -457,7 +458,7 @@ tarEverything () {
 collectStalenessResults(){
 echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
   doForNodesIn ${ANT_NODES} \
-  "cd ~/antidote; \
+  "cd /tmp/antidote; \
   chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
   ./bin/physics_staleness/tar-staleness-results-g5k.sh -${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}-${STRICT_STABLE}"
 
@@ -556,10 +557,10 @@ CopyStalenessLogs () {
 #  local head=$(head -1 .dc_nodes1)
 
   echo "[SYNCING ANTIDOTE STALENESS LOGS]: SYNCING antidote staleness logs... "
-  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+  echo "[SYNCING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /tmp/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   ./execute-in-nodes.sh "$clusterhead" \
-        "chmod +x /root/antidote/bin/sync_staleness_logs.erl && \
-        /root/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
+        "chmod +x /tmp/antidote/bin/sync_staleness_logs.erl && \
+        /tmp/antidote/bin/sync_staleness_logs.erl ${nodes_str}"
   echo -e "\t[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: Done"
 
 
@@ -567,7 +568,7 @@ CopyStalenessLogs () {
   dirLog="benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
-    cd ~/antidote && \
+    cd /tmp/antidote && \
     mkdir -p $dirStale && \
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
@@ -581,7 +582,7 @@ CopyStalenessLogs () {
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]: Truncating antidote staleness logs... "
   echo "[TRUNCATING ANTIDOTE STALENESS LOGS]:executing in node $clusterhead /root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   ./execute-in-nodes.sh "$clusterhead" \
-        "/root/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
+        "/tmp/antidote/bin/truncate_staleness_logs.erl ${nodes_str}"
   echo -e "\t[TRUNCATING ANTIDOTE STALENESS LOGS]: Done"
 }
 
@@ -595,7 +596,7 @@ startBGprocesses() {
   nodes_str=${nodes_str%?}
 #  local head=$(head -1 .dc_nodes1)
   local join_cluster="\
-    ./antidote/bin/start_bg_processes.erl ${nodes_str}
+    /tmp/antidote/bin/start_bg_processes.erl ${nodes_str}
   "
   ./execute-in-nodes.sh "${nodes_str}" "${join_cluster}" "-debug"
 }

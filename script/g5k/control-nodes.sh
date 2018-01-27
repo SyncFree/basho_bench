@@ -18,8 +18,8 @@ stopNodes () {
   local command="\
     [[ -f control-nodes-remote.sh ]] && ./control-nodes-remote.sh stop; \
     pkill beam; \
-    rm -rf antidote/_build/default/rel/antidote/data/*.LOG; \
-    rm -rf antidote/_build/default/rel/antidote/log/*; \
+    rm -rf /tmp/antidote/_build/default/rel/antidote/data/*.LOG; \
+    rm -rf /tmp/antidote/_build/default/rel/antidote/log/*; \
   "
   ./execute-in-nodes.sh "$(cat ${ANT_NODES})" "${command}" "-debug"
 }
