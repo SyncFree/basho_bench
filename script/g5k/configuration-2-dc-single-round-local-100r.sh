@@ -19,7 +19,7 @@ SITES=( "rennes" )
 GRID_JOB_ID=60414
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
