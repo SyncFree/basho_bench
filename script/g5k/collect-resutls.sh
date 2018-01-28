@@ -245,15 +245,15 @@ CopyStalenessLogs () {
   echo -e "\t[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: Done"
 
 
-  dirStale="_build/default/rel/antidote/benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
-  dirLog="_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
+  dirStale="~/antidote/_build/default/rel/antidote/benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
+  dirLog="~/antidote/_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
     cd ~/antidote && \
     mkdir -p $dirStale && \
-    cp _build/default/rel/antidote/data/Staleness* $dirStale && \
+    cp ~/antidote/_build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
-    cp _build/default/rel/antidote/log/*.log $dirLog"
+    cp ~/antidote/_build/default/rel/antidote/log/*.log $dirLog"
   echo "[COPYING STALENESS LOGS]: moving logs to directory: $dirStale at all antidote nodes... "
   echo "[COPYING LOGS]: moving logs to directory: $dirLog at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
