@@ -338,19 +338,16 @@ distributeCookies () {
   local cookie_config="/tmp/antidote/config/vars.config"
 
   local c=0
-  while read node; do
-    local cookie=${cookie_array[$c]}
+  local cookie=${cookie_array[$c]}
 
     local command="
     sed -i.bak \
       's|.*cookie.*|{cookie, ${cookie}},|g' \
       ${cookie_config} ${cookie_dev_config}
   "
-      ssh -i ${EXPERIMENT_PRIVATE_KEY} -T \
-        -o ConnectTimeout=3 \
-        -o StrictHostKeyChecking=no root@${node} "${command}"
-    c=$((c + 1))
-  done < ${ANT_IPS}
+
+  ./execute-in-nodes.sh "$(cat ${ANT_IPS})" "${command}" "-debug"
+
 
   echo -e "\t[DISTRIBUTE_COOKIES]: Done"
 }
