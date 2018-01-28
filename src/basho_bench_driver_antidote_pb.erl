@@ -94,25 +94,34 @@ new(Id) ->
 %%            TargetPort = lists:nth((Id rem length(IPs)+1), PbPorts),
     TargetPort = 8087,
     ?INFO("Using target port ~p for worker ~p\n", [TargetPort, Id]),
-    {ok, Pid} = antidotec_pb_socket:start_link(TargetNode, TargetPort),
-    TypeDict = dict:from_list(Types),
-    {ok, #state{time = {1, 1, 1}, worker_id = Id,
-        pb_pid = Pid,
-        last_read = {undefined, undefined},
-        set_size = SetSize,
-        num_partitions = NumPartitions,
-        type_dict = TypeDict, pb_port = TargetPort,
-        target_node = TargetNode, commit_time = ignore,
-        txn_num_reads = NumReads, txn_num_updates = NumUpdates,
-        txn_num_read_rounds = NumReadRounds,
-        read_only_reads = RoReads,
-        read_only_rounds = RoReadRounds,
-        exp_round = ExpRound,
-        temp_num_reads = NumReads, temp_num_updates = NumUpdates,
-        measure_staleness = MeasureStaleness,
-        sequential_reads = SequentialReads,
-        bucket = Bucket,
-        sequential_writes = SequentialWrites}}.
+    case antidotec_pb_socket:start_link(TargetNode, TargetPort) of
+        {ok, Pid} ->
+            TypeDict = dict:from_list(Types),
+            {ok, #state{time = {1, 1, 1}, worker_id = Id,
+                pb_pid = Pid,
+                last_read = {undefined, undefined},
+                set_size = SetSize,
+                num_partitions = NumPartitions,
+                type_dict = TypeDict, pb_port = TargetPort,
+                target_node = TargetNode, commit_time = ignore,
+                txn_num_reads = NumReads, txn_num_updates = NumUpdates,
+                txn_num_read_rounds = NumReadRounds,
+                read_only_reads = RoReads,
+                read_only_rounds = RoReadRounds,
+                exp_round = ExpRound,
+                temp_num_reads = NumReads, temp_num_updates = NumUpdates,
+                measure_staleness = MeasureStaleness,
+                sequential_reads = SequentialReads,
+                bucket = Bucket,
+                sequential_writes = SequentialWrites}};
+            {error,{tcp,etimedout}} ->
+                timer:sleep(10),
+                new(Id);
+            Reason ->
+                Reason
+    end.
+
+
 
 
 get_random_keys_from_list(NumUpdates, IntegerKeys, Acc) ->
