@@ -334,15 +334,14 @@ distributeCookies () {
   echo -e "\t[DISTRIBUTE_COOKIES]: Starting..."
 
   local cookie_array=($(cat ${ALL_COOKIES}))
-  local cookie_dev_config="~/antidote/rel/vars/dev_vars.config.src"
-  local cookie_config="~/antidote/config/vars.config"
+  local cookie_dev_config="/tmp/antidote/rel/vars/dev_vars.config.src"
+  local cookie_config="/tmp/antidote/config/vars.config"
 
   local c=0
   while read node; do
     local cookie=${cookie_array[$c]}
 
     local command="
-    cd /tmp/antidote && \
     sed -i.bak \
       's|.*cookie.*|{cookie, ${cookie}},|g' \
       ${cookie_config} ${cookie_dev_config}
