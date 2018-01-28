@@ -314,12 +314,12 @@ createCookies () {
   for n in $(seq 1 ${total_dcs}); do
     # In each datacenter, all antidote nodes must have the same cookie
     for _ in $(seq 1 ${ANTIDOTE_NODES}); do
-      echo "dccookie${n}" | tee -a ${ALL_COOKIES} >> ${ANT_COOKIES}
+      echo "${GRID_JOB_ID}${n}" | tee -a ${ALL_COOKIES} >> ${ANT_COOKIES}
     done
 
     # In each datacenter, all basho_bench nodes must have the same cookie
     for _ in $(seq 1 ${BENCH_NODES}); do
-      echo "dccookie${n}" | tee -a ${ALL_COOKIES} >> ${BENCH_COOKIES}
+      echo "${GRID_JOB_ID}${n}" | tee -a ${ALL_COOKIES} >> ${BENCH_COOKIES}
     done
 
   done
