@@ -585,7 +585,7 @@ CopyStalenessLogs () {
   dirLog="benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
-    cd ~/antidote && \
+    cd /tmp/antidote && \
     mkdir -p $dirStale && \
     cp _build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
