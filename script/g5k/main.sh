@@ -535,7 +535,7 @@ if [[ "${FORCE_NTP_SYNC}" == "true" ]]; then
 
 run () {
   export antidote_ip_file=".antidote_ip_file"
-if [[ "${JUST_COLLECT_RESULTS}" == "false" ]]; then
+#if [[ "${JUST_COLLECT_RESULTS}" == "false" ]]; then
   setupKeys
   if [[ "${JUST_RUN}" == "false" ]]; then
 
@@ -551,7 +551,7 @@ if [[ "${JUST_COLLECT_RESULTS}" == "false" ]]; then
           transferIPs .dc_bench_nodes "${antidote_ip_file}"
           syncClocks
   fi
-fi
+#fi
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
   collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
   tarEverything
