@@ -348,16 +348,17 @@ for dc in $(seq 1 ${total_dcs}); do
     # In each datacenter, all antidote nodes must have the same cookie
 
     first=$(( (dc - 1) * ANTIDOTE_NODES))
-    last=$(( dc * (ANTIDOTE_NODES - 1) ))
-    dcnodes=("${nodes[@]:${first}:${last}}")
+    last=$(( dc * ANTIDOTE_NODES - 1 ))
+#    dcnodes=("${nodes[@]:${first}:${last}}")
 
-  for node in ${dcnodes}; do
+  for i in $(seq ${first} ${last}); do
+     node=${nodes[$i]}
      local command="
     sed -i.bak \
       's|.*cookie.*|{cookie, ${cookie}${dc}},|g' \
       ${cookie_config} ${cookie_dev_config}
   "
-    echo "executing $command in nodes ${dcnodes}"
+    echo "executing $command in nodes ${node}"
     ./execute-in-nodes.sh "${node}" "${command}" "-debug"
   done
 done
