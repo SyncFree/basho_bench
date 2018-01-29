@@ -535,23 +535,10 @@ if [[ "${FORCE_NTP_SYNC}" == "true" ]]; then
 
 run () {
   export antidote_ip_file=".antidote_ip_file"
-if [[ "${JUST_COLLECT_RESULTS}" == "false" ]]; then
-  setupKeys
-  if [[ "${JUST_RUN}" == "false" ]]; then
 
-          #get machines and define which are antidote and bench,
-          # and deploy images
-          if [[ "${IMAGES_LOADED}" == "false" ]]; then
-            deployImages
-            export IMAGES_LOADED="true"
-          fi
-          provisionNodes
-          local total_dcs=$(getTotalDCCount)
-          prepareClusters ${total_dcs} "${antidote_ip_file}"
-          transferIPs .dc_bench_nodes "${antidote_ip_file}"
-          syncClocks
-  fi
-fi
+  setupKeys
+
+  runTests
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
   collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
   tarEverything
@@ -692,21 +679,7 @@ for protocol in "${ANTIDOTE_PROTOCOLS[@]}"; do
 
 
 
-    if [[ "${RESERVE_SITES}" == "true" ]]; then
-      echo "[RESERVING_SITES]: Starting..."
-      export GRID_JOB_ID=$(reserveSites)
 
-      if [[ -z "${GRID_JOB_ID}" ]]; then
-        echo "Uh-oh! Something went wrong while reserving. Maybe try again?"
-        exit 1
-      fi
-
-      sed -i.bak '/^GRID_JOB_ID.*/d' configuration.sh
-      echo "GRID_JOB_ID=${GRID_JOB_ID}" >> configuration.sh
-      echo "[RESERVING_SITES]: Done. Successfully reserved with id ${GRID_JOB_ID}"
-    else
-      echo "[RESERVING_SITES]: Skipping"
-    fi
 
     # Delete the reservation if script is killed
     trap 'cancelJob ${GRID_JOB_ID}' SIGINT SIGTERM

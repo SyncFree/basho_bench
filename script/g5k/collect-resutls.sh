@@ -183,7 +183,7 @@ collectResults () {
 tarEverything () {
   pushd "${SCRATCHFOLDER}" > /dev/null 2>&1
   local tar_name="$(basename "${SCRATCHFOLDER}")-$GLOBAL_TIMESTART"
-  command="tar -czf ~/${tar_name}.tar ${SCRATCHFOLDER}"
+  command="tar -czf /root/${tar_name}.tar ${SCRATCHFOLDER}"
   $command
   rm -rf "${SCRATCHFOLDER}"
   popd > /dev/null 2>&1
@@ -193,7 +193,7 @@ tarEverything () {
 collectStalenessResults(){
 echo "[COLLECTING_RESULTS]: Taring antidote staleness logs at all antidote nodes..."
   doForNodesIn ${ANT_NODES} \
-  "cd ~/antidote; \
+  "cd /root/antidote; \
   chmod +x ./bin/physics_staleness/tar-staleness-results-g5k.sh
   ./bin/physics_staleness/tar-staleness-results-g5k.sh -${GLOBAL_TIMESTART}-${ANTIDOTE_PROTOCOL}-${STRICT_STABLE}"
 
@@ -249,7 +249,7 @@ CopyStalenessLogs () {
   dirLog="/tmp/antidote/_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
-    cd ~/antidote && \
+    cd /root/antidote && \
     mkdir -p $dirStale && \
     cp /tmp/antidote/_build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
