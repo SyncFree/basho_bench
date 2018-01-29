@@ -351,16 +351,16 @@ for dc in $(seq 1 ${total_dcs}); do
     last=$(( dc * (ANTIDOTE_NODES - 1) ))
     dcnodes=("${nodes[@]:${first}:${last}}")
 
-
-   local command="
+  for node in ${dcnodes}; do
+     local command="
     sed -i.bak \
       's|.*cookie.*|{cookie, ${cookie}${dc}},|g' \
       ${cookie_config} ${cookie_dev_config}
   "
-  echo "executing $command in nodes ${dcnodes}"
-  ./execute-in-nodes.sh "${dcnodes}" "${command}" "-debug"
+    echo "executing $command in nodes ${dcnodes}"
+    ./execute-in-nodes.sh "${node}" "${command}" "-debug"
+  done
 done
-
   echo -e "\t[DISTRIBUTE_COOKIES]: Done"
 }
 
