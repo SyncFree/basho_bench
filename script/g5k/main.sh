@@ -331,23 +331,35 @@ createCookies () {
 # TODO: Really necessary? How do we distribute them?
 # Send erlang cookies to the appropiate antidote nodes.
 distributeCookies () {
+
+  total_dcs=$1
   echo -e "\t[DISTRIBUTE_COOKIES]: Starting..."
 
   local cookie_array=($(cat ${ALL_COOKIES}))
+  local nodes=($(cat ${ALL_IPS}))
+
   local cookie_dev_config="/tmp/antidote/rel/vars/dev_vars.config.src"
   local cookie_config="/tmp/antidote/config/vars.config"
 
   local c=0
   local cookie=${cookie_array[$c]}
 
-    local command="
+for dc in $(seq 1 ${total_dcs}); do
+    # In each datacenter, all antidote nodes must have the same cookie
+
+    first=$(( (dc - 1) * ANTIDOTE_NODES))
+    last=$(( dc * (ANTIDOTE_NODES - 1) ))
+    dcnodes=("${nodes[@]:${first}:${last}}")
+
+
+   local command="
     sed -i.bak \
-      's|.*cookie.*|{cookie, ${cookie}},|g' \
+      's|.*cookie.*|{cookie, ${cookie}${dc}},|g' \
       ${cookie_config} ${cookie_dev_config}
   "
-
-  ./execute-in-nodes.sh "$(cat ${ANT_IPS})" "${command}" "-debug"
-
+  echo "executing $command in nodes ${dcnodes}"
+  ./execute-in-nodes.sh "${dcnodes}" "${command}" "-debug"
+done
 
   echo -e "\t[DISTRIBUTE_COOKIES]: Done"
 }
@@ -394,7 +406,7 @@ if [[ "${CONNECT_CLUSTERS_AND_DCS}" == "true" ]]; then
   local antidote_ip_file="$2"
 
             createCookies ${total_dcs}
-          distributeCookies
+          distributeCookies ${total_dcs}
   ./prepare-clusters.sh ${ANTIDOTE_NODES} ${total_dcs}
 
   local ant_offset=0
