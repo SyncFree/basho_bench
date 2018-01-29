@@ -20,7 +20,7 @@ joinLocalDC () {
 
   nodes_str=${nodes_str%?}
   local join_dc="\
-    ~/antidote/bin/join_cluster_script.erl ${nodes_str}
+    /tmp/antidote/bin/join_cluster_script.erl ${nodes_str}
   "
 
   ./execute-in-nodes.sh "${head}" "${join_dc}" "-debug"

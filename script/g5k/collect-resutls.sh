@@ -121,8 +121,8 @@ distributeCookies () {
   echo -e "\t[DISTRIBUTE_COOKIES]: Starting..."
 
   local cookie_array=($(cat ${ALL_COOKIES}))
-  local cookie_dev_config="~/antidote/rel/vars/dev_vars.config.src"
-  local cookie_config="~/antidote/config/vars.config"
+  local cookie_dev_config="/tmp/antidote/rel/vars/dev_vars.config.src"
+  local cookie_config="/tmp/antidote/config/vars.config"
 
   local c=0
   while read node; do
@@ -245,15 +245,15 @@ CopyStalenessLogs () {
   echo -e "\t[SYNCING AND CLOSING ANTIDOTE STALENESS LOGS]: Done"
 
 
-  dirStale="~/antidote/_build/default/rel/antidote/benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
-  dirLog="~/antidote/_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
+  dirStale="/tmp/antidote/_build/default/rel/antidote/benchLogs/Staleness/Stale-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
+  dirLog="/tmp/antidote/_build/default/rel/antidote/benchLogs/Log/Log-$KEYSPACE-$ROUNDS-$READS-$UPDATES-$BENCH_CLIENTS_PER_INSTANCE"
 
   command1="\
     cd ~/antidote && \
     mkdir -p $dirStale && \
-    cp ~/antidote/_build/default/rel/antidote/data/Staleness* $dirStale && \
+    cp /tmp/antidote/_build/default/rel/antidote/data/Staleness* $dirStale && \
     mkdir -p $dirLog && \
-    cp ~/antidote/_build/default/rel/antidote/log/*.log $dirLog"
+    cp /tmp/antidote/_build/default/rel/antidote/log/*.log $dirLog"
   echo "[COPYING STALENESS LOGS]: moving logs to directory: $dirStale at all antidote nodes... "
   echo "[COPYING LOGS]: moving logs to directory: $dirLog at all antidote nodes... "
   echo "\t[GetAntidoteLogs]: executing $command1 at ${antidote_nodes[@]}..."
