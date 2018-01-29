@@ -551,6 +551,7 @@ run () {
           transferIPs .dc_bench_nodes "${antidote_ip_file}"
           syncClocks
   fi
+  runTests
 #fi
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
   collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
