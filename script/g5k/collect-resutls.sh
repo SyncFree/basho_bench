@@ -215,7 +215,7 @@ run () {
   export antidote_ip_file=".antidote_ip_file"
   collectResults >> ${LOGDIR}/collect-results-${GLOBAL_TIMESTART} 2>&1
   collectStalenessResults >> ${LOGDIR}/collect-staleness-results-${GLOBAL_TIMESTART} 2>&1
-  tarEverything
+#  tarEverything
   echo "done collecting staleness results"
 }
 

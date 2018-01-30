@@ -58,7 +58,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 ANTIDOTE_BRANCH="17-dec"
 
 #possible protocols: cure, av, oc, ec, gr
-ANTIDOTE_PROTOCOLS=( "oc" "ec" )
+ANTIDOTE_PROTOCOLS=( "ec" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
