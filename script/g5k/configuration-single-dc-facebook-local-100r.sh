@@ -13,13 +13,13 @@ JUST_RUN=false
 RESERVE_SITES=false
 
 # Different g5k sites to run the benchmark
-SITES=( "rennes" )
+SITES=( "nancy" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60415
+GRID_JOB_ID=60443
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=true
+DEPLOY_IMAGE=false
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
