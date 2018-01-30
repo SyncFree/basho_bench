@@ -72,7 +72,7 @@ BENCH_FILE="antidote_pb.config"
 
 
 #5 single round
-KEY_SPACES=( 10000 )
+KEY_SPACES=( 100000 )
 ROUND_NUMBER=( 1 )
 READ_NUMBER=( 100 100 100 100 )
 UPDATE_NUMBER=( 2 10 50 100 )

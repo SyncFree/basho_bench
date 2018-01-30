@@ -16,10 +16,10 @@ RESERVE_SITES=false
 SITES=( "rennes" )
 
 # Comment or remove this line when RESERVE_SITES=true, it will be added automatically.
-GRID_JOB_ID=60442
+GRID_JOB_ID=60426
 
 # Boot the machines and load the os image.
-DEPLOY_IMAGE=false
+DEPLOY_IMAGE=true
 
 # Provision the nodes with Antidote / basho_bench
 DOWNLOAD_ANTIDOTE=true
@@ -58,7 +58,7 @@ ANTIDOTE_URL="https://github.com/SyncFree/antidote.git"
 ANTIDOTE_BRANCH="17-dec"
 
 #possible protocols: cure, av, oc, ec, gr
-ANTIDOTE_PROTOCOLS=( "cure" "av" "oc" "ec" )
+ANTIDOTE_PROTOCOLS=( "oc" "ec" "av" "cure" )
 
 # git repository of the basho_bench code (useful to test forks)
 BENCH_URL="https://github.com/SyncFree/basho_bench.git"
@@ -74,6 +74,6 @@ BENCH_FILE="antidote_pb.config"
 #5 facebook
 KEY_SPACES=( 100000 )
 ROUND_NUMBER=( 10 )
-READ_NUMBER=( 100 )
-UPDATE_NUMBER=( 1000 )
-BENCH_THREAD_NUMBER=( 1 5 10 15 20 )
+READ_NUMBER=( 100 100 100 100 )
+UPDATE_NUMBER=( 1000 500 100 2 )
+BENCH_THREAD_NUMBER=( 5 10 20 30 40 50 )
