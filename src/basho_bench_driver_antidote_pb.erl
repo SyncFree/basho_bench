@@ -47,6 +47,7 @@
     measure_staleness,
     temp_num_reads,
     temp_num_updates,
+    hotspots,
     bucket,
     sequential_reads,
     sequential_writes}).
@@ -87,6 +88,7 @@ new(Id) ->
     NumPartitions = basho_bench_config:get(num_vnodes),
     MeasureStaleness = basho_bench_config:get(staleness),
     SequentialReads = basho_bench_config:get(sequential_reads),
+    HotSpots = basho_bench_config:get(hotspots),
     SequentialWrites = basho_bench_config:get(sequential_writes),
     %% Choose the node using our ID as a modulus
     TargetNode = lists:nth((Id rem length(IPs)+1), IPs),
@@ -111,6 +113,7 @@ new(Id) ->
                 exp_round = ExpRound,
                 temp_num_reads = NumReads, temp_num_updates = NumUpdates,
                 measure_staleness = MeasureStaleness,
+                hotspots = HotSpots,
                 sequential_reads = SequentialReads,
                 bucket = Bucket,
                 sequential_writes = SequentialWrites}};
@@ -144,6 +147,7 @@ get_random_keys_from_list(NumUpdates, IntegerKeys, Acc) ->
 run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     pb_port = _Port, target_node = _Node,
     bucket = Bucket,
+    hotspots = HotSpots,
     txn_num_read_rounds = NumReadRounds,
     txn_num_reads = NumReads,
     txn_num_updates = NumUpdates,
@@ -154,6 +158,7 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
     measure_staleness = MS,
     sequential_writes = SeqWrites,
     sequential_reads = SeqReads}) ->
+%%    lager:info("keygen is ~p", [KeyGen]),
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
     case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{static, false}]) of
         {ok, TxId} ->
@@ -165,7 +170,7 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
                         _->
                             NumReads * NumReadRounds
                     end,
-                    generate_keys(TotalReads, KeyGen);
+                    generate_keys(TotalReads, KeyGen, HotSpots);
                 false ->
                     no_reads
             end,
@@ -179,7 +184,7 @@ run(txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = Id,
                     UpdateIntKeys = case IntegerKeys of
                         no_reads ->
                             %% write only transaction
-                            generate_keys(NumUpdates, KeyGen);
+                            generate_keys(NumUpdates, KeyGen, HotSpots);
                         _ ->
                             %% The following selects the random read keys for updating.
                             get_random_keys_from_list(NumUpdates, IntegerKeys, [])
@@ -216,6 +221,7 @@ run(read_only_txn_dynamic, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worke
     read_only_reads = RoNumReads,
     exp_round = ExpRound,
     type_dict = TypeDict,
+    hotspots = HotSpots,
     commit_time = OldCommitTime,
     measure_staleness = MS,
     sequential_reads = SeqReads}) ->
@@ -230,7 +236,7 @@ run(read_only_txn_dynamic, KeyGen, _ValueGen, State = #state{pb_pid = Pid, worke
                         _->
                             RoNumReads * RoReadRounds
                     end,
-                    generate_keys(TotalReads, KeyGen);
+                    generate_keys(TotalReads, KeyGen, HotSpots);
                 false ->
                     no_reads
             end,
@@ -268,13 +274,15 @@ run(update_only_txn, KeyGen, ValueGen, State = #state{pb_pid = Pid, worker_id = 
     txn_num_updates = NumUpdates,
     type_dict = TypeDict,
     set_size = SetSize,
+    hotspots = HotSpots,
     commit_time = OldCommitTime,
     measure_staleness = MS,
     sequential_writes = SeqWrites}) ->
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
     case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{static, true}]) of
         {ok, {static, {TimeStamp, TxnProperties}}} ->
-            UpdateIntKeys = generate_keys(NumUpdates, KeyGen),
+            UpdateIntKeys = generate_keys(NumUpdates, KeyGen, HotSpots),
+%%            ?INFO("these are the keys: ~p",[UpdateIntKeys]),
             BObjs = multi_get_random_param_new(UpdateIntKeys, TypeDict, Bucket, ValueGen(), undefined, SetSize),
             case create_update_operations(Pid, BObjs, {static, {TimeStamp, TxnProperties}}, SeqWrites) of
                 ok ->
@@ -536,20 +544,30 @@ report_staleness_rec([H | T], HistName, Iter) ->
 
 
 %% @doc generate NumReads unique keys using the KeyGen
-generate_keys(NumKeys, KeyGen) ->
+generate_keys(NumKeys, KeyGen, HotSpots) ->
     Seq = lists:seq(1, NumKeys),
     S = lists:foldl(fun(_, Set) ->
-        N = unikey(KeyGen, Set),
+        N = unikey(KeyGen, Set, HotSpots),
         sets:add_element(N, Set)
     end, sets:new(), Seq),
     sets:to_list(S).
 
 
-unikey(KeyGen, Set) ->
-    R = KeyGen(),
+unikey(KeyGen, Set, HotSpots) ->
+    R = case HotSpots of
+        {true, NumberOfHotSpots, Probability} ->
+            case rand:uniform(100) =< Probability of
+                true ->
+                    rand:uniform(NumberOfHotSpots);
+                false ->
+                    KeyGen()
+            end;
+        _->
+            KeyGen()
+    end,
     case sets:is_element(R, Set) of
         true ->
-            unikey(KeyGen, Set);
+            unikey(KeyGen, Set, HotSpots);
         false ->
             R
     end.
