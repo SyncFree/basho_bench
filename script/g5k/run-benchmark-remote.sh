@@ -17,7 +17,7 @@ set -eo pipefail
 
 changeBucket () {
   local config_file="$1"
-  local bucket="<<\"$KEYSPACE-$UPDATES\">>"
+  local bucket="<<\"$UPDATES-$BENCH_CLIENTS_PER_INSTANCE\">>"
 
   sed -i.bak "s|^{bucket.*|{bucket, ${bucket}}.|g" "${config_file}"
 }
