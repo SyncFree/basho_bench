@@ -96,12 +96,15 @@ run(txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
     sequential_writes=SeqWrites,
     sequential_reads=SeqReads})->
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{static, false}]) of
+    IntegerKeys=generate_keys(NumReads, KeyGen),
+    %Locks = [a,b,123],
+    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{locks,Locks}]) of
         {ok, TxId}->
             %% Perform reads, if this is not a write only transaction.
             {ReadResult, IntKeys}=case NumReads>0 of
                 true->
-                    IntegerKeys=generate_keys(NumReads, KeyGen),
+                    
                     BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
                     case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
                         {ok, RS}->
