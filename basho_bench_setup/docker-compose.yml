@@ -1,7 +1,7 @@
 version: "2"
 services:
   antidote1:
-     image: mweber/antidotedb:latest
+     image: maxikohl/antidote:strong_consistency
      ports:
        - "8087:8087"
      environment:
@@ -14,7 +14,7 @@ services:
        - local1
 
   antidote2:
-    image: mweber/antidotedb:latest
+    image: maxikohl/antidote:strong_consistency
     ports:
       - "8088:8087"
     environment:
@@ -26,9 +26,8 @@ services:
       - interdc
       - local2
 
-
   antidote3:
-    image: mweber/antidotedb:latest
+    image: maxikohl/antidote:strong_consistency
     ports:
       - "8089:8087"
     environment:
@@ -38,7 +37,7 @@ services:
       - NET_ADMIN
     networks:
       - interdc
-      - local2
+      - local3
 
   link:
     image: erlang:19
@@ -48,13 +47,16 @@ services:
     links:
       - antidote1
       - antidote2
+      - antidote3
     cap_add:
       - NET_ADMIN
     networks:
       - local1
       - local2
+      - local3
 
 networks:
   interdc:
   local1:
   local2:
+  local3:
