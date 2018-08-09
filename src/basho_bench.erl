@@ -174,7 +174,10 @@ test_dir(Opts, Name) ->
     TestDir = filename:join([ResultsDirAbs, Name]),
     ok = filelib:ensure_dir(filename:join(TestDir, "foobar")),
     Link = filename:join([ResultsDir, "current"]),
-    [] = os:cmd(?FMT("rm -f ~s; ln -sf ~s ~s", [Link, TestDir, Link])),
+    {ok, CurrentWD} = file:get_cwd(),
+    ok = file:set_cwd(ResultsDir),
+    [] = os:cmd(?FMT("rm -f ~s; ln -sf ~s ~s", [Link, Name, Link])),
+    ok = file:set_cwd(CurrentWD),
     TestDir.
 
 wait_for_stop(Mref, infinity) ->

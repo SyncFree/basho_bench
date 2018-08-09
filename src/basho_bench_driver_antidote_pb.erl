@@ -43,7 +43,8 @@
                 temp_num_reads,
                 temp_num_updates,
                 sequential_reads,
-                sequential_writes}).
+                sequential_writes,
+                txn_locks}).
 
 %% ====================================================================
 %% API
@@ -56,6 +57,7 @@ new(Id) ->
     IPs = basho_bench_config:get(antidote_pb_ips),
     PbPorts = basho_bench_config:get(antidote_pb_port),
     Types  = basho_bench_config:get(antidote_types),
+    Locks = basho_bench_config:get(txn_locks, []),
     SetSize = basho_bench_config:get(set_size),
     NumUpdates  = basho_bench_config:get(num_updates),
     NumReads = basho_bench_config:get(num_reads),
@@ -79,7 +81,8 @@ new(Id) ->
         temp_num_reads = NumReads, temp_num_updates = NumUpdates,
         measure_staleness = MeasureStaleness,
         sequential_reads = SequentialReads,
-        sequential_writes = SequentialWrites}}.
+        sequential_writes = SequentialWrites,
+        txn_locks = Locks}}.
 %% @doc A general transaction.
 %% it first performs reads to a number of objects defined by the
 %% {num_reads, X} parameter in the config file.
@@ -94,355 +97,18 @@ run(txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
     commit_time=OldCommitTime,
     measure_staleness=MS,
     sequential_writes=SeqWrites,
-    sequential_reads=SeqReads})->
+    sequential_reads=SeqReads,
+    txn_locks = LockTypes})->
     StartTime = erlang:system_time(micro_seconds), %% For staleness calc
     IntegerKeys=generate_keys(NumReads, KeyGen),
     %Locks = [a,b,123],
     Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
-    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{exclusive_locks,Locks}]) of
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), lists:map(fun(LockType) -> {LockType, Locks} end, LockTypes)) of
         {ok, TxId}->
             %% Perform reads, if this is not a write only transaction.
             {ReadResult, IntKeys}=case NumReads>0 of
                 true->
-                    
-                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
-                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
-                        {ok, RS}->
-                            {RS, IntegerKeys};
-                        Error->
-                            {{error, {Id, Error}, State}, IntegerKeys}
-                    end;
-                false->
-                    {no_reads, no_reads}
-            end,
-            case ReadResult of
-                %% if reads failed, return immediately.
-                {error, {ID, ERROR}, STATE}->
-                    {error, {ID, ERROR}, STATE};
-                _->
-                    %% if reads succeeded, perform updates.
-                    UpdateIntKeys=case IntKeys of
-                        no_reads->
-                            %% write only transaction
-                            UpdateIntKeys=generate_keys(NumUpdates, KeyGen);
-                        _->
-                            %%                    The following selects the latest reads for updating.
-                            UpdateIntKeys=lists:sublist(IntKeys, NumReads-NumUpdates+1, NumUpdates)
-                    end,
-                    BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, ValueGen(), undefined, SetSize),
-                    case create_update_operations(Pid, BObjs, TxId, SeqWrites) of
-                        ok->
-                            case antidotec_pb:commit_transaction(Pid, TxId) of
-                                {ok, BCommitTime}->
-                                    report_staleness(MS, BCommitTime, StartTime),
-                                    CommitTime=
-                                    binary_to_term(BCommitTime),
-                                    {ok, State#state{commit_time=CommitTime}};
-                                E->
-                                    {error, {Id, E}, State}
-                            end;
-                        E1->
-                            {error, {Id, E1}, State}
-                    end
-            end;
-        Error->
-            {error, {Id, Error}, State}
-    end;
-%% @doc A general transaction.
-%% it first performs reads to a number of objects defined by the
-%% {num_reads, X} parameter in the config file.
-%% Then, it updates {num_updates, X}.
 
-run(txn_shared_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
-    pb_port=_Port, target_node=_Node,
-    num_reads=NumReads,
-    num_updates=NumUpdates,
-    type_dict=TypeDict,
-    set_size=SetSize,
-    commit_time=OldCommitTime,
-    measure_staleness=MS,
-    sequential_writes=SeqWrites,
-    sequential_reads=SeqReads})->
-    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    IntegerKeys=generate_keys(NumReads, KeyGen),
-    %Locks = [a,b,123],
-    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
-    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{shared_locks,Locks}]) of
-        {ok, TxId}->
-            %% Perform reads, if this is not a write only transaction.
-            {ReadResult, IntKeys}=case NumReads>0 of
-                true->
-                    
-                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
-                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
-                        {ok, RS}->
-                            {RS, IntegerKeys};
-                        Error->
-                            {{error, {Id, Error}, State}, IntegerKeys}
-                    end;
-                false->
-                    {no_reads, no_reads}
-            end,
-            case ReadResult of
-                %% if reads failed, return immediately.
-                {error, {ID, ERROR}, STATE}->
-                    {error, {ID, ERROR}, STATE};
-                _->
-                    %% if reads succeeded, perform updates.
-                    UpdateIntKeys=case IntKeys of
-                        no_reads->
-                            %% write only transaction
-                            UpdateIntKeys=generate_keys(NumUpdates, KeyGen);
-                        _->
-                            %%                    The following selects the latest reads for updating.
-                            UpdateIntKeys=lists:sublist(IntKeys, NumReads-NumUpdates+1, NumUpdates)
-                    end,
-                    BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, ValueGen(), undefined, SetSize),
-                    case create_update_operations(Pid, BObjs, TxId, SeqWrites) of
-                        ok->
-                            case antidotec_pb:commit_transaction(Pid, TxId) of
-                                {ok, BCommitTime}->
-                                    report_staleness(MS, BCommitTime, StartTime),
-                                    CommitTime=
-                                    binary_to_term(BCommitTime),
-                                    {ok, State#state{commit_time=CommitTime}};
-                                E->
-                                    {error, {Id, E}, State}
-                            end;
-                        E1->
-                            {error, {Id, E1}, State}
-                    end
-            end;
-        Error->
-            {error, {Id, Error}, State}
-    end;
-%% @doc A general transaction.
-%% it first performs reads to a number of objects defined by the
-%% {num_reads, X} parameter in the config file.
-%% Then, it updates {num_updates, X}.
-
-run(txn_exclusive_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
-    pb_port=_Port, target_node=_Node,
-    num_reads=NumReads,
-    num_updates=NumUpdates,
-    type_dict=TypeDict,
-    set_size=SetSize,
-    commit_time=OldCommitTime,
-    measure_staleness=MS,
-    sequential_writes=SeqWrites,
-    sequential_reads=SeqReads})->
-    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    IntegerKeys=generate_keys(NumReads, KeyGen),
-    %Locks = [a,b,123],
-    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
-    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{exclusive_locks,Locks}]) of
-        {ok, TxId}->
-            %% Perform reads, if this is not a write only transaction.
-            {ReadResult, IntKeys}=case NumReads>0 of
-                true->
-                    
-                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
-                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
-                        {ok, RS}->
-                            {RS, IntegerKeys};
-                        Error->
-                            {{error, {Id, Error}, State}, IntegerKeys}
-                    end;
-                false->
-                    {no_reads, no_reads}
-            end,
-            case ReadResult of
-                %% if reads failed, return immediately.
-                {error, {ID, ERROR}, STATE}->
-                    {error, {ID, ERROR}, STATE};
-                _->
-                    %% if reads succeeded, perform updates.
-                    UpdateIntKeys=case IntKeys of
-                        no_reads->
-                            %% write only transaction
-                            UpdateIntKeys=generate_keys(NumUpdates, KeyGen);
-                        _->
-                            %%                    The following selects the latest reads for updating.
-                            UpdateIntKeys=lists:sublist(IntKeys, NumReads-NumUpdates+1, NumUpdates)
-                    end,
-                    BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, ValueGen(), undefined, SetSize),
-                    case create_update_operations(Pid, BObjs, TxId, SeqWrites) of
-                        ok->
-                            case antidotec_pb:commit_transaction(Pid, TxId) of
-                                {ok, BCommitTime}->
-                                    report_staleness(MS, BCommitTime, StartTime),
-                                    CommitTime=
-                                    binary_to_term(BCommitTime),
-                                    {ok, State#state{commit_time=CommitTime}};
-                                E->
-                                    {error, {Id, E}, State}
-                            end;
-                        E1->
-                            {error, {Id, E1}, State}
-                    end
-            end;
-        Error->
-            {error, {Id, Error}, State}
-    end;
-
-%% @doc A general transaction.
-%% it first performs reads to a number of objects defined by the
-%% {num_reads, X} parameter in the config file.
-%% Then, it updates {num_updates, X}.
-
-run(txn_locks_and_shared_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
-    pb_port=_Port, target_node=_Node,
-    num_reads=NumReads,
-    num_updates=NumUpdates,
-    type_dict=TypeDict,
-    set_size=SetSize,
-    commit_time=OldCommitTime,
-    measure_staleness=MS,
-    sequential_writes=SeqWrites,
-    sequential_reads=SeqReads})->
-    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    IntegerKeys=generate_keys(NumReads, KeyGen),
-    %Locks = [a,b,123],
-    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
-    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{shared_locks,Locks},{locks,Locks}]) of
-        {ok, TxId}->
-            %% Perform reads, if this is not a write only transaction.
-            {ReadResult, IntKeys}=case NumReads>0 of
-                true->
-                    
-                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
-                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
-                        {ok, RS}->
-                            {RS, IntegerKeys};
-                        Error->
-                            {{error, {Id, Error}, State}, IntegerKeys}
-                    end;
-                false->
-                    {no_reads, no_reads}
-            end,
-            case ReadResult of
-                %% if reads failed, return immediately.
-                {error, {ID, ERROR}, STATE}->
-                    {error, {ID, ERROR}, STATE};
-                _->
-                    %% if reads succeeded, perform updates.
-                    UpdateIntKeys=case IntKeys of
-                        no_reads->
-                            %% write only transaction
-                            UpdateIntKeys=generate_keys(NumUpdates, KeyGen);
-                        _->
-                            %%                    The following selects the latest reads for updating.
-                            UpdateIntKeys=lists:sublist(IntKeys, NumReads-NumUpdates+1, NumUpdates)
-                    end,
-                    BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, ValueGen(), undefined, SetSize),
-                    case create_update_operations(Pid, BObjs, TxId, SeqWrites) of
-                        ok->
-                            case antidotec_pb:commit_transaction(Pid, TxId) of
-                                {ok, BCommitTime}->
-                                    report_staleness(MS, BCommitTime, StartTime),
-                                    CommitTime=
-                                    binary_to_term(BCommitTime),
-                                    {ok, State#state{commit_time=CommitTime}};
-                                E->
-                                    {error, {Id, E}, State}
-                            end;
-                        E1->
-                            {error, {Id, E1}, State}
-                    end
-            end;
-        Error->
-            {error, {Id, Error}, State}
-    end;
-
-%% @doc A general transaction.
-%% it first performs reads to a number of objects defined by the
-%% {num_reads, X} parameter in the config file.
-%% Then, it updates {num_updates, X}.
-
-run(txn_locks_and_exclusive_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
-    pb_port=_Port, target_node=_Node,
-    num_reads=NumReads,
-    num_updates=NumUpdates,
-    type_dict=TypeDict,
-    set_size=SetSize,
-    commit_time=OldCommitTime,
-    measure_staleness=MS,
-    sequential_writes=SeqWrites,
-    sequential_reads=SeqReads})->
-    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    IntegerKeys=generate_keys(NumReads, KeyGen),
-    %Locks = [a,b,123],
-    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
-    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{exclusive_locks,Locks},{locks,Locks}]) of
-        {ok, TxId}->
-            %% Perform reads, if this is not a write only transaction.
-            {ReadResult, IntKeys}=case NumReads>0 of
-                true->
-                    
-                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
-                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
-                        {ok, RS}->
-                            {RS, IntegerKeys};
-                        Error->
-                            {{error, {Id, Error}, State}, IntegerKeys}
-                    end;
-                false->
-                    {no_reads, no_reads}
-            end,
-            case ReadResult of
-                %% if reads failed, return immediately.
-                {error, {ID, ERROR}, STATE}->
-                    {error, {ID, ERROR}, STATE};
-                _->
-                    %% if reads succeeded, perform updates.
-                    UpdateIntKeys=case IntKeys of
-                        no_reads->
-                            %% write only transaction
-                            UpdateIntKeys=generate_keys(NumUpdates, KeyGen);
-                        _->
-                            %%                    The following selects the latest reads for updating.
-                            UpdateIntKeys=lists:sublist(IntKeys, NumReads-NumUpdates+1, NumUpdates)
-                    end,
-                    BObjs=multi_get_random_param_new(UpdateIntKeys, TypeDict, ValueGen(), undefined, SetSize),
-                    case create_update_operations(Pid, BObjs, TxId, SeqWrites) of
-                        ok->
-                            case antidotec_pb:commit_transaction(Pid, TxId) of
-                                {ok, BCommitTime}->
-                                    report_staleness(MS, BCommitTime, StartTime),
-                                    CommitTime=
-                                    binary_to_term(BCommitTime),
-                                    {ok, State#state{commit_time=CommitTime}};
-                                E->
-                                    {error, {Id, E}, State}
-                            end;
-                        E1->
-                            {error, {Id, E1}, State}
-                    end
-            end;
-        Error->
-            {error, {Id, Error}, State}
-    end;
-
-run(txn_exclusive_locks_and_shared_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
-    pb_port=_Port, target_node=_Node,
-    num_reads=NumReads,
-    num_updates=NumUpdates,
-    type_dict=TypeDict,
-    set_size=SetSize,
-    commit_time=OldCommitTime,
-    measure_staleness=MS,
-    sequential_writes=SeqWrites,
-    sequential_reads=SeqReads})->
-    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
-    IntegerKeys=generate_keys(NumReads, KeyGen),
-    %Locks = [a,b,123],
-    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
-    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{exclusive_locks,Locks},{shared_locks,Locks}]) of
-        {ok, TxId}->
-            %% Perform reads, if this is not a write only transaction.
-            {ReadResult, IntKeys}=case NumReads>0 of
-                true->
-                    
                     BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
                     case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
                         {ok, RS}->
