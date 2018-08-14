@@ -80,11 +80,213 @@ new(Id) ->
         measure_staleness = MeasureStaleness,
         sequential_reads = SequentialReads,
         sequential_writes = SequentialWrites}}.
+
+
+%% @doc A general transaction reading one value.
+%% it first performs reads to a number of objects defined by the
+%% {num_reads, X} parameter in the config file and then commits the transaction.
+run(read_txn_nolocks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
+    pb_port=_Port, target_node=_Node,
+    num_reads=NumReads,
+    num_updates=NumUpdates,
+    type_dict=TypeDict,
+    set_size=SetSize,
+    commit_time=OldCommitTime,
+    measure_staleness=MS,
+    sequential_writes=SeqWrites,
+    sequential_reads=SeqReads})->
+    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+    IntegerKeys=generate_keys(NumReads, KeyGen),
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), []) of
+        {ok, TxId}->
+            %% Perform reads, if this is not a write only transaction.
+            {ReadResult, IntKeys}=case NumReads>0 of
+                true->
+                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
+                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
+                        {ok, RS}->
+                            {RS, IntegerKeys};
+                        Error->
+                            {{error, {Id, Error}, State}, IntegerKeys}
+                    end;
+                false->
+                    {no_reads, no_reads}
+            end,
+            case ReadResult of
+                %% if reads failed, return immediately.
+                {error, {ID, ERROR}, STATE}->
+                    {error, {ID, ERROR}, STATE};
+                _->
+                    case antidotec_pb:commit_transaction(Pid, TxId) of
+                        {ok, BCommitTime}->
+                            report_staleness(MS, BCommitTime, StartTime),
+                            CommitTime= binary_to_term(BCommitTime),
+                            {ok, State#state{commit_time=CommitTime}};
+                        E->
+                            {error, {Id, E}, State}
+                    end
+            end;
+        Error->
+            {error, {Id, Error}, State}
+    end;
+
+%% @doc A general transaction reading one value.
+%% it first performs reads to a number of objects defined by the
+%% {num_reads, X} parameter in the config file and then commits the transaction.
+run(read_txn_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
+    pb_port=_Port, target_node=_Node,
+    num_reads=NumReads,
+    num_updates=NumUpdates,
+    type_dict=TypeDict,
+    set_size=SetSize,
+    commit_time=OldCommitTime,
+    measure_staleness=MS,
+    sequential_writes=SeqWrites,
+    sequential_reads=SeqReads})->
+    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+    IntegerKeys=generate_keys(NumReads, KeyGen),
+    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{locks,Locks}]) of
+        {ok, TxId}->
+            %% Perform reads, if this is not a write only transaction.
+            {ReadResult, IntKeys}=case NumReads>0 of
+                true->
+                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
+                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
+                        {ok, RS}->
+                            {RS, IntegerKeys};
+                        Error->
+                            {{error, {Id, Error}, State}, IntegerKeys}
+                    end;
+                false->
+                    {no_reads, no_reads}
+            end,
+            case ReadResult of
+                %% if reads failed, return immediately.
+                {error, {ID, ERROR}, STATE}->
+                    {error, {ID, ERROR}, STATE};
+                _->
+                    case antidotec_pb:commit_transaction(Pid, TxId) of
+                        {ok, BCommitTime}->
+                            report_staleness(MS, BCommitTime, StartTime),
+                            CommitTime= binary_to_term(BCommitTime),
+                            {ok, State#state{commit_time=CommitTime}};
+                        E->
+                            {error, {Id, E}, State}
+                    end
+            end;
+        Error->
+            {error, {Id, Error}, State}
+    end;
+
+%% @doc A general transaction reading one value.
+%% it first performs reads to a number of objects defined by the
+%% {num_reads, X} parameter in the config file and then commits the transaction.
+run(read_txn_exclusive_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
+    pb_port=_Port, target_node=_Node,
+    num_reads=NumReads,
+    num_updates=NumUpdates,
+    type_dict=TypeDict,
+    set_size=SetSize,
+    commit_time=OldCommitTime,
+    measure_staleness=MS,
+    sequential_writes=SeqWrites,
+    sequential_reads=SeqReads})->
+    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+    IntegerKeys=generate_keys(NumReads, KeyGen),
+    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{exclusive_locks,Locks}]) of
+        {ok, TxId}->
+            %% Perform reads, if this is not a write only transaction.
+            {ReadResult, IntKeys}=case NumReads>0 of
+                true->
+                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
+                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
+                        {ok, RS}->
+                            {RS, IntegerKeys};
+                        Error->
+                            {{error, {Id, Error}, State}, IntegerKeys}
+                    end;
+                false->
+                    {no_reads, no_reads}
+            end,
+            case ReadResult of
+                %% if reads failed, return immediately.
+                {error, {ID, ERROR}, STATE}->
+                    {error, {ID, ERROR}, STATE};
+                _->
+                    case antidotec_pb:commit_transaction(Pid, TxId) of
+                        {ok, BCommitTime}->
+                            report_staleness(MS, BCommitTime, StartTime),
+                            CommitTime= binary_to_term(BCommitTime),
+                            {ok, State#state{commit_time=CommitTime}};
+                        E->
+                            {error, {Id, E}, State}
+                    end
+            end;
+        Error->
+            {error, {Id, Error}, State}
+    end;
+
+
+%% @doc A general transaction reading one value.
+%% it first performs reads to a number of objects defined by the
+%% {num_reads, X} parameter in the config file and then commits the transaction.
+run(read_txn_shared_locks, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
+    pb_port=_Port, target_node=_Node,
+    num_reads=NumReads,
+    num_updates=NumUpdates,
+    type_dict=TypeDict,
+    set_size=SetSize,
+    commit_time=OldCommitTime,
+    measure_staleness=MS,
+    sequential_writes=SeqWrites,
+    sequential_reads=SeqReads})->
+    StartTime = erlang:system_time(micro_seconds), %% For staleness calc
+    IntegerKeys=generate_keys(NumReads, KeyGen),
+    Locks = [list_to_binary(integer_to_list(K))||K<-IntegerKeys],
+    case antidotec_pb:start_transaction(Pid, term_to_binary(OldCommitTime), [{shared_locks,Locks}]) of
+        {ok, TxId}->
+            %% Perform reads, if this is not a write only transaction.
+            {ReadResult, IntKeys}=case NumReads>0 of
+                true->
+                    BoundObjects=[{list_to_binary(integer_to_list(K)), get_key_type(K, TypeDict), ?BUCKET}||K<-IntegerKeys],
+                    case create_read_operations(Pid, BoundObjects, TxId, SeqReads) of
+                        {ok, RS}->
+                            {RS, IntegerKeys};
+                        Error->
+                            {{error, {Id, Error}, State}, IntegerKeys}
+                    end;
+                false->
+                    {no_reads, no_reads}
+            end,
+            case ReadResult of
+                %% if reads failed, return immediately.
+                {error, {ID, ERROR}, STATE}->
+                    {error, {ID, ERROR}, STATE};
+                _->
+                    case antidotec_pb:commit_transaction(Pid, TxId) of
+                        {ok, BCommitTime}->
+                            report_staleness(MS, BCommitTime, StartTime),
+                            CommitTime= binary_to_term(BCommitTime),
+                            {ok, State#state{commit_time=CommitTime}};
+                        E->
+                            {error, {Id, E}, State}
+                    end
+            end;
+        Error->
+            {error, {Id, Error}, State}
+    end;
+
+
+
+
+
+
 %% @doc A general transaction.
 %% it first performs reads to a number of objects defined by the
 %% {num_reads, X} parameter in the config file.
 %% Then, it updates {num_updates, X}.
-
 run(txn, KeyGen, ValueGen, State=#state{pb_pid=Pid, worker_id=Id,
     pb_port=_Port, target_node=_Node,
     num_reads=NumReads,

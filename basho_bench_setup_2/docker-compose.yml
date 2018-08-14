@@ -1,0 +1,62 @@
+version: "2"
+services:
+  antidote1:
+     image: maxikohl/antidote:strong_consistency_002
+     ports:
+       - "8087:8087"
+     environment:
+       NODE_NAME: "antidote@antidote1"
+       SHORT_NAME: "true"
+     cap_add:
+       - NET_ADMIN
+     networks:
+       - interdc
+       - local1
+
+  antidote2:
+    image: maxikohl/antidote:strong_consistency_002
+    ports:
+      - "8088:8087"
+    environment:
+      NODE_NAME: "antidote@antidote2"
+      SHORT_NAME: "true"
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - interdc
+      - local2
+
+  antidote3:
+    image: maxikohl/antidote:strong_consistency_002
+    ports:
+      - "8089:8087"
+    environment:
+      NODE_NAME: "antidote@antidote3"
+      SHORT_NAME: "true"
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - interdc
+      - local3
+
+  link:
+    image: erlang:19
+    volumes:
+      - .:/code
+    command: '/code/link.sh'
+    links:
+      - antidote1
+      - antidote2
+      - antidote3
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - local1
+      - local2
+      - local3
+
+networks:
+  interdc:
+  local1:
+  local2:
+  local3:
