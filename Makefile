@@ -98,6 +98,15 @@ runall:
 	_build/default/bin/basho_bench lengthy_benchmarks/10_C_NOLOCKS_ReadOnly_Main_10Min_ViewKeys.config
 
 
+10_C_ES_ReadOnly_Mixed_Pareto_10k_90_%:
+	_build/default/bin/basho_bench workload_simulations/10_C_ES_ReadOnly_Mixed_Pareto_10k_90_%.config
+10_C_ES_ReadOnly_Mixed_Pareto_100k_90_%:
+	_build/default/bin/basho_bench workload_simulations/10_C_ES_ReadOnly_Mixed_Pareto_100k_90_%.config
+100_C_ES_ReadOnly_Mixed_Pareto_10k_90_%:
+	_build/default/bin/basho_bench workload_simulations/100_C_ES_ReadOnly_Mixed_Pareto_10k_90_%.config
+100_C_ES_ReadOnly_Mixed_Pareto_10k_99_9%:
+	_build/default/bin/basho_bench workload_simulations/100_C_ES_ReadOnly_Mixed_Pareto_10k_99_9%.config
+
 
 results:
 	Rscript --vanilla priv/summary.r -i tests/current
