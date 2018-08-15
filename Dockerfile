@@ -25,4 +25,5 @@ COPY --from=0 /usr/src/basho_bench/_build/default/bin/basho_bench .
 COPY ./examples /opt/basho_bench/examples
 COPY ./priv /opt/basho_bench/priv
 COPY ./entrypoint.sh /entrypoint.sh
+VOLUME [ "/opt/basho_bench/tests" ]
 ENTRYPOINT [ "/entrypoint.sh" ]
