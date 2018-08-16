@@ -59,6 +59,10 @@ runall:
 	_build/default/bin/basho_bench simple_benchmarks/1_C_E_ReadOnly_Main.config
 10_C_E_ReadOnly_Main:
 	_build/default/bin/basho_bench simple_benchmarks/10_C_E_ReadOnly_Main.config
+100_C_E_ReadOnly_Main:
+	_build/default/bin/basho_bench simple_benchmarks/100_C_E_ReadOnly_Main.config
+1000_C_E_ReadOnly_Main:
+	_build/default/bin/basho_bench simple_benchmarks/100_C_E_ReadOnly_Main.config
 1_C_S_ReadOnly_Main:
 	_build/default/bin/basho_bench simple_benchmarks/1_C_S_ReadOnly_Main.config
 10_C_S_ReadOnly_Main:
@@ -72,6 +76,10 @@ runall:
 	_build/default/bin/basho_bench simple_benchmarks/1_C_E_ReadOnly_Secondary.config
 10_C_E_ReadOnly_Secondary:
 	_build/default/bin/basho_bench simple_benchmarks/10_C_E_ReadOnly_Secondary.config
+100_C_E_ReadOnly_Secondary:
+	_build/default/bin/basho_bench simple_benchmarks/100_C_E_ReadOnly_Secondary.config
+1000_C_E_ReadOnly_Secondary:
+	_build/default/bin/basho_bench simple_benchmarks/100_C_E_ReadOnly_Secondary.config
 1_C_S_ReadOnly_Secondary:
 	_build/default/bin/basho_bench simple_benchmarks/1_C_S_ReadOnly_Secondary.config
 10_C_S_ReadOnly_Secondary:
@@ -85,6 +93,10 @@ runall:
 	_build/default/bin/basho_bench simple_benchmarks/1_C_E_ReadOnly_Mixed.config
 10_C_E_ReadOnly_Mixed:
 	_build/default/bin/basho_bench simple_benchmarks/10_C_E_ReadOnly_Mixed.config
+100_C_E_ReadOnly_Mixed:
+	_build/default/bin/basho_bench simple_benchmarks/100_C_E_ReadOnly_Mixed.config
+1000_C_E_ReadOnly_Mixed:
+	_build/default/bin/basho_bench simple_benchmarks/100_C_E_ReadOnly_Mixed.config
 1_C_S_ReadOnly_Mixed:
 	_build/default/bin/basho_bench simple_benchmarks/1_C_S_ReadOnly_Mixed.config
 10_C_S_ReadOnly_Mixed:

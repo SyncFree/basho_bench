@@ -1,7 +1,7 @@
 version: "2"
 services:
   antidote1:
-     image: maxikohl/antidote:strong_consistency_002
+     image: maxikohl/antidote:strong_consistency_003
      ports:
        - "8087:8087"
      environment:
@@ -14,7 +14,7 @@ services:
        - local1
 
   antidote2:
-    image: maxikohl/antidote:strong_consistency_002
+    image: maxikohl/antidote:strong_consistency_003
     ports:
       - "8088:8087"
     environment:
@@ -27,7 +27,7 @@ services:
       - local2
 
   antidote3:
-    image: maxikohl/antidote:strong_consistency_002
+    image: maxikohl/antidote:strong_consistency_003
     ports:
       - "8089:8087"
     environment:
