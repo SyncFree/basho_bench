@@ -206,7 +206,7 @@ run(txn, TxnSeq, MsgId, Seed, State) ->
 run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=PartList, tx_server=TxServer, deter=Deter, total_key=TotalKey,
         dc_rep_ids=DcRepIds, node_id=MyNodeId,  hash_dict=HashDict, no_rep_ids=NoRepIds, 
         local_hot_rate=LocalHotRate, local_hot_range=LocalHotRange, remote_hot_rate=RemoteHotRate, remote_hot_range=RemoteHotRange,
-        cache_hot_range=CacheHotRange, cache_range=CRange, cache_hot_rate=CacheHotRate, my_stat=MyStat,
+        cache_hot_range=CacheHotRange, cache_range=CRange, cache_hot_rate=CacheHotRate,
         master_num=MNum, slave_num=SNum, master_range=MRange, slave_range=SRange})->
     random:seed(Seed),
     %StartTime = os:timestamp(),
@@ -220,27 +220,14 @@ run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=Pa
             NumKeys = TotalKey,
             DcRepLen = length(DcRepIds),
             NoRepLen = length(NoRepIds),
-            BeginTime = os:timestamp(),
-            {_, WriteSet, _, MyStat2} 
-                = lists:foldl(fun(_, {Cnt, WS, {StartTime, PrevTime}, AccStat}) ->
+            WriteSet = lists:foldl(fun(_, WS) ->
                     Rand = random:uniform(10000),
                     case Rand =< MNum of
                         true -> 
                             Key = hot_or_not(1, LocalHotRange, MRange, LocalHotRate),
                             V = read_from_node(TxServer, TxId, Key, MyNodeId, MyNodeId, PartList, HashDict, SpeculaRead),
                             case is_number(V) of false -> lager:warning("WTF, V is not number!", [V]), V=1; true -> ok end,
-                            Now = os:timestamp(),
-                            case Cnt == NumKeys -1 of
-                                true  -> 
-                                    {{LMRTime, LMRCnt}, LSR, CR, {TRTime, TRCnt}} = AccStat, 
-                                    {Cnt+1, dict:store({MyNodeId, Key}, V+Add, WS), {StartTime, Now},  
-                                            {{LMRTime+timer:now_diff(Now, PrevTime), LMRCnt+1}, LSR, CR, 
-                                                {TRTime+timer:now_diff(Now, StartTime), TRCnt+1}}};
-                                _ ->
-                                    {{LMRTime, LMRCnt}, LSR, CR, TR} = AccStat, 
-                                    {Cnt+1, dict:store({MyNodeId, Key}, V+Add, WS), {StartTime, Now}, 
-                                            {{LMRTime+timer:now_diff(Now, PrevTime), LMRCnt+1}, LSR, CR, TR}} 
-                            end;
+                            dict:store({MyNodeId, Key}, V+Add, WS); 
                         false -> 
                             case Rand =< MNum+SNum of
                                 true ->     
@@ -249,36 +236,14 @@ run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=Pa
                                     Rand1 = random:uniform(DcRepLen),
                                     DcNode = lists:nth(Rand1, DcRepIds),
                                     V = read_from_node(TxServer, TxId, Key, DcNode, MyNodeId, PartList, HashDict, SpeculaRead),
-                                    Now = os:timestamp(),
-                                    case Cnt == NumKeys - 1 of
-                                        true  -> 
-                                            {LMR, {LSRTime, LSRCnt}, CR, {TRTime, TRCnt}} = AccStat, 
-                                            {Cnt+1, dict:store({DcNode, Key}, V+Add, WS), {StartTime, Now},  
-                                                    {LMR, {LSRTime+timer:now_diff(Now, PrevTime), LSRCnt+1}, CR, 
-                                                        {TRTime+timer:now_diff(Now, StartTime), TRCnt+1}}};
-                                        _ ->
-                                            {LMR, {LSRTime, LSRCnt}, CR, TR} = AccStat, 
-                                            {Cnt+1, dict:store({DcNode, Key}, V+Add, WS), {StartTime, Now}, 
-                                                    {LMR, {LSRTime+timer:now_diff(Now, PrevTime), LSRCnt+1}, CR, TR}} 
-                                    end;
+                                    dict:store({DcNode, Key}, V+Add, WS);
                                 false -> OtherDcNode = lists:nth(Rand rem NoRepLen +1, NoRepIds),
                                     Key = hot_or_not(MRange+SRange+1, CacheHotRange, CRange, CacheHotRate),
                                     V = read_from_node(TxServer, TxId, Key, OtherDcNode, MyNodeId, PartList, HashDict, SpeculaRead),
-                                    Now = os:timestamp(),
-                                    case Cnt == NumKeys -1 of
-                                        true  -> 
-                                            {LMR, LSR, {CRTime, CRCnt}, {TRTime, TRCnt}} = AccStat, 
-                                            {Cnt+1, dict:store({OtherDcNode, Key}, V+Add, WS), {StartTime, Now},  
-                                                    {LMR, LSR, {CRTime+timer:now_diff(Now, PrevTime), CRCnt+1}, 
-                                                        {TRTime+timer:now_diff(Now, StartTime), TRCnt+1}}};
-                                        _ ->
-                                            {LMR, LSR, {CRTime, CRCnt}, TR} = AccStat, 
-                                            {Cnt+1, dict:store({OtherDcNode, Key}, V+Add, WS), {StartTime, Now}, 
-                                                    {LMR, LSR, {CRTime+timer:now_diff(Now, PrevTime), CRCnt+1}, TR}} 
-                                    end
+                                    dict:store({OtherDcNode, Key}, V+Add, WS)
                             end
                     end
-                  end, {1, dict:new(), {BeginTime, BeginTime}, MyStat}, lists:seq(1, NumKeys)),
+                  end, dict:new(), lists:seq(1, NumKeys)),
 
             {LocalWriteList, RemoteWriteList} = get_local_remote_writeset(WriteSet, PartList, MyNodeId),
             %lager:warning("Node is ~w, local ws is ~w, remote ws is ~w", [MyNodeId, LocalWriteList, RemoteWriteList]),
@@ -287,20 +252,20 @@ run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=Pa
             %lager:warning("After calling certify"),
             case Response of
                 {ok, {committed, _CommitTime, Info}} ->
-                    {ok, Info, State#state{my_stat=MyStat2}};
+                    {ok, Info, State};
                 {ok, {specula_commit, _SpeculaCT, Info}} ->
-                    {specula_commit, Info, State#state{my_stat=MyStat2}};
+                    {specula_commit, Info, State};
                 {cascade_abort, Info} ->
-                    {cascade_abort, Info, State#state{my_stat=MyStat2}};
+                    {cascade_abort, Info, State};
                 {error,timeout} ->
                     lager:info("Timeout on client ~p",[TxServer]),
-                    {error, timeout, State#state{my_stat=MyStat2}};
+                    {error, timeout, State};
                 {aborted, Info} ->
-                    {aborted, Info, State#state{my_stat=MyStat2}};
+                    {aborted, Info, State};
 		wrong_msg ->
-                    {wrong_msg, State#state{my_stat=MyStat2}};
+                    {wrong_msg, State};
                 {badrpc, Reason} ->
-                    {error, Reason, State#state{my_stat=MyStat2}}
+                    {error, Reason, State}
             end
     end.
     
