@@ -11,7 +11,6 @@ import os
 import numpy as np
 import pandas as pd
 import re
-from plot_line_share import *
 
 sys.path.append('/Users/liz/Documents/MyDocument/repositories/basho_bench/dataScript')
 from helper import *
@@ -46,7 +45,6 @@ def get_lists(root_folder, config_str):
 baseline_folder='processed_data/tpcc/baseline'
 planet_folder='processed_data/tpcc/planet'
 int_folder='processed_data/tpcc/internal'
-ext_folder='processed_data/tpcc/external'
 
 fig = plt.figure()
 ax11 = plt.subplot2grid((3,3), (0,0))
@@ -62,9 +60,9 @@ ax33 = plt.subplot2grid((3,3), (2,2))
 #ax1.yaxis.labelpad = 22
 #ax2.yaxis.labelpad = 11
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
-output_folder='./figures/vldb/tpcc/' + time
+output_folder='./figures/hpdc/tpcc/' + time
 os.mkdir(output_folder)
-dict1={'y_lim':2.5, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR', 'STR-External'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) 5% new order, 83% payment', 'bbox_loc':(1.5,1.42), 'y1pad':14, 'y2pad':14, 'y3pad':10}
+dict1={'y_lim':2.5, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'Ext-Spec', 'STR'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) 5% new order, 83% payment', 'bbox_loc':(1.5,1.42), 'y1pad':14, 'y2pad':14, 'y3pad':10}
 dict1['x_ticks']=[10, 100, 200, 400, 600, 800, 1000, 1200]
 dict1['sc']={1,3}
 
@@ -76,9 +74,7 @@ planetLL=sort_by_num(planetLL)
 #planetLL=planetLL[:-1]
 [internalLL]=get_matching_series_delete([int_folder, 'tpcc', 7, 8, 5, 83, 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'tpcc', 7, 8, 5, 83, 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
+th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder], [baselineLL, planetLL, internalLL])
 lgd=plot_lines(th, abort, spec_abort, lat, ax11, ax12, ax13, dict1)
 
 dict1['under_labels']='(b) 45% new order, 43% payment'
@@ -95,12 +91,10 @@ planetLL=sort_by_num(planetLL)
 #planetLL=planetLL[:-1]
 [internalLL]=get_matching_series_delete([int_folder, 'tpcc', 7, 8, 45, 43, 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'tpcc', 7, 8, 45, 43, 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
 #print("Planet: "+" ".join(planetLL))
 #print("Internal: "+" ".join(internalLL))
 #print("External: "+" ".join(externalLL))
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
+th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder], [baselineLL, planetLL, internalLL])
 plot_lines(th, abort, spec_abort, lat, ax21, ax22, ax23, dict1)
 
 dict1['under_labels']='(c) 5% new order, 43% payment'
@@ -113,12 +107,7 @@ planetLL=sort_by_num(planetLL)
 #planetLL=planetLL[:-1]
 [internalLL]=get_matching_series_delete([int_folder, 'tpcc', 7, 8, 5, 43, 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'tpcc', 7, 8, 5, 43, 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
-#print("Planet: "+" ".join(planetLL))
-#print("Internal: "+" ".join(internalLL))
-#print("External: "+" ".join(externalLL))
+th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder], [baselineLL, planetLL, internalLL])
 plot_lines(th, abort, spec_abort, lat, ax31, ax32, ax33, dict1)
 #plot_lines(th1, abort1, lat1, ax31, ax32, ax33, dict1)
 

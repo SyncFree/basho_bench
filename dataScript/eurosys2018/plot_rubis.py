@@ -56,7 +56,7 @@ ax13 = plt.subplot2grid((3,1), (2,0))
 #ax1.yaxis.labelpad = 22
 #ax2.yaxis.labelpad = 11
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
-output_folder='./figures/vldb/rubis/' + time
+output_folder='./figures/eurosys/rubis/' + time
 os.mkdir(output_folder)
 dict1={'y_lim':20, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR', 'STR-External'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'bbox_loc':(0.15,1.06), 'under_labels':False, 'y1pad':18, 'y2pad':13, 'y3pad':10}
 dict1['x_ticks']=[50, 500, 1000, 2000, 3000, 4000]

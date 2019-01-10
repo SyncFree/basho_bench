@@ -7,9 +7,6 @@ import random
 import os
 import numpy as np
 import matplotlib.gridspec as gridspec
-import matplotlib
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
 
 def swap(l, i1, i2):
     tmp = l[i1]
@@ -21,7 +18,7 @@ def plot_multi_lines(throughput_list, base1, base2, ax1, plot_dict):
     
     fsize=18
     xlabsize=22
-    underlabsize=22
+    underlabsize=25
     ylabsize=20
     maxv=0
     max_latency = 0
@@ -35,7 +32,7 @@ def plot_multi_lines(throughput_list, base1, base2, ax1, plot_dict):
     #colors=['#30a152', '#e34932', '#035a8c', '#a7bdd9']
     dashed_ls = ['--', '-.', ':']
     line_index=0
-    olsize=18
+    olsize=22
     marker_size=15
     line_width=4
 
@@ -70,16 +67,10 @@ def plot_multi_lines(throughput_list, base1, base2, ax1, plot_dict):
         ax1.set_xlabel(plot_dict['under_labels'], fontsize=underlabsize) 
 
     ax1.set_ylim([0,plot_dict['y_lim']])
-    #ax1.set_xticks([-0.5,1,2,3,4.5])
     ax1.set_xlim([-0.15, len(plot_dict['x_ticks'])-0.85])
     ax1.set_xticklabels(['']+plot_dict['x_ticks'], minor=False, fontsize=xlabsize)
 
-    #ticks = ax1.get_xticks()
-    #ax1.set_xticks(plot_dict['x_ticks'])
-
-    #ax1.set_xticks([0,1,2,3,4],plot_dict['x_ticks'])
     ax1.yaxis.grid(True)
-    #mpl.rcParams['ytick.labelsize'] = fsize
     ax1.tick_params(labelsize=fsize)
     if 'y_ticks' in plot_dict and plot_dict['y_ticks'] == False:
         ax1.yaxis.set_major_formatter(NullFormatter())

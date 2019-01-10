@@ -13,10 +13,6 @@ import pandas as pd
 import re
 from plot_line_share import *
 
-import matplotlib
-matplotlib.rcParams['pdf.fonttype'] = 42
-matplotlib.rcParams['ps.fonttype'] = 42
-
 sys.path.append('/Users/liz/Documents/MyDocument/repositories/basho_bench/dataScript')
 from helper import *
 from datetime import datetime
@@ -71,9 +67,9 @@ ax33 = plt.subplot2grid((3,3), (2,2))
 #ax1.yaxis.labelpad = 22
 #ax2.yaxis.labelpad = 11
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
-output_folder='./figures/vldb/micro/' + time
+output_folder='./figures/eurosys/micro/' + time
 os.mkdir(output_folder)
-dict1={'y_lim':4.9, 'legend_type':'warehouse', 'x_ticks':[10,20,30,40,60,80], 'legends':['ClockSI-Rep', 'PLANET', 'STR', 'STR-External'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms)', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) High local, low remote', 'bbox_loc':(1.54,1.42), 'y1pad':34, 'y2pad':20, 'y3pad':4}
+dict1={'y_lim':4.9, 'legend_type':'warehouse', 'x_ticks':[10,20,30,40,60,80], 'legends':['ClockSI-Rep', 'Ext-Spec', 'STR'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms)', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) High local, low remote', 'bbox_loc':(1.54,1.42), 'y1pad':34, 'y2pad':20, 'y3pad':4}
 dict1['x_labels']=['300 cls', '600 cls', '900 cls', '1200 cls', '1500 cls']
 dict1['sc']= {1,3}
 
@@ -84,9 +80,7 @@ baselineLL=baselineLL[:-1]
 planetLL=sort_by_num(planetLL)
 [internalLL]=get_matching_series_delete([int_folder, 'micro', 4, 6, 1000, 15000, 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'micro', 4, 6, 1000, 15000, 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
+th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder], [baselineLL, planetLL, internalLL])
 th1=th
 abort1=abort
 lat1=lat
@@ -106,9 +100,7 @@ planetLL=sort_by_num(planetLL)
 #planetLL=planetLL[:-1]
 [internalLL]=get_matching_series_delete([int_folder, 'micro', 4, 6, 30000, 15000, 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'micro', 4, 6, 30000, 15000, 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
+th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder], [baselineLL, planetLL, internalLL])
 #th, abort, lat = get_compare_data([baseline_folder, planet_folder], [baselineLL, planetLL])
 plot_lines(th, abort, spec_abort, lat, ax21, ax22, ax23, dict1)
 
@@ -138,15 +130,7 @@ planetLL=sort_by_num(planetLL)
 #planetLL=planetLL[:-1]
 [internalLL]=get_matching_series_delete([int_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'micro', 4, 6, 1000, 500, 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
-#print("Planet: "+" ".join(planetLL))
-#print("Internal: "+" ".join(internalLL))
-#print("External: "+" ".join(externalLL))
-#plot_lines([[0.62, 0.74, 1.19, 0.93, 0.59], [2.41, 2.43, 1.14, 0.94, 0.72]], [], [[],[]], ax41, ax42, ax43, dict1)
-#plot_lines([[0]], [[0]], [[[0],[0]]], ax41, ax42, ax43, dict1)
-#th, abort, lat = get_compare_data([baseline_folder, planet_folder], [baselineLL, planetLL])
+th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder], [baselineLL, planetLL, internalLL])
 plot_lines(th, abort, spec_abort, lat, ax31, ax32, ax33, dict1)
 
 plt.figtext(0.44, 0.07, "Number of clients per server", fontsize=18)

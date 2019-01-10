@@ -88,10 +88,12 @@ def plot_multi_lines(throughput_list, base1, base2, ax1, plot_dict):
 
     print handlers
     if 'has_legend' in plot_dict and plot_dict['has_legend']:
-        if 'out_legend' in plot_dict and plot_dict['out_legend']:
+        if 'out_legend' in plot_dict:
             commit_legend = plot_dict['commit_legend']
-            print(handlers)
-            lgd = ax1.legend(handlers, commit_legend, fontsize=olsize, loc=9, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, bbox_to_anchor=plot_dict['bbox_loc'], ncol=3)
+            if plot_dict['out_legend']:
+                lgd = ax1.legend(handlers, commit_legend, fontsize=olsize, loc=9, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, bbox_to_anchor=plot_dict['bbox_loc'], ncol=len(handlers)/2)
+            else:
+                lgd = ax1.legend(handlers, commit_legend, fontsize=olsize, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, ncol=len(handlers)/2)
         else:
             pass
 

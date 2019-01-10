@@ -62,7 +62,7 @@ ax33 = plt.subplot2grid((3,3), (2,2))
 #ax1.yaxis.labelpad = 22
 #ax2.yaxis.labelpad = 11
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
-output_folder='./figures/vldb/tpcc/' + time
+output_folder='./figures/eurosys/tpcc/' + time
 os.mkdir(output_folder)
 dict1={'y_lim':2.5, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR', 'STR-External'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'under_labels':'(a) 5% new order, 83% payment', 'bbox_loc':(1.5,1.42), 'y1pad':14, 'y2pad':14, 'y3pad':10}
 dict1['x_ticks']=[10, 100, 200, 400, 600, 800, 1000, 1200]

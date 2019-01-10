@@ -17,11 +17,12 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
     xticks_entry = dict() 
     
     fsize=18
-    yticksize=16
+    #yticksize=16
+    yticksize=18
     xlabsize=22
-    underlabsize=18
-    markersize=10
-    ylabsize=14
+    underlabsize=20
+    markersize=13
+    ylabsize=16
     maxv=0
     max_latency = 0
     handlers = []
@@ -33,11 +34,10 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
     dashed_ls = ['--', '-.', ':']
     line_index=0
     barwidth = 0.3
-    olsize=20
+    olsize=19
     marker_size=14
-    line_width=3.5
-    num_xticks = 0
-    start_pos = 0
+    #line_width=3.5
+    line_width=4.5
 
     line_index=0
     total_bars = len(th_list)
@@ -50,9 +50,10 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
                 print th
                 print plot_dict['x_ticks']
                 h,  = ax1.plot(plot_dict['x_ticks'], th, color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
-                ax2.plot(plot_dict['x_ticks'], abort_list[line_index], color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
-                if i in plot_dict['sc']:
-                    ax2.plot(plot_dict['x_ticks'], spec_abort_list[line_index], color=colors[line_index], ls='--', marker=markers[line_index], linewidth=line_width, markersize=markersize)
+                if len(abort_list):
+                    ax2.plot(plot_dict['x_ticks'], abort_list[line_index], color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
+                    if i in plot_dict['sc']:
+                        ax2.plot(plot_dict['x_ticks'], spec_abort_list[line_index], color=colors[line_index], ls='--', marker=markers[line_index], linewidth=line_width, markersize=markersize)
 
 
                 ax3.plot(plot_dict['x_ticks'], lat_list[line_index][0], color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
@@ -60,9 +61,10 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
                     ax3.plot(plot_dict['x_ticks'], lat_list[line_index][1], color=colors[line_index], ls=dashed_ls[0], marker=markers[line_index], linewidth=line_width, markersize=markersize)
             else:
                 h,  = ax1.plot(th, color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
-                ax2.plot(abort_list[line_index], color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
-                if i in plot_dict['sc']:
-                    ax2.plot(plot_dict['x_ticks'], spec_abort_list[line_index], color=colors[line_index], ls='--', marker=markers[line_index], linewidth=line_width, markersize=markersize)
+                if len(abort_list[line_index]):
+                    ax2.plot(abort_list[line_index], color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
+                    if i in plot_dict['sc']:
+                        ax2.plot(plot_dict['x_ticks'], spec_abort_list[line_index], color=colors[line_index], ls='--', marker=markers[line_index], linewidth=line_width, markersize=markersize)
 
                 ax3.plot(lat_list[line_index][0], color=colors[line_index], marker=markers[line_index], linewidth=line_width, markersize=markersize)
                 if lat_list[line_index][1][0] != 0:
@@ -78,24 +80,25 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
 
     ax2.set_ylim([0,0.99])
     if 'y3_lim' in plot_dict:
-        ax3.set_ylim([0, plot_dict['y3_lim']])
+        ax3.set_ylim([1, plot_dict['y3_lim']])
     else:
-        ax3.set_ylim([0,1380])
-    #ax3.set_yscale('log')
+        ax3.set_ylim([1,1190])
+    ax3.set_yscale('log')
     #if plot_dict['y_lim'] != 0:
     ax1.set_ylim([0,plot_dict['y_lim']])
 
     if plot_dict['y1_label'] != False:
-        ax1.set_ylabel(plot_dict['y1_label'], fontsize=ylabsize, labelpad=22) 
-        ax2.set_ylabel(plot_dict['y2_label'], fontsize=ylabsize, labelpad=13) 
-        ax3.set_ylabel(plot_dict['y3_label'], fontsize=ylabsize, labelpad=4) 
+        ax1.set_ylabel(plot_dict['y1_label'], fontsize=ylabsize, labelpad=plot_dict['y1pad']) 
+        ax2.set_ylabel(plot_dict['y2_label'], fontsize=ylabsize, labelpad=plot_dict['y2pad']) 
+        ax3.set_ylabel(plot_dict['y3_label'], fontsize=ylabsize, labelpad=plot_dict['y3pad']) 
     else:
         ax1.yaxis.set_major_formatter(NullFormatter())
         ax2.yaxis.set_major_formatter(NullFormatter())
         ax3.yaxis.set_major_formatter(NullFormatter())
 
     if plot_dict['under_labels'] != False:
-        ax3.set_xlabel(plot_dict['under_labels'], fontsize=underlabsize, labelpad=40) 
+        ax3.set_xlabel(plot_dict['under_labels'], fontsize=underlabsize, labelpad=20) 
+        #ax3.set_xlabel(plot_dict['under_labels'], fontsize=underlabsize, labelpad=20) 
 
     #ax3.set_xticklabels(plot_dict['x_ticks'], minor=False, fontsize=xlabsize)
 
@@ -113,7 +116,8 @@ def plot_lines(th_list, abort_list, spec_abort_list, lat_list, ax1, ax2, ax3, pl
     lgd=0
 
     if 'legends' in plot_dict and plot_dict['legends']:
-        lgd = ax1.legend(handlers, plot_dict['legends'], fontsize=olsize, loc=9, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, bbox_to_anchor=plot_dict['bbox_loc'], ncol=len(handlers))
+    #    lgd = ax1.legend(handlers, plot_dict['legends'], fontsize=olsize, loc=9, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, bbox_to_anchor=plot_dict['bbox_loc'], ncol=len(handlers))
         #lgd = ax1.legend(handlers, plot_dict['legends'], fontsize=olsize, loc=9, labelspacing=0.1, handletextpad=0.15, borderpad=0.26, bbox_to_anchor=plot_dict['bbox_loc'], ncol=1)
+        lgd = ax1.legend(handlers, plot_dict['legends'], fontsize=olsize, loc=9, bbox_to_anchor=plot_dict['bbox_loc'], labelspacing=0.1, handletextpad=0.15, borderpad=0.26, ncol=1)
 
     return lgd

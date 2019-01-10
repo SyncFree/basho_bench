@@ -46,7 +46,7 @@ def get_lists(root_folder, config_str):
 baseline_folder='processed_data/rubissocc/baseline'
 planet_folder='processed_data/rubissocc/planet'
 int_folder='processed_data/rubissocc/internal'
-ext_folder='processed_data/rubissocc/external'
+#ext_folder='processed_data/rubissocc/external'
 
 fig = plt.figure()
 ax11 = plt.subplot2grid((3,1), (0,0))
@@ -56,9 +56,9 @@ ax13 = plt.subplot2grid((3,1), (2,0))
 #ax1.yaxis.labelpad = 22
 #ax2.yaxis.labelpad = 11
 time=datetime.now().strftime("%Y%m%d-%H:%M:%S")
-output_folder='./figures/vldb/rubis/' + time
+output_folder='./figures/eurosys/rubis/' + time
 os.mkdir(output_folder)
-dict1={'y_lim':20, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'PLANET', 'STR', 'STR-External'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'bbox_loc':(0.15,1.06), 'under_labels':False, 'y1pad':18, 'y2pad':13, 'y3pad':10}
+dict1={'y_lim':20, 'y3_lim':40000, 'legend_type':'warehouse', 'legends':['ClockSI-Rep', 'Ext-Spec', 'STR'], 'y1_label':'Commits (K txs/s)', 'y2_label':'Abort rate', 'y3_label':'Latency(ms) in log', 'abort_legend':['Abort rate  ', 'Baseline', 'STR: i. abort', 'STR: s. abort'], 'no_title':True, 'x_label': 'Client number', 'th_lim':5, 'lat_lim':100000, 'bbox_loc':(0.15,1.06), 'under_labels':False, 'y1pad':18, 'y2pad':13, 'y3pad':10}
 dict1['x_ticks']=[50, 500, 1000, 2000, 3000, 4000]
 dict1['sc']={1,3}
 
@@ -70,11 +70,9 @@ planetLL=sort_by_num(planetLL)
 #planetLL=planetLL[:-1]
 [internalLL]=get_matching_series_delete([int_folder, 'rubis', 4, 'rubis', 1], [], {'order':'ascend'})
 internalLL=sort_by_num(internalLL)
-[externalLL]=get_matching_series_delete([ext_folder, 'rubis', 4, 'rubis', 1], [], {'order':'ascend'})
-externalLL=sort_by_num(externalLL)
-#internalLL=[]
-#externalLL=[]
-th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder, ext_folder], [baselineLL, planetLL, internalLL, externalLL])
+#[externalLL]=get_matching_series_delete([ext_folder, 'rubis', 4, 'rubis', 1], [], {'order':'ascend'})
+#externalLL=sort_by_num(externalLL)
+th, abort, spec_abort, lat = get_compare_data([baseline_folder, planet_folder, int_folder], [baselineLL, planetLL, internalLL])
 lgd=plot_lines(th, abort, spec_abort, lat, ax11, ax12, ax13, dict1)
 
 plt.figtext(0.35, 0.01, "Number of clients per server", fontsize=18)
