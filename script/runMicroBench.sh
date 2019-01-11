@@ -28,7 +28,7 @@ else
     then
         HotRate=${17}
     else
-        HotRate=90
+        HotRate=10
     fi
     if [ $# -eq 18 ]
     then
