@@ -34,7 +34,9 @@
 
 -record(state, {worker_id,
                 time,
+                consistency,
                 total_key,
+                total_read,
                 part_list,
 		        my_table,
                 process_time,
@@ -90,7 +92,9 @@ new(Id) ->
     ToSleep = basho_bench_config:get(to_sleep),
     ProcessTime = basho_bench_config:get(process_time),
     TotalKey = basho_bench_config:get(total_key),
+    TotalRead = basho_bench_config:get(total_read),
     Concurrent = basho_bench_config:get(concurrent),
+    Consistency = basho_bench_config:get(consistency),
    
     MasterNum = basho_bench_config:get(master_num)*100,
     SlaveNum = basho_bench_config:get(slave_num)*100,
@@ -161,7 +165,9 @@ new(Id) ->
                deter = Deter,
                my_stat = {{0,0}, {0,0}, {0,0}, {0,0}},
                total_key = TotalKey,
+               total_read = TotalRead,
                tx_server=MyTxServer,
+               consistency=Consistency,
                part_list = PartList,
 		       my_table=MyTable,
                process_time=ProcessTime,
@@ -203,7 +209,7 @@ get_stat(#state{target_node=TargetNode, worker_id=Id, my_stat=MyStat}) ->
 run(txn, TxnSeq, MsgId, Seed, State) ->
     run(txn, TxnSeq, MsgId, Seed, ignore, ignore, State).
 
-run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=PartList, tx_server=TxServer, deter=Deter, total_key=TotalKey,
+run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=PartList, tx_server=TxServer, deter=Deter, total_key=TotalKey, total_read = TotalRead, consistency = Consistency,
         dc_rep_ids=DcRepIds, node_id=MyNodeId,  hash_dict=HashDict, no_rep_ids=NoRepIds, 
         local_hot_rate=LocalHotRate, local_hot_range=LocalHotRange, remote_hot_rate=RemoteHotRate, remote_hot_range=RemoteHotRange,
         cache_hot_range=CacheHotRange, cache_range=CRange, cache_hot_rate=CacheHotRate,
@@ -220,14 +226,13 @@ run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=Pa
             NumKeys = TotalKey,
             DcRepLen = length(DcRepIds),
             NoRepLen = length(NoRepIds),
-            WriteSet = lists:foldl(fun(_, WS) ->
+            {_, WriteSet} = lists:foldl(fun(_, {Cnt, WS}) ->
                     Rand = random:uniform(10000),
-                    case Rand =< MNum of
+                    {MyKey, KeyNode, Val} = case Rand =< MNum of
                         true -> 
                             Key = hot_or_not(1, LocalHotRange, MRange, LocalHotRate),
                             V = read_from_node(TxServer, TxId, Key, MyNodeId, MyNodeId, PartList, HashDict, SpeculaRead),
-                            case is_number(V) of false -> lager:warning("WTF, V is not number!", [V]), V=1; true -> ok end,
-                            dict:store({MyNodeId, Key}, V+Add, WS); 
+                            {Key, MyNodeId, V};
                         false -> 
                             case Rand =< MNum+SNum of
                                 true ->     
@@ -236,14 +241,21 @@ run(txn, TxnSeq, MsgId, Seed, SpeculaLen, SpeculaRead, State=#state{part_list=Pa
                                     Rand1 = random:uniform(DcRepLen),
                                     DcNode = lists:nth(Rand1, DcRepIds),
                                     V = read_from_node(TxServer, TxId, Key, DcNode, MyNodeId, PartList, HashDict, SpeculaRead),
-                                    dict:store({DcNode, Key}, V+Add, WS);
+                                    {Key, DcNode, V};
                                 false -> OtherDcNode = lists:nth(Rand rem NoRepLen +1, NoRepIds),
                                     Key = hot_or_not(MRange+SRange+1, CacheHotRange, CRange, CacheHotRate),
                                     V = read_from_node(TxServer, TxId, Key, OtherDcNode, MyNodeId, PartList, HashDict, SpeculaRead),
-                                    dict:store({OtherDcNode, Key}, V+Add, WS)
+                                    {Key, OtherDcNode, V}
                             end
+                    end,
+                    case Cnt < TotalRead of
+                        true -> case Consistency of
+                                    si -> {Cnt+1, WS}; 
+                                    ser -> {Cnt+1, dict:store({KeyNode, MyKey}, read, WS)}
+                                end;
+                        false -> {Cnt, dict:store({KeyNode, MyKey}, Val+Add, WS)}
                     end
-                  end, dict:new(), lists:seq(1, NumKeys)),
+                  end, {0, dict:new()}, lists:seq(1, NumKeys)),
 
             {LocalWriteList, RemoteWriteList} = get_local_remote_writeset(WriteSet, PartList, MyNodeId),
             %lager:warning("Node is ~w, local ws is ~w, remote ws is ~w", [MyNodeId, LocalWriteList, RemoteWriteList]),
