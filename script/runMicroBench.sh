@@ -36,6 +36,18 @@ else
     else
         NumKeys=10
     fi
+    if [ $# -eq 19 ]
+    then
+        Con=${19}
+    else
+        Con=si
+    fi
+    if [ $# -eq 20 ]
+    then
+        NumReads=${20}
+    else
+        NumReads=0
+    fi
     if [ "$do_specula" == true ]; then
 	    fast_reply=true
     else
@@ -50,7 +62,7 @@ Folder=$folder/$Time
 echo "Folder to make is" $Folder
 mkdir $Folder
 touch $Folder/$Seq
-echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${16} $NumKeys $HotRate > $Folder/config
+echo $1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12} ${13} ${16} $NumKeys $HotRate $Con $NumReads > $Folder/config
 sudo rm -f config
 echo ant concurrent $1 >> config 
 echo micro concurrent $1 >> config 
@@ -74,6 +86,9 @@ echo micro pattern $pattern >> config
 echo micro total_key $NumKeys >> config
 echo micro specula $do_specula >> config
 echo micro deter $deter >> config
+
+echo micro total_read $NumReads >> config
+echo micro consistency $Con >> config
 #ToSleep=$((40000 / ${1}))
 NumNodes=`cat ./script/allnodes | wc -l`
 MasterToSleep=$((NumNodes*500+10000))
