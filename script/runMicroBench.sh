@@ -24,30 +24,10 @@ else
     folder=${14}
     Seq=${15}
     Clock=${16}
-    if [ $# -eq 17 ]
-    then
-        HotRate=${17}
-    else
-        HotRate=10
-    fi
-    if [ $# -eq 18 ]
-    then
-        NumKeys=${18}
-    else
-        NumKeys=10
-    fi
-    if [ $# -eq 19 ]
-    then
-        Con=${19}
-    else
-        Con=si
-    fi
-    if [ $# -eq 20 ]
-    then
-        NumReads=${20}
-    else
-        NumReads=0
-    fi
+    HotRate=${17}
+    NumKeys=${18}
+    Con=${19}
+    NumReads=${20}
     if [ "$do_specula" == true ]; then
 	    fast_reply=true
     else
