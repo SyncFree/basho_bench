@@ -13,7 +13,6 @@ function runNTimes {
         fi
         start_ind=$((start_ind+1))
     done
-    exit
 } 
 
 seq="1"

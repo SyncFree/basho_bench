@@ -13,7 +13,6 @@ function runNTimes {
         echo "Skipped..."$start_ind
         fi
         start_ind=$((start_ind+1))
-        exit
     done
 } 
 
@@ -52,7 +51,7 @@ MN=80
 SN=20
 CN=0
 
-seq="1"
+seq="1 2"
 do_specula=true
 specula_read=true
 clock=new
