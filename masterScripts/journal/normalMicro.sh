@@ -75,7 +75,7 @@ echo micro all_nodes replace >> config
 ./script/restartAndConnect.sh
 
 len=0
-cons="ser"
+cons="si"
 total_reads="8 4 2 1 0"
 threads="120"
 contentions="4 1"

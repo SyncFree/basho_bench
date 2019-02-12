@@ -51,14 +51,14 @@ MN=80
 SN=20
 CN=0
 
-seq="1 2"
+seq="1"
 do_specula=true
 specula_read=true
 clock=new
 len=0
 threads="100"
-./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
-./script/parallel_command.sh "cd antidote && sudo make rel"
+#./masterScripts/initMachnines.sh 1 benchmark_precise_remove_stat_forward_rr 
+#./script/parallel_command.sh "cd antidote && sudo make rel"
 
 folder="specula_tests/consistency"
 rm -rf ./config
@@ -78,7 +78,7 @@ echo micro all_nodes replace >> config
 do_specula=true
 specula_read=true
 len=0
-cons="ser"
+cons="si"
 total_reads="8 4 2 1 0"
 threads="120"
 contentions="1 4"
